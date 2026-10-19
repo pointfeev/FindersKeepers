@@ -1,0 +1,4 @@
+{
+  "Libs/UI/Textures/Icons/Map/TreasureFinder_icon.dds": "IPL_GameData.pak:Libs/UI/Textures/Icons/Items/map_book_icon.dds",
+  "Libs/UI/Textures/Icons/Map/TreasureFinder_undiscovered_icon.dds": "IPL_GameData.pak:Libs/UI/Textures/Icons/Items/map_book_icon.dds"
+}

@@ -1,0 +1,73 @@
+cmake_minimum_required(VERSION 4.0)
+
+project(TreasureFinder LANGUAGES CXX)
+
+set(MOD_ID treasurefinder)
+
+if(DEFINED ENV{KCD2_DIR})
+    set(KCD2_DIR_DEFAULT "$ENV{KCD2_DIR}")
+else()
+    set(KCD2_DIR_DEFAULT "C:/Program Files (x86)/Steam/steamapps/common/KingdomComeDeliverance2")
+endif()
+set(KCD2_DIR "${KCD2_DIR_DEFAULT}" CACHE PATH "KCD2 install folder that the deploy target copies the mod into")
+
+file(GLOB_RECURSE PLUGIN_SOURCES CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/plugin/src/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/plugin/src/*.h")
+add_library(TreasureFinder SHARED ${PLUGIN_SOURCES})
+set_target_properties(TreasureFinder PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED ON)
+target_compile_definitions(TreasureFinder PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX)
+target_compile_options(TreasureFinder PRIVATE /utf-8 /W4)
+target_include_directories(TreasureFinder PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/plugin/src")
+
+# ---- Mod folder: <build>/mod/treasurefinder, laid out as it sits in the game's Mods folder ----
+set(MOD_STAGE "${CMAKE_BINARY_DIR}/mod/${MOD_ID}")
+set(MOD_PAK "${MOD_STAGE}/Data/${MOD_ID}.pak")
+set(MOD_MANIFEST "${CMAKE_CURRENT_SOURCE_DIR}/mod/mod.manifest")
+# Game assets the pak reuses under our names (the mark type's icons), read from the KCD2_DIR install at build time.
+set(MOD_GAME_FILES "${CMAKE_CURRENT_SOURCE_DIR}/mod/game_files.json")
+file(GLOB_RECURSE MOD_DATA_FILES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/mod/data/*")
+# The file list as a dependency: it is rewritten only when files are added or removed, so a deleted data file
+# repacks the .pak too (file timestamps alone only catch edits).
+string(REPLACE ";" "\n" MOD_DATA_LIST "${MOD_DATA_FILES}")
+file(CONFIGURE OUTPUT "${CMAKE_BINARY_DIR}/mod-data-files.txt" CONTENT "${MOD_DATA_LIST}\n")
+
+find_program(UV_EXECUTABLE uv REQUIRED)
+add_custom_command(
+    OUTPUT "${MOD_PAK}"
+    COMMAND "${UV_EXECUTABLE}" run --project "${CMAKE_CURRENT_SOURCE_DIR}" treasure-data --game "${KCD2_DIR}" pack
+            "${CMAKE_CURRENT_SOURCE_DIR}/mod/data" "${MOD_PAK}" --game-files "${MOD_GAME_FILES}"
+    DEPENDS ${MOD_DATA_FILES} "${CMAKE_BINARY_DIR}/mod-data-files.txt" "${MOD_GAME_FILES}"
+    COMMENT "Packing ${MOD_ID}.pak"
+    VERBATIM)
+
+# One Localization/<Language>_xml.pak per game language, built from the string table; the stamp stands in for the
+# set of paks, whose languages come from the table.
+set(MOD_STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/mod/localization.json")
+set(MOD_LOCALIZATION_STAMP "${CMAKE_BINARY_DIR}/localization.stamp")
+add_custom_command(
+    OUTPUT "${MOD_LOCALIZATION_STAMP}"
+    COMMAND "${UV_EXECUTABLE}" run --project "${CMAKE_CURRENT_SOURCE_DIR}" treasure-data localize
+            "${MOD_STRINGS}" "${MOD_STAGE}/Localization"
+    COMMAND "${CMAKE_COMMAND}" -E touch "${MOD_LOCALIZATION_STAMP}"
+    DEPENDS "${MOD_STRINGS}"
+    COMMENT "Building localization paks"
+    VERBATIM)
+
+add_custom_target(mod ALL
+    COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${MOD_MANIFEST}" "${MOD_STAGE}/mod.manifest"
+    COMMAND "${CMAKE_COMMAND}" -E make_directory "${MOD_STAGE}/KCSE/Plugins"
+    # The DLL only: debuggers find its PDB at the build path recorded in the DLL.
+    COMMAND "${CMAKE_COMMAND}" -E copy_if_different "$<TARGET_FILE:TreasureFinder>" "${MOD_STAGE}/KCSE/Plugins"
+    DEPENDS TreasureFinder "${MOD_PAK}" "${MOD_LOCALIZATION_STAMP}" "${MOD_MANIFEST}"
+    COMMENT "Staging ${MOD_STAGE}"
+    SOURCES "${MOD_MANIFEST}" "${MOD_STRINGS}" "${MOD_GAME_FILES}" ${MOD_DATA_FILES}
+    VERBATIM)
+
+# The mod folder is replaced whole, so files no longer part of the mod go too.
+add_custom_target(deploy
+    COMMAND "${CMAKE_COMMAND}" -E rm -rf "${KCD2_DIR}/Mods/${MOD_ID}"
+    COMMAND "${CMAKE_COMMAND}" -E copy_directory "${MOD_STAGE}" "${KCD2_DIR}/Mods/${MOD_ID}"
+    DEPENDS mod
+    COMMENT "Copying the mod into ${KCD2_DIR}/Mods/${MOD_ID}"
+    VERBATIM)

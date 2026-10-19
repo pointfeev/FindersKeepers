@@ -1,6 +1,6 @@
 # Treasure maps in KCD2 1.5.6: where each one leads
 
-Research for the treasure-finder KCSE mod. Game build: Steam 1.5.6 (release_1_5-15693). Full per-map data, including sources (URLs), alternates and notes, is in [treasure_maps.json](treasure_maps.json).
+Research for the treasure-finder mod. Game build: Steam 1.5.6 (release_1_5-15693). Full per-map data, including sources (URLs), alternates and notes, is in [treasure_maps.json](treasure_maps.json).
 
 ## How a map is tied to its destination
 

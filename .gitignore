@@ -1,6 +1,9 @@
-# Files unpacked from the game install and the indexes built from them: game
-# content, regenerated per build by `treasure-data extract` / `index`.
-/.cache/
+# Build trees: CMake presets build under build/, IDE profiles made outside the presets under cmake-build-*.
+/build/
+/cmake-build-*/
+
+# Per-user IDE state (JetBrains). The project is defined by CMakeLists.txt, CMakePresets.json and pyproject.toml.
+/.idea/
 
 /.venv/
 __pycache__/

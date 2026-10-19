@@ -1,0 +1,9 @@
+---
+Language: Cpp
+BasedOnStyle: LLVM
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ColumnLimit: 120
+# Namespace contents are indented, nested namespaces included (LLVM leaves them flush).
+NamespaceIndentation: All
