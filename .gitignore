@@ -1,0 +1,7 @@
+# Files unpacked from the game install and the indexes built from them: game
+# content, regenerated per build by `treasure-data extract` / `index`.
+/.cache/
+
+/.venv/
+__pycache__/
+/.ruff_cache/

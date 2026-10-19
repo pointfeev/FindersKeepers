@@ -1,0 +1,2058 @@
+[
+  {
+    "map": "andelStrazny_underground_map",
+    "guid": "ff1994fb-a737-4e68-9dc4-7f1ca47a9168",
+    "en_name": "Map of Kuttenberg underground ",
+    "category": "treasure",
+    "destination_summary": "Goatskin's (Kozina's) hideout in the Kuttenberg underground on the east side of the city, below Leflirska street near the Klasterska gate; the route runs through Janek the Scribbler's cellar. A barrel holds Master Schindel's stolen Astrolabe, the book 'Livre du ciel et du monde' and 'Strange little verse I', which starts the verse scavenger hunt.",
+    "container": "barrel (quest InteractionTrigger 'loot items')",
+    "level": "kutnohorsko",
+    "entity_name": "andelStrazny_kozinaStash",
+    "entity_id": "139871",
+    "entity_guid": "10757e76-16ca-4481",
+    "pos": "3233.389,686.466,39.89327",
+    "poi_name": null,
+    "alt_entities": [
+      {
+        "name": "andel_strazny (SmartObjectHolder)",
+        "cls": "SmartObjectHolder",
+        "id": "139872",
+        "guid": "81c969dd-4897-4582",
+        "pos": "3232.638,687.0149,39.92944"
+      }
+    ],
+    "how_matched": "In quest u66__andel_strazny ('Master Schindel's toys'), quest_itemy.xml holds the map GUID and declares InteractionTriggerAsset kozinaStash; interacting with it grants the stolen items. SmartObjectHolder andel_strazny links it to InteractionTrigger 139871 at z 39.9, about 12 m below street level (51.9). The quest log says the stolen items are in Goatskin's underground stash and that the map is sewn into the coat of Angel, hanged on the gallows. Destructoid says the map shows Goatskin's stash and tells you to search the barrel.",
+    "confidence": "verified",
+    "sources": [
+      "https://www.destructoid.com/how-to-find-the-map-of-kuttenberg-underground-tunnels-in-kingdom-come-2/",
+      "https://kingdomcomedeliverance2.wiki.fextralife.com/Map_of_Kuttenberg_Underground"
+    ],
+    "notes": "Quest item, but the objective 'Find the stolen items in the underground' has no Marker in the quest XML (only the hand-in to Schindel is marked), so a mod marker is useful. The 'Strange little verse' chain uses stashes andelStraznyRiddle1-5 (e.g. kasna_hiddenStash 81346); this map does not point to them.",
+    "source": {
+      "how": "body",
+      "summary": "Sewn into the coat of the hanged thief Angel at the Kuttenberg gallows/execution site south-east of the city, upstairs in the gallows building. Francek also gives it as an item reward at the end of the 'Striped Tonies' quest.",
+      "level": "kutnohorsko",
+      "entity_name": "hledaniLichtenstejna_andel",
+      "entity_id": "6615",
+      "pos": "3313.788,327.7408,33.1674",
+      "confidence": "verified",
+      "sources": [
+        "https://www.destructoid.com/how-to-find-the-map-of-kuttenberg-underground-tunnels-in-kingdom-come-2/",
+        "https://kingdomcomedeliverance2.wiki.fextralife.com/Map_of_Kuttenberg_Underground"
+      ],
+      "alt": [
+        {
+          "how": "quest_reward",
+          "summary": "ItemReward in sesivaniTonici/hibernace/prisaha_u_kostela/rozlouceni_s_franckem.xml (Striped Tonies, farewell with Francek)",
+          "pos": null
+        }
+      ],
+      "entity_check": "ok",
+      "entity_guid": "6566b2f8-f8af-4b13"
+    },
+    "entity_check": "ok"
+  },
+  {
+    "map": "artefakt_BavorCoatofArmsDrawing",
+    "guid": "2932390c-2601-452e-aa0b-f70334eee3a2",
+    "en_name": "Boleslav Bavor's coat of arms sketch",
+    "category": "not_a_location_map",
+    "quest_marks_destination": true,
+    "destination_summary": "Reference sketch of Bavor's arms (arrow symbol), used to recognise his mural in the church (3rd from the right, east side) and his marked cross/grave in the infirmary-church graveyard, where the True Cross relic is dug up. All steps are quest-marked.",
+    "container": null,
+    "level": "klaster",
+    "entity_name": null,
+    "entity_id": null,
+    "entity_guid": null,
+    "pos": null,
+    "poi_name": null,
+    "alt_entities": [
+      {
+        "entity_name": "graveHole[special/graveHole2_89745c25-bd81-4307-8950-c23e43880529] (Bavor's grave, asset graveSearch_holeEntity)",
+        "class": "Hole",
+        "entity_id": "19704",
+        "entity_guid": "5b8cb5b9-c6da-09e3",
+        "pos": "1422.316,1009.696,25.46929",
+        "role": "quest marker of vykopej_boleslavuv_hrob"
+      },
+      {
+        "entity_name": "artefakt_graveSearch_interactionTrigger_1 (crest on the cross)",
+        "class": "InteractionTrigger",
+        "entity_id": "6413",
+        "entity_guid": "d6b28414-aadc-4a2b",
+        "pos": "1423.088,1010.425,26.39457",
+        "role": "where the crest is recognised"
+      },
+      {
+        "entity_name": "artefakt_graveSearch_reliquaryPosition_tagPoint",
+        "class": "TagPoint",
+        "entity_id": "6369",
+        "entity_guid": "2478d2c0-89a9-4497",
+        "pos": "1420.724,1009.205,26.5694",
+        "role": "relic spot"
+      },
+      {
+        "entity_name": "artefakt_wallPaintingSearching_mainMarker_triggerArea (mural)",
+        "class": "TriggerArea",
+        "entity_id": "628",
+        "entity_guid": "fa8f7128-965f-41cf",
+        "pos": "1381.031,1049.236,26.29315",
+        "role": "mural search marker"
+      }
+    ],
+    "how_matched": "artefakt.xml / konstanty.xml reference the GUID; objective prohledni_si_nakres_od_kryspina ('examine the sketch from Crispin'); later objectives mark the mural, the crypt, the graveyard area and the grave Hole.",
+    "confidence": "verified",
+    "sources": [
+      "https://www.powerpyx.com/kingdom-come-deliverance-2-seek-and-you-shall-find-walkthrough/",
+      "https://www.giga.de/games/kingdom-come-deliverance-2-wer-suchet-der-findet-boreslav-bavors-grab-finden--01K9SVS6BTANYFD39PAYW1ME4D"
+    ],
+    "notes": "Identification aid, not a map. If the mod wants a marker anyway, Bavor's grave Hole 19704 is the end point, but the quest already marks it.",
+    "source": {
+      "how": "quest_reward",
+      "summary": "Given by the monastery librarian Brother Crispin in the library after you discuss your findings ('Seek and You Shall Find').",
+      "level": "klaster",
+      "entity_name": "ssed_knihovnik",
+      "entity_id": "4042",
+      "entity_guid": "65ccef38-e3ac-46f3",
+      "pos": "1302.121,997.0846,26.35",
+      "confidence": "verified",
+      "sources": ["https://www.powerpyx.com/kingdom-come-deliverance-2-seek-and-you-shall-find-walkthrough/"],
+      "entity_check": "ok"
+    },
+    "entity_check": "no_id"
+  },
+  {
+    "map": "dlc2_mrtvyNemluvi_mapStash",
+    "guid": "47c8bf72-4579-4ca0-8b90-f642145476a7",
+    "en_name": "Storage Yard Plan",
+    "category": "treasure",
+    "quest_marks_destination": false,
+    "destination_summary": "Legacy of the Forge guild job 'In the Service of the Guild' (A203 mrtviNemluvi): the stolen guild steel is in a chest upstairs (ladder) in one of the houses of the bandit-held Rabstein ruin; the quest adds 8 steel to it. The chest's own loot: gunpowder ingredients, shot, 890 gr, scatter-shot recipe.",
+    "container": "chest (upper floor, reached by ladder)",
+    "level": "kutnohorsko",
+    "entity_name": "Stash29",
+    "entity_id": "108724",
+    "entity_guid": "9a096da4-d656-4770",
+    "pos": "675.2197,1109.931,128.4073",
+    "poi_name": "ruinaRabstejnky_poi (Rabstein ruin) 682.0374,1107.738,124.3776",
+    "alt_entities": [],
+    "how_matched": "mrtviNemluvi.xml declares StashAsset 'stash' and ItemAsset 'map' = this GUID; SmartObjectHolder mrtviNemluvi links asset['stash'] -> Stash29 (layer Main/krab_rabstejnsko/rabstejnRuin/_common); zelezo_ve_stashi.xml / questitem.xml AddStashDefaultItem put the steel there; objective najdi_tajne_skladiste Done log says the goods were found in the ruin near the Rabstejn homestead. Online guide: map points to the Rabstein (mill) ruins, chest upstairs via a ladder.",
+    "confidence": "verified",
+    "sources": [
+      "https://escorenews.com/en/article/71885-how-to-find-secret-stash-in-the-service-of-the-guild-in-kcd2-where-is-location-from-storage-yard-plan-map-in-legacy-of-the-forge-dlc",
+      "https://kcd2.org/en/post/kcd2-in-the-service-of-the-guild"
+    ],
+    "notes": "Lead verified. Objective najdi_tajne_skladiste ('Find the secret storage yard') has NO Marker attribute and the parent objective only carries a steel-count tracker, so the quest does not mark the stash: good candidate for a mod marker. Escorenews was read only through a search snippet (page behind a Cloudflare challenge).",
+    "source": {
+      "how": "npc_loot",
+      "summary": "Carried by the dying bandit (Ondrej) near the dead bandits' camp in the forest west of the Maleshov stud farm; he hands it over if kept alive long enough, otherwise take it from him/his body.",
+      "level": "kutnohorsko",
+      "entity_name": "mrtviNemluvi_woundedBandit",
+      "entity_id": "952820",
+      "entity_guid": "fe3a716f-690b-45e9",
+      "pos": "202.3072,1491.359,136.7345",
+      "alt": [
+        {
+          "entity_name": "mrtviNemluvi_campArea (bandit camp)",
+          "entity_id": "139817",
+          "pos": "237.7119,1454.694,130.436"
+        }
+      ],
+      "confidence": "verified",
+      "sources": [
+        "https://escorenews.com/en/article/71885-how-to-find-secret-stash-in-the-service-of-the-guild-in-kcd2-where-is-location-from-storage-yard-plan-map-in-legacy-of-the-forge-dlc"
+      ],
+      "entity_check": "ok"
+    },
+    "entity_check": "ok"
+  },
+  {
+    "map": "hadkaKonaru_archeryTracks",
+    "guid": "459b1484-7758-4bde-a326-4ebd17493c60",
+    "en_name": "Diagrams of mounted archery tracks",
+    "category": "not_a_location_map",
+    "destination_summary": "Not a treasure or area map. It is a set of diagrams of the mounted-archery contest courses Bibrek builds (Horses for Courses / Nomads' Camp contests). If a marker is wanted at all, the course area is the horse-archery range south of Nomads' Camp.",
+    "container": null,
+    "level": "trosecko",
+    "entity_name": "horseArchery_rangeArea",
+    "entity_id": "181390",
+    "entity_guid": "c309685a-e8cc-401a",
+    "pos": "1091.678,1709.336,58.60509",
+    "poi_name": null,
+    "alt_entities": [
+      {
+        "name": "horseArcheryTrosecko SmartObjectHolder",
+        "pos": "1094.093,1662.937,77.48647"
+      },
+      {
+        "name": "poi_bibrekAltair (Bibrek's altar)",
+        "pos": "965.974,1866.987,37.94847"
+      }
+    ],
+    "how_matched": "bibrek__setup_zavodu.xml: CreatePlayerReward(459b1484) on port bibrek__setup_zavodu.map, the dialogue in which Bibrek sets up the archery contest. The jizdniLukostrelbaTrosecko asset rangeArea -> TriggerArea 181390 (layer _quest/activity/konskeZavody/archery/rangeArea).",
+    "confidence": "likely",
+    "sources": [
+      "https://www.powerpyx.com/kingdom-come-deliverance-2-horses-for-courses-walkthrough/",
+      "https://game-checklists.com/kcd2/guides/horses-for-courses-quest/"
+    ],
+    "notes": "Recommend no destination marker. The contest is an activity with its own NPC and markers. No online source mentions this item by name.",
+    "source": {
+      "how": "quest_reward",
+      "summary": "Given by Bibrek in dialogue during the horse-archery contest setup (CreatePlayerReward in bibrek__setup_zavodu.xml). Bibrek normally stands at Nomads' Camp, Vezicko.",
+      "level": "trosecko",
+      "entity_name": "tvez_bibrek",
+      "entity_id": "26294",
+      "pos": "1037.994,1905.006,12.29135",
+      "confidence": "likely",
+      "sources": ["https://www.powerpyx.com/kingdom-come-deliverance-2-horses-for-courses-walkthrough/"],
+      "entity_check": "ok",
+      "entity_guid": "f095ad0c-25cf-428c"
+    },
+    "entity_check": "ok"
+  },
+  {
+    "map": "hunting_map_suchdol",
+    "guid": "b2418856-aa99-4d02-8c51-1261556b7b15",
+    "en_name": "Poacher's map",
+    "category": "area",
+    "destination_summary": "Area map marking about 4-5 hunting grounds (animal spawn spots) around Suchdol and the Ratbor poachers' camp, in the far north-west of the Kuttenberg region. No container.",
+    "container": "none (animal spawn areas)",
+    "level": "kutnohorsko",
+    "entity_name": "ksuc_animalSpawn_huntingSpotPOI_3",
+    "entity_id": null,
+    "entity_guid": null,
+    "pos": "752.1333,3759.727,116.3503",
+    "poi_name": "ksuc_animalSpawn_huntingSpotPOI_1..3",
+    "alt_entities": [
+      {
+        "name": "ksuc_animalSpawn_huntingSpotPOI_1",
+        "cls": "POI",
+        "pos": "736.9954,3691.037,116.8558"
+      },
+      {
+        "name": "ksuc_animalSpawn_huntingSpotPOI_2",
+        "cls": "POI",
+        "pos": "702.3117,3862.128,99.57937"
+      },
+      {
+        "name": "krat_animalSpawn_huntingSpotPOI_5",
+        "cls": "POI",
+        "pos": "895.8105,3769.522,93.3"
+      },
+      {
+        "name": "krat_animalSpawn_huntingSpotPOI_4",
+        "cls": "POI",
+        "pos": "946.5512,3937.821,114.6686"
+      }
+    ],
+    "how_matched": "The item description is 'Map showing hunting spots around Suchdol', and no quest references the item. I matched it to the hunting-spot POIs with the location prefix ksuc (Suchdol), plus the two krat (Ratbor) spots next to the poachers' camp where the map is found. The exact set is unconfirmed.",
+    "confidence": "likely",
+    "sources": [
+      "https://kingdomcomedeliverance2.wiki.fextralife.com/Poacher's_Map",
+      "https://www.gamerguides.com/kingdom-come-deliverance-ii/database/books/maps/poachers-map"
+    ],
+    "notes": "The map images (hunting_map_suchdol_1/2 on Gamer Guides) are transparent overlays with 4-5 red blobs and no base map, so I could not georeference them. For the mod, an area marker on the ksuc spots or their centroid (~760,3800) is the safest choice.",
+    "source": {
+      "how": "chest",
+      "summary": "Medium-lock chest in the ruined building of the poachers' camp near Ratbor, north-west of Suchdol (White Roebuck quest area). Open it with Mach's chest key or by lockpicking.",
+      "level": "kutnohorsko",
+      "entity_name": "stash[Chest/chest48_7f593a88-e77d-48f8-8fe7-da61eec1a1fc]",
+      "entity_id": "64454",
+      "pos": "814.5784,3840.349,94.87387",
+      "confidence": "verified",
+      "sources": [
+        "https://kingdomcomedeliverance2.wiki.fextralife.com/Poacher's_Map",
+        "https://www.gamerguides.com/kingdom-come-deliverance-ii/database/books/maps/poachers-map"
+      ],
+      "entity_check": "ok",
+      "entity_guid": "d2019bd5-f8b5-0251"
+    },
+    "entity_check": "no_id"
+  },
+  {
+    "map": "kralovskeStribro_mapToSecretMint",
+    "guid": "b0af19a6-8dd2-4306-9fec-90cea54935de",
+    "en_name": "Map to the secret mint",
+    "category": "quest",
+    "destination_summary": "The secret mint south-east of Grund (Sukov woods). A hole with a ladder (the secret adit) leads down a tunnel to Buresh's illegal mint (main quest 'Via Argentum').",
+    "container": "none (underground quest location)",
+    "level": "kutnohorsko",
+    "entity_name": "secretAditEntrance",
+    "entity_id": "40419",
+    "entity_guid": "5daa929f-3d31-44e9",
+    "pos": "3543.129,1789.803,104.0476",
+    "poi_name": null,
+    "alt_entities": [
+      {
+        "name": "secretMintArea (quest search-area marker)",
+        "cls": "TriggerArea",
+        "id": "40409",
+        "pos": "3514.202,1771.422,87.04147"
+      },
+      {
+        "name": "secretMint",
+        "cls": "TriggerArea",
+        "id": "40398",
+        "pos": "3539.196,1770.23,91.94106"
+      },
+      {
+        "name": "secretAditArea",
+        "cls": "TriggerArea",
+        "id": "40394",
+        "pos": "3537.946,1789.427,94.42802"
+      },
+      {
+        "name": "secretMintLockedRoom",
+        "cls": "TriggerArea",
+        "id": "40412",
+        "pos": "3565.362,1814.765,93.53458"
+      }
+    ],
+    "how_matched": "Quest kralovskeStribro.xml declares ItemAsset vokraksSecretMintMap (this GUID) and the TriggerAreas secretMint, secretMintArea and secretAditEntrance, resolved via SmartObjectHolder kralovskeStribro. The objective logs carry Marker='secretMintArea', 'secretMint' and 'secretMintLockedRoom'. Guides: Volkmar gives the map, and the mint entrance is a hole with a ladder east of Grund at the south edge of the search area.",
+    "confidence": "verified",
+    "sources": [
+      "https://www.powerpyx.com/kingdom-come-deliverance-2-where-to-find-the-secret-mint/",
+      "https://www.powerpyx.com/kingdom-come-deliverance-2-via-argentum-walkthrough/"
+    ],
+    "notes": "Main-quest item; the quest already shows markers (first the search area, then the mint), so a mod marker is redundant. The mint is on level layer ksus_sukov/secretMint; the stashes there (91849-91996) are the mint's own containers. For a single point, use secretAditEntrance (z 104, at the surface).",
+    "source": {
+      "how": "npc_loot",
+      "summary": "Carried by smelter Volkmar (Vokrak) in Grund during Via Argentum; you get it from him after interrogating him (quest AddQuestItem StartingLocation=vokrak). In some quest branches Vokrak moves to Kuttenberg (tag point vokraksKHpoint 3167.6,657.8).",
+      "level": "kutnohorsko",
+      "entity_name": "kgru_vokrak",
+      "entity_id": "948519",
+      "pos": "3261.611,2210.429,91.65857",
+      "confidence": "verified",
+      "sources": ["https://www.powerpyx.com/kingdom-come-deliverance-2-via-argentum-walkthrough/"],
+      "entity_check": "ok",
+      "entity_guid": "ee367189-7d29-4d8f"
+    },
+    "entity_check": "ok"
+  },
+  {
+    "map": "kuttenberg_underground_map",
+    "guid": "8c4dec01-9ab1-4049-afb0-22617e4aef59",
+    "en_name": "Miners' Underground Map",
+    "category": "area",
+    "destination_summary": "General map of the Kuttenberg underground tunnels (the miners' own map). Not tied to a container.",
+    "container": "none",
+    "level": "kutnohorsko",
+    "entity_name": null,
+    "entity_id": null,
+    "entity_guid": null,
+    "pos": "2862.471,707.0403,38.89635",
+    "poi_name": "kutnohorskePodzemi_vstup_poi (Kuttenberg underground) 2862.471,707.0403,38.89635",
+    "alt_entities": [
+      {
+        "name": "kutnohorskePodzemi_krizovatka_poi (Underground crossroads)",
+        "cls": "POI",
+        "pos": "3031.668,740.5168,47.05457"
+      },
+      {
+        "name": "vstupDoPodzemiRadnicni_poi",
+        "cls": "POI",
+        "pos": "3091.779,809.6545,58.51328"
+      }
+    ],
+    "how_matched": "Only the item definition references this item. No inventory preset, shop, level entity or quest graph mentions its name or GUID. The description says it shows the underground in general.",
+    "confidence": "unresolved",
+    "sources": [
+      "https://www.gamerguides.com/kingdom-come-deliverance-ii/database/books/maps/miners-underground-map",
+      "https://kingdomcomedeliverance2.wiki.fextralife.com/Miners'_Underground_Map"
+    ],
+    "notes": "Probably unobtainable in normal play (a cut or debug item); Gamer Guides lists only the spawn command 'wh_cheat_additem kuttenberg_underground_map'. Don't confuse it with andelStrazny_underground_map ('Map of Kuttenberg underground'). The suggested marker is just the underground entrance POI.",
+    "source": {
+      "how": "other",
+      "summary": "No in-game source found: it is not in any loot preset, trader table, level entity or quest. Likely a console-only or cut item.",
+      "level": null,
+      "entity_name": null,
+      "entity_id": null,
+      "pos": null,
+      "confidence": "unresolved",
+      "sources": ["https://www.gamerguides.com/kingdom-come-deliverance-ii/database/books/maps/miners-underground-map"],
+      "entity_check": "no_id"
+    },
+    "entity_check": "no_id"
+  },
+  {
+    "map": "map_bruncvik_01",
+    "guid": "0f04ab4e-2b33-489d-8c4b-3f21a28c544b",
+    "en_name": "Brunswick's map I",
+    "category": "treasure",
+    "destination_summary": "Second Brunswick piece (plate legs): a sack behind the two small trees above the wolf den ('Vlci doupe') north of Tachov / Bukovina. Wolves are usually present. Objective text: 'Find a part of Brunswick's armour by the two trees'.",
+    "container": "sack (sack_b_interactive); not buried",
+    "level": "trosecko",
+    "entity_name": "Stash4[Stash/sack_generic4_a0d5ebf3-8fee-4fa9-b3aa-8ff3cc9bc676]",
+    "entity_id": "36209",
+    "entity_guid": "4fe8eb63-c0d0-08c1",
+    "pos": "1927.815,3000.045,88.78703",
+    "poi_name": "tbuk_animalSpawn_huntingSpotPOI_10 (wolf hunting spot) 1920.017,3003.489,88.20084",
+    "alt_entities": [],
+    "how_matched": "prvni_cast_zbroje.xml: precteni_mapky (mapka = map_bruncvik_01) outputs mapka_prectena -> objective_na_druhou_cast_zbroje_je_aktivni -> druha_cast_zbroje (objective najdi_cast_bruncvikovy_zbroje_u_dvou_stromu). brneni_ve_stashich.xml puts the plate legs (96981577) in asset druhaStash. SmartObjectHolder bruncvikovaZbroj (47551) links asset['druhaStash'] -> Stash 36209. The designer note gives goto 1927.16,3000.40,89.95 (POI Vlci doupe).",
+    "confidence": "verified",
+    "sources": [
+      "https://www.powerpyx.com/kingdom-come-deliverance-2-the-lions-crest-walkthrough/",
+      "https://primagames.com/?p=302784"
+    ],
+    "notes": "Online guides confirm the location (wolf den, sack behind two trees) but number the maps by pickup order, not by item name. The item-to-destination link comes from the quest data. The stash has no preset; it holds only quest-added items plus junk. The quest objectives have no map markers, so a mod marker is useful.",
+    "source": {
+      "how": "quest_reward",
+      "summary": "Granted by the quest (CreatePlayerReward) when the player takes the first armour piece from the buried first stash (asset prvniStash) at the Chapel in the rocks ('Oltar ve skalach') north of Trosky. Maps I and II are granted together. A shovel is needed (Hole 186329 at the same spot).",
+      "level": "trosecko",
+      "entity_name": "Stash4[Stash/sack_generic3_2f8c03ee-971b-4229-bd08-662e4074f94f]",
+      "entity_id": "11107",
+      "pos": "2416.624,3040.473,78.41129",
+      "confidence": "verified",
+      "sources": [
+        "https://www.powerpyx.com/kingdom-come-deliverance-2-the-lions-crest-walkthrough/",
+        "quest:Barbora/trosecko/preorder_bonus/bruncvikovaZbroj/bruncvikova_zbroj/precteni_mapky.xml (CreatePlayerReward on brneni_s_mapkou_sebrano)"
+      ],
+      "entity_check": "ok",
+      "entity_guid": "c0b1037e-d825-0541"
+    },
+    "entity_check": "ok"
+  },
+  {
+    "map": "map_bruncvik_02",
+    "guid": "50838533-edc2-4be9-bb35-36c27559368a",
+    "en_name": "Brunswick's map II",
+    "category": "treasure",
+    "destination_summary": "Third Brunswick piece (plate arms and gauntlets): a sack at the large cliffs with three crosses ('Krize na skalach' / Crosses in the rocks) west of Tachov near Vidlak; the piece is by the north cross. Objective: 'Find a part of Brunswick's armour by the crosses on the rock'.",
+    "container": "sack (sack_b); not buried",
+    "level": "trosecko",
+    "entity_name": "krizeVeSkalach_stash",
+    "entity_id": "15711",
+    "entity_guid": "6c2328f8-ed20-4dba",
+    "pos": "1307.827,2770.852,45.132",
+    "poi_name": "krizeVeSkalach_poi (Crosses in the rocks) 1307.246,2770.043,45.14849",
+    "alt_entities": [],
+    "how_matched": "prvni_cast_zbroje.xml: precteni_mapky_1 (mapka = map_bruncvik_02) outputs -> hadanka_na_treti_cast_zbroje_byla_prectena -> treti_cast_zbroje (objective najdi_cast_bruncvikovy_zbroje_u_krizu_na_skale). The armour (448e8c3b) goes in asset tretiStash. SmartObjectHolder bruncvikovaZbroj links asset['tretiStash'] -> Stash 15711 (preset inventory_poi_krizeNaSkalach). The designer note gives goto 1298.99,2781.89 (POI Krize na skalach).",
+    "confidence": "verified",
+    "sources": [
+      "https://www.powerpyx.com/kingdom-come-deliverance-2-the-lions-crest-walkthrough/",
+      "https://primagames.com/?p=302784"
+    ],
+    "notes": "The kit's quest_refs file is prvni_cast_zbroje.xml because the map is read in the first-part graph. Its destination is the third stash. The stash also has its own POI loot preset.",
+    "source": {
+      "how": "quest_reward",
+      "summary": "Granted by the quest (CreatePlayerReward) when the player takes the first armour piece from the buried first stash (asset prvniStash) at the Chapel in the rocks ('Oltar ve skalach') north of Trosky. Maps I and II are granted together. A shovel is needed (Hole 186329 at the same spot).",
+      "level": "trosecko",
+      "entity_name": "Stash4[Stash/sack_generic3_2f8c03ee-971b-4229-bd08-662e4074f94f]",
+      "entity_id": "11107",
+      "pos": "2416.624,3040.473,78.41129",
+      "confidence": "verified",
+      "sources": [
+        "https://www.powerpyx.com/kingdom-come-deliverance-2-the-lions-crest-walkthrough/",
+        "quest:Barbora/trosecko/preorder_bonus/bruncvikovaZbroj/bruncvikova_zbroj/precteni_mapky.xml (CreatePlayerReward on brneni_s_mapkou_sebrano)"
+      ],
+      "entity_check": "ok",
+      "entity_guid": "c0b1037e-d825-0541"
+    },
+    "entity_check": "ok"
+  },
+  {
+    "map": "map_bruncvik_03",
+    "guid": "d857eb43-206d-4a2d-bccf-10418f78ba6c",
+    "en_name": "Brunswick's map III",
+    "category": "treasure",
+    "destination_summary": "Fourth Brunswick piece (cuirass): a cloth bag next to a skeleton leaning against a cross at the foot of a tree ('Zapomenuty kriz' / Cross and skeleton). It lies roughly halfway between Tachov and Zhelejov, north of the Zhelejov wagoners' inn/baths, past a cross on a high rock. Objective: 'Find a part of Brunswick's armour by the old skeleton'.",
+    "container": "sack (sack_b_interactive); not buried",
+    "level": "trosecko",
+    "entity_name": "Stash4[Stash/sack_generic5_ca98d5bd-653b-4364-8045-509ad07ce9eb]",
+    "entity_id": "11970",
+    "entity_guid": "25a5d52d-2a05-040c",
+    "pos": "1651.31,2333.466,41.19957",
+    "poi_name": "krizAKostlivec_poi (Cross and skeleton) 1650.7,2333.109,41.36785",
+    "alt_entities": [
+      {
+        "name": "Stash27 11898 inventory_poi_zapomenutyKriz1 (cross on the rock, same POI group)",
+        "pos": "1656.022,2315.164,38.08333"
+      }
+    ],
+    "how_matched": "druha_cast_zbroje.xml: precteni_mapky (mapka = map_bruncvik_03, granted when the plate legs are taken) outputs hadanka_na_ctvrtou_cast_zbroje_* -> ctvrta_cast_zbroje (objective najdi_cast_bruncvikovy_zbroje_u_stareho_kostlivce). The cuirass (8f0afc06) goes in asset ctvrtaStash. SmartObjectHolder links asset['ctvrtaStash'] -> Stash 11970 (preset inventory_poi_zapomenutyKriz2). The designer note gives goto 1653.91,2332.99 (POI Zapomenuty kriz).",
+    "confidence": "verified",
+    "sources": [
+      "https://www.powerpyx.com/kingdom-come-deliverance-2-the-lions-crest-walkthrough/",
+      "https://primagames.com/?p=302784"
+    ],
+    "notes": "Layer tkrc_krcak/_common.",
+    "source": {
+      "how": "quest_reward",
+      "summary": "Granted by the quest when the player takes the plate legs from the second stash (asset druhaStash) at the wolf den north of Tachov.",
+      "level": "trosecko",
+      "entity_name": "Stash4[Stash/sack_generic4_a0d5ebf3-8fee-4fa9-b3aa-8ff3cc9bc676]",
+      "entity_id": "36209",
+      "pos": "1927.815,3000.045,88.78703",
+      "confidence": "verified",
+      "sources": [
+        "https://www.powerpyx.com/kingdom-come-deliverance-2-the-lions-crest-walkthrough/",
+        "quest:Barbora/trosecko/preorder_bonus/bruncvikovaZbroj/bruncvikova_zbroj/precteni_mapky.xml (CreatePlayerReward on brneni_s_mapkou_sebrano)"
+      ],
+      "entity_check": "ok",
+      "entity_guid": "4fe8eb63-c0d0-08c1"
+    },
+    "entity_check": "ok"
+  },
+  {
+    "map": "map_bruncvik_04",
+    "guid": "5fe3931b-0b18-46b3-9053-eecaf5aa3c27",
+    "en_name": "Brunswick's map IV",
+    "category": "treasure",
+    "destination_summary": "Fifth and final Brunswick piece (helmet/bascinet): a small stone cairn / burial mound with a stone cross at the Treasure hunters' camp ('Lovci pokladu'), in the forest east-southeast of Nomads' Camp (Vezicko). Interact via 'Examine the mound'. Objective: 'Find a part of Brunswick's armour by the stone cairn'.",
+    "container": "burial mound (invisible sphere stash with an 'Examine the mound' prompt); no shovel",
+    "level": "trosecko",
+    "entity_name": "lovciPokladu_stash",
+    "entity_id": "9534",
+    "entity_guid": "91f60272-12d4-489e",
+    "pos": "1284.68,1976.974,63.23505",
+    "poi_name": "hledaciPokladu_poi (Treasure hunters' camp) 1293.814,1968.435,62.37451",
+    "alt_entities": [
+      {
+        "name": "chest 9568 inventory_poi_lovciPokladu_chest (camp chest, not the target)",
+        "pos": "1293.713,1965.01,60.98787"
+      },
+      {
+        "name": "sack 42695 inventory_poi_lovciPokladu_sack",
+        "pos": "1303.086,1966.761,60.77349"
+      },
+      {
+        "name": "sack 9598 inventory_smallAmountOfBasicSupplies",
+        "pos": "1292.241,1965.751,61.03533"
+      }
+    ],
+    "how_matched": "treti_cast_zbroje.xml: precteni_mapky (mapka = map_bruncvik_04, granted when the arm armour is taken) outputs hadanka_na_patou_cast_zbroje_* -> pata_cast_zbroje (objective najdi_cast_bruncvikovy_zbroje_u_kamenne_mohyly). The helmet (157697b8) goes in asset pataStash. SmartObjectHolder links asset['pataStash'] -> Stash 9534 (preset inventory_poi_lovciPokladu_burrialMound, sOpenMessage @pata_cast_prozkoumat_mohy_PyUd). The designer note gives goto 1290.14,1969.52 (POI Lovci pokladu).",
+    "confidence": "verified",
+    "sources": [
+      "https://www.powerpyx.com/kingdom-come-deliverance-2-the-lions-crest-walkthrough/",
+      "https://primagames.com/?p=302784"
+    ],
+    "notes": "Map IV leads to pataStash, the 5th stash, not ctvrtaStash. Its quest file is treti_cast_zbroje.xml because it is granted with the third piece. Several other camp containers sit within 20 m.",
+    "source": {
+      "how": "quest_reward",
+      "summary": "Granted by the quest when the player takes the plate arms/gauntlets from the third stash (asset tretiStash) at Crosses in the rocks.",
+      "level": "trosecko",
+      "entity_name": "krizeVeSkalach_stash",
+      "entity_id": "15711",
+      "pos": "1307.827,2770.852,45.132",
+      "confidence": "verified",
+      "sources": [
+        "https://www.powerpyx.com/kingdom-come-deliverance-2-the-lions-crest-walkthrough/",
+        "quest:Barbora/trosecko/preorder_bonus/bruncvikovaZbroj/bruncvikova_zbroj/precteni_mapky.xml (CreatePlayerReward on brneni_s_mapkou_sebrano)"
+      ],
+      "entity_check": "ok",
+      "entity_guid": "6c2328f8-ed20-4dba"
+    },
+    "entity_check": "ok"
+  },
+  {
+    "map": "map_u49_mapakpokladu",
+    "guid": "4f636944-e9d3-4bae-85b8-165b5a049486",
+    "en_name": "Krizhan's treasure map",
+    "category": "treasure",
+    "destination_summary": "Abandoned mine shaft at the treasure hunters' (bandit) camp near Lorec, north-east of Kuttenberg toward Sedletz. The three diggable spots inside the adit are EMPTY because the map is a forgery (quest 'X Marks the Spot').",
+    "container": "3 diggable holes (shovel), no loot",
+    "level": "kutnohorsko",
+    "entity_name": "graveHole[special/graveHole8_08f3c974-f610-4e53-aaee-3e92f710058f]",
+    "entity_id": "952782",
+    "entity_guid": "da0b20e8-8d4b-04b7",
+    "pos": "3788.133,1146.728,54.10458",
+    "poi_name": null,
+    "alt_entities": [
+      {
+        "name": "dira2 graveHole7",
+        "cls": "Hole",
+        "id": "952783",
+        "guid": "ab8eb8d1-3b17-054d",
+        "pos": "3784.03,1151.609,54.05568"
+      },
+      {
+        "name": "dira3 graveHole9",
+        "cls": "Hole",
+        "id": "952784",
+        "guid": "6561da10-6187-0079",
+        "pos": "3789.935,1151.602,54.22691"
+      },
+      {
+        "name": "mapaKPokladu_kemp (camp TriggerArea)",
+        "cls": "TriggerArea",
+        "id": "116545",
+        "guid": "92b08811-43b6-4631",
+        "pos": "3752.705,1137.362,48.16936"
+      },
+      {
+        "name": "mapaKPokladu_placeholderStash (quest alias krizanStash): backup stash where the quest returns the map item, NOT treasure",
+        "cls": "Stash",
+        "id": "116547",
+        "guid": "24c2f425-9430-4b5b",
+        "pos": "3788.165,1154.633,55.02963"
+      }
+    ],
+    "how_matched": "Quest Barbora/kutnohorsko/mapaKPokladu.xml holds the map GUID and declares HoleAsset dira1-3 and TriggerAreaAsset kemp. SmartObjectHolder mapaKPokladu links them to the Holes in klor_lorec/series_treasureHuntersCamp/holes/diggable. The objective text says the treasure 'should be buried inside the abandoned adit'. Guides agree: buy the map from Krizhan, find the bandit camp, dig the marked spots and find nothing.",
+    "confidence": "verified",
+    "sources": [
+      "https://game-checklists.com/kcd2/guides/x-marks-the-spot-quest/",
+      "https://www.powerpyx.com/kingdom-come-deliverance-2-x-marks-the-spot-walkthrough/",
+      "https://patchcrazy.co.uk/kcd2-all-treasure-map-locations/"
+    ],
+    "notes": "Quest item. The first objective, 'Find out where the map leads', has NO Marker in the quest XML, so a mod marker adds information; only the 'get the map back' and 'talk to Krizhan' logs carry markers. There is no treasure, so the mod may want to label it as a decoy. The camp NPCs (klor_treasureHunter_1..5) move between the camp (~3751,1112) and the mine. Entity: (quest alias dira1)",
+    "source": {
+      "how": "npc_sale",
+      "summary": "Bought from hired hand Krizhan in Pschitoky (about 100 groschen), or stolen from him or won in a fist fight. If lost, the quest returns it to the backup stash krizanStash.",
+      "level": "kutnohorsko",
+      "entity_name": "kpri_krizan",
+      "entity_id": "113753",
+      "pos": "2279.494,1845.3,128.6494",
+      "confidence": "verified",
+      "sources": [
+        "https://game-checklists.com/kcd2/guides/x-marks-the-spot-quest/",
+        "https://patchcrazy.co.uk/kcd2-all-treasure-map-locations/"
+      ],
+      "entity_check": "ok",
+      "entity_guid": "5aef0f5d-1ef4-43ee"
+    },
+    "entity_check": "ok"
+  },
+  {
+    "map": "map_u49_mapakpokladu_bandit",
+    "guid": "0b54dfe4-7c6b-41bd-b6f5-6f079c98a14d",
+    "en_name": "Bandit's treasure map",
+    "category": "treasure",
+    "destination_summary": "Identical copy of Krizhan's forged map: the same abandoned mine at the treasure hunters' camp near Lorec, with the same three empty dig spots. Nothing to find.",
+    "container": "3 diggable holes (shovel), no loot",
+    "level": "kutnohorsko",
+    "entity_name": "graveHole[special/graveHole8_08f3c974-f610-4e53-aaee-3e92f710058f]",
+    "entity_id": "952782",
+    "entity_guid": "da0b20e8-8d4b-04b7",
+    "pos": "3788.133,1146.728,54.10458",
+    "poi_name": null,
+    "alt_entities": [
+      {
+        "name": "dira2 graveHole7",
+        "cls": "Hole",
+        "id": "952783",
+        "guid": "ab8eb8d1-3b17-054d",
+        "pos": "3784.03,1151.609,54.05568"
+      },
+      {
+        "name": "dira3 graveHole9",
+        "cls": "Hole",
+        "id": "952784",
+        "guid": "6561da10-6187-0079",
+        "pos": "3789.935,1151.602,54.22691"
+      },
+      {
+        "name": "mapaKPokladu_kemp (camp TriggerArea)",
+        "cls": "TriggerArea",
+        "id": "116545",
+        "guid": "92b08811-43b6-4631",
+        "pos": "3752.705,1137.362,48.16936"
+      },
+      {
+        "name": "mapaKPokladu_placeholderStash (quest alias krizanStash): backup stash where the quest returns the map item, NOT treasure",
+        "cls": "Stash",
+        "id": "116547",
+        "guid": "24c2f425-9430-4b5b",
+        "pos": "3788.165,1154.633,55.02963"
+      }
+    ],
+    "how_matched": "It uses the same images as Krizhan's map (mapaKPokladu_treasureMap1/2) and is referenced by the same quest (tabor_treasurehunteru.xml moves it from bandit1 to the player). In-game text: 'I've seen this map before...'.",
+    "confidence": "verified",
+    "sources": [
+      "https://game-checklists.com/kcd2/guides/x-marks-the-spot-quest/",
+      "https://www.powerpyx.com/kingdom-come-deliverance-2-x-marks-the-spot-walkthrough/"
+    ],
+    "notes": "Decoy map. When the quest ends, whether failed or done (mapy_po_questu.xml), the game also adds copies to five other NPCs' inventories as a running joke: the Humble knight (char_POKORNY_RYTIR_U45, Sedletz souls), Jachym (bandit), dice player Kazimir (Pschitoky), a fence (generic commoner, Sukov souls) and gravedigger Lenek (Sedletz). The player may loot these later and end up holding several copies. Entity: (quest alias dira1)",
+    "source": {
+      "how": "npc_loot",
+      "summary": "Carried by the treasure-hunter (bandit) leader at the camp/mine near Lorec. He hands it over if he surrenders; otherwise loot it from his body. After the quest, extra copies appear in 5 other NPCs' inventories (no fixed position).",
+      "level": "kutnohorsko",
+      "entity_name": "klor_treasureHunter_1",
+      "entity_id": "952781",
+      "pos": "3751.742,1110.812,55.28787",
+      "confidence": "verified",
+      "sources": ["https://game-checklists.com/kcd2/guides/x-marks-the-spot-quest/"],
+      "entity_check": "ok",
+      "notes": "Entity: (leader, soul char_VUDCE_LAPKU_U49_MAPA_K_POKLADU)",
+      "entity_guid": "823df317-3f45-4d00"
+    },
+    "entity_check": "ok"
+  },
+  {
+    "map": "nakaza_dirtyPageFromCrypt",
+    "guid": "b590ff7d-c3c5-4095-8be6-50d8588a7fc4",
+    "en_name": "Filthy parchment from the crypt",
+    "category": "not_a_location_map",
+    "quest_marks_destination": true,
+    "destination_summary": "Drawing of a Jerusalem cross (images jerusalem_1/2, quest constant nakres_erbu), a clue rather than a map. It sends Henry to the librarian Crispin ('Seek and You Shall Find'), leading eventually to Bavor's grave; every step is quest-marked.",
+    "container": null,
+    "level": "klaster",
+    "entity_name": null,
+    "entity_id": null,
+    "entity_guid": null,
+    "pos": null,
+    "poi_name": null,
+    "alt_entities": [
+      {
+        "entity_name": "ssed_knihovnik (Crispin, next lead)",
+        "class": "NPC",
+        "entity_id": "4042",
+        "entity_guid": "65ccef38-e3ac-46f3",
+        "pos": "1302.121,997.0846,26.35",
+        "role": "artefakt objective porad_se_s_klasternim_knihovnikem state StartedJerusalemCross marks 'knihovnik'"
+      }
+    ],
+    "how_matched": "nakaza itemconstants nakres_erbu = this GUID; erb__quest_item.xml spawns it in ItemSlot coatOfArmsDrawingSlot; artefakt.xml log for StartedJerusalemCross refers to the cross drawing found in the crypt.",
+    "confidence": "verified",
+    "sources": [
+      "https://www.powerpyx.com/?p=313902",
+      "https://www.powerpyx.com/kingdom-come-deliverance-2-seek-and-you-shall-find-walkthrough/"
+    ],
+    "notes": "No location to mark; recommend skipping.",
+    "source": {
+      "how": "world_pickup",
+      "summary": "Lying on the altar in the monastery crypt during 'Silent Witnesses' (ItemSlot nakaza_coatOfArmsDrawingSlot_placeholder).",
+      "level": "klaster",
+      "entity_name": "nakaza_coatOfArmsDrawingSlot_placeholder",
+      "entity_id": "416",
+      "entity_guid": "efbcd6d9-b4ce-4030",
+      "pos": "1367.941,1043.668,22.26123",
+      "confidence": "verified",
+      "sources": ["https://www.powerpyx.com/?p=313902"],
+      "entity_check": "ok"
+    },
+    "entity_check": "no_id"
+  },
+  {
+    "map": "nakaza_mapOfCrypt",
+    "guid": "cb10e1c5-d8b7-4244-b1ba-57884b26f66e",
+    "en_name": "Crypt map",
+    "category": "quest",
+    "quest_marks_destination": true,
+    "destination_summary": "Plan of the chapel crypt under the Sedletz church. It is found inside the crypt and is a navigation aid for it (the crypt is revisited in 'Seek and You Shall Find' to find Bavor's sarcophagus behind the weak wall).",
+    "container": "none (area: monastery crypt)",
+    "level": "klaster",
+    "entity_name": "nakaza_cryptArea",
+    "entity_id": "382",
+    "entity_guid": "e7588c2e-82a8-49e2",
+    "pos": "1372.22,1047.066,20.14612",
+    "poi_name": null,
+    "alt_entities": [
+      {
+        "entity_name": "nakaza_playerVisitedCryptArea",
+        "class": "TriggerArea",
+        "entity_id": "375",
+        "entity_guid": "8e65509c-264e-493f",
+        "pos": "1356.017,1057.744,21.24612",
+        "role": "crypt visit trigger"
+      },
+      {
+        "entity_name": "artefakt_goingToCryptMarker_triggerArea",
+        "class": "TriggerArea",
+        "entity_id": "504",
+        "entity_guid": "880c68cb-0a3e-4868",
+        "pos": "1363.764,1052.801,20.39465",
+        "role": "artefakt quest marker for searching the crypt for Bavor's tomb"
+      }
+    ],
+    "how_matched": "nakaza itemconstants mapa_v_krypte ('map in the crypt') = this GUID, spawned by spawnitemandbarkafterinteraction into ItemSlot cryptMapSlot inside the crypt; objective prohledej_kryptu marks cryptArea.",
+    "confidence": "likely",
+    "sources": ["https://www.powerpyx.com/?p=313902"],
+    "notes": "Not a treasure map; its destination is the crypt it is found in, already quest-marked. Recommend skipping. What the drawing shows in detail is unverified; no guide found mentions this item.",
+    "source": {
+      "how": "world_pickup",
+      "summary": "Picked up inside the crypt while searching it in 'Silent Witnesses' (ItemSlot nakaza_cryptMapSlot_placeholder).",
+      "level": "klaster",
+      "entity_name": "nakaza_cryptMapSlot_placeholder",
+      "entity_id": "414",
+      "entity_guid": "1b526967-c64c-4bdc",
+      "pos": "1363.813,1044.862,22.03538",
+      "confidence": "likely",
+      "sources": [],
+      "entity_check": "ok"
+    },
+    "entity_check": "ok"
+  },
+  {
+    "map": "nemcuvPoklad_mapStashLoot_1",
+    "guid": "3236e899-8d8f-43e6-8bf7-e5124e06a212",
+    "en_name": "Footpad's hideout map",
+    "category": "treasure",
+    "destination_summary": "Sunken locked chest in the marsh under a birch tree south-east of Kuttenberg, near Sedletz. The key is in a bird's nest in the tree; knock it down with a thrown stone. Contents: 2410 groschen, river-pearl necklace, 2 silver cups, Strength skillbook IV.",
+    "container": "locked chest (sunken in marsh); key in bird's nest above",
+    "level": "kutnohorsko",
+    "entity_name": "Stash27",
+    "entity_id": "99806",
+    "entity_guid": "232b257f-adef-4580",
+    "pos": "3421.122,269.0405,25.60102",
+    "poi_name": "nemcuvPoklad1_poi (Sunken chest) 3421.254,269.0812,26.0571",
+    "alt_entities": [
+      {
+        "name": "Nest2 (holds the chest key)",
+        "cls": "Nest",
+        "id": "99810",
+        "guid": "335de9c4-de5d-43e4",
+        "pos": "3421.991,263.9328,31.46501"
+      }
+    ],
+    "how_matched": "Names pair map _1 with POI 1: the map's images are 'POI_NemcuvPoklad_treasureMap', and the target preset is inventory_poi_nemcuvPoklad1_chestInMarsh at POI nemcuvPoklad1_poi. Online (Steam guide 'Treasure Maps!', Gamerpillar), the Footpad's hideout map leads to a tree east of Kuttenberg with a chest and a bird's nest holding its key. The level data has Nest entity 99810 5 m from Stash27; there is no nest at the other stash.",
+    "confidence": "verified",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=3435821401",
+      "https://gamerpillar.com/footpads-hideout-map-treasure-location-kingdom-come-deliverance-ii-kcd2/"
+    ],
+    "notes": "Gamerpillar calls it 'buried', but there is no Hole entity at Stash27. The POI label is 'Sunken chest' (in a marsh), so no shovel is needed.",
+    "source": {
+      "how": "chest",
+      "summary": "Hidden compartment behind a breakable brick wall in the cellar of the All Saints tavern, Italian quarter, Kuttenberg (quest 'The German's Treasure'); contains both Beikovetz maps.",
+      "level": "kutnohorsko",
+      "entity_name": "nemcuvPoklad_stashInTheWall",
+      "entity_id": "952830",
+      "pos": "3036.624,713.6868,51.57442",
+      "confidence": "verified",
+      "sources": [
+        "https://kingdomcomedeliverance2.wiki.fextralife.com/Footpad's_Hideout_Map",
+        "https://www.powerpyx.com/?p=266813",
+        "https://steamcommunity.com/sharedfiles/filedetails/?id=3435821401"
+      ],
+      "entity_check": "ok",
+      "entity_guid": "92835d0c-a335-490b"
+    },
+    "entity_check": "ok"
+  },
+  {
+    "map": "nemcuvPoklad_mapStashLoot_2",
+    "guid": "0d28fa2c-c50f-4adf-ae13-aa919091eeba",
+    "en_name": "Old hideout map",
+    "category": "treasure",
+    "destination_summary": "Buried sack in a fresh grave under a two-forked tree, in the forest north-east of Bohunovice near Opatovice; dig it up with a shovel. Contents: 1880 groschen, 2 golden crosses, silver chalice, expensive rosary, golden cup, golden-cross ring.",
+    "container": "buried sack (graveHole, shovel required)",
+    "level": "kutnohorsko",
+    "entity_name": "Stash250",
+    "entity_id": "140292",
+    "entity_guid": "44a5e0c5-d164-425c",
+    "pos": "2196.518,3281.21,104.9688",
+    "poi_name": "nemcuvPokladOpatovice_poi (Buried treasure) 2196.198,3281.003,105.7783",
+    "alt_entities": [
+      {
+        "name": "graveHole[special/graveHole5_2dfb37f6-cf5f-41e9-bda4-229413fa5c70] (dig spot)",
+        "cls": "Hole",
+        "id": "140316",
+        "guid": "ff03de6a-b404-0b0d",
+        "pos": "2196.383,3281.162,105.0384"
+      }
+    ],
+    "how_matched": "The map's images are 'nemcuv_Poklad_planek_POI2', and the target preset is inventory_poi_nemcuvPoklad2_sackInHole at POI nemcuvPokladOpatovice_poi ('Buried treasure'). Diggable Hole 140316 sits on the stash. Online, the Old Hideout Map leads to a grave under a two-forked tree north-east of Bohunowitz; you dig it up with a shovel and find a sack inside.",
+    "confidence": "verified",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=3435821401",
+      "https://gamerpillar.com/old-hideout-map-treasure-location-kingdom-come-deliverance-ii-kcd2/"
+    ],
+    "notes": "Buried: the Stash is under Hole 140316, so the 3D marker could point at the Hole.",
+    "source": {
+      "how": "chest",
+      "summary": "Same hidden wall compartment in the All Saints tavern cellar, Kuttenberg ('The German's Treasure').",
+      "level": "kutnohorsko",
+      "entity_name": "nemcuvPoklad_stashInTheWall",
+      "entity_id": "952830",
+      "pos": "3036.624,713.6868,51.57442",
+      "confidence": "verified",
+      "sources": [
+        "https://kingdomcomedeliverance2.wiki.fextralife.com/Old_Hideout_Map",
+        "https://steamcommunity.com/sharedfiles/filedetails/?id=3435821401"
+      ],
+      "entity_check": "ok",
+      "entity_guid": "92835d0c-a335-490b"
+    },
+    "entity_check": "ok"
+  },
+  {
+    "map": "poi_MapkaZlodeje_map",
+    "guid": "a76e4c3b-a427-4afd-a27a-d4206f5c769c",
+    "en_name": "Caught thief's map",
+    "category": "treasure",
+    "destination_summary": "Thief's camp in the woods on the cliffs east of Nebakov Mill. Locked chest just south-east of the camp cookpot; one armed bandit guards it.",
+    "container": "locked chest (hard)",
+    "level": "trosecko",
+    "entity_name": "stash[Chest/chest55_53e65c70-4ffa-4006-ba01-c6c8c18cd47e]",
+    "entity_id": "21924",
+    "entity_guid": "febefd2d-5032-0aaf",
+    "pos": "2192.099,1329.465,50.0493",
+    "poi_name": null,
+    "alt_entities": [
+      {
+        "role": "camp fireplace/cookpot landmark",
+        "entity_id": "21939",
+        "pos": "2191.548,1333.022,50"
+      },
+      {
+        "role": "guard NPC",
+        "entity_name": "tneb_man_29",
+        "entity_id": "44524",
+        "pos": "2193.149,1331.803,49.977"
+      }
+    ],
+    "how_matched": "Editor layer Main/tneb_nebakov/poi_mapkaDopadenehoZlodeje (= 'caught thief's map' POI) holds only this chest; preset inventory_thiefsStash = 328 g, engraved gem ring, marigold, 4 Frankfurt steel, 2 bandages, tunic, which is exactly the loot GamerGuides lists. Chest is ~3.5 m S of the fireplace ('SE of cookpot').",
+    "confidence": "verified",
+    "sources": [
+      "https://www.gamerguides.com/kingdom-come-deliverance-ii/guide/free-form-quests/trosky/caught-thiefs-map-treasure-location-guide",
+      "https://selphie1999gaming.com/game-guides/kcd2-kingdom-come-deliverance-2/kingdom-come-deliverance-2-caught-thiefs-map-treasure/"
+    ],
+    "notes": "No map POI exists for this camp in pois.csv; use the chest position. Quest mapkaDopadenehoZlodeje.xml only handles obtaining the map (no StashAsset).",
+    "source": {
+      "how": "npc_sale",
+      "summary": "Black Bartosch at Trosky Castle (dice tables by the combat arena, west side of the castle grounds) once the castle is open: buy for 250 g, win it at dice (50 g stake), or pickpocket. The quest gives the item to soul CernyBartos (AddSoulDefaultItem) while 'Bartos je na Troskach'.",
+      "level": "trosecko",
+      "entity_name": "dice_behaviors[Table/table_dice3_74a5fb67-ea54-4d7a-b834-fd46720ae7b5]",
+      "entity_id": "26076",
+      "entity_guid": "4dc561dc-199f-02f6",
+      "pos": "2382.768,2592.526,207.9593",
+      "confidence": "verified",
+      "sources": [
+        "https://www.gamerguides.com/kingdom-come-deliverance-ii/guide/free-form-quests/trosky/caught-thiefs-map-treasure-location-guide",
+        "https://thefilibusterblog.com/kingdom-come-deliverance-2-solution-for-caught-thiefs-map-treasure-location/"
+      ],
+      "entity_check": "ok",
+      "notes": "Entity: (SmartObjectHolder bound as asset bartosuvStul); NPC ttro_cernyBartos id 194871 home spot 2384.243,2565.712,239.54"
+    },
+    "entity_check": "ok"
+  },
+  {
+    "map": "poi_kostlivecVMocalech_map",
+    "guid": "956af166-1412-49ed-a678-14000c200f3b",
+    "en_name": "Map of the Zhelejov marshes",
+    "category": "treasure",
+    "destination_summary": "Zhelejov marshes (west of Zhelejov / the Wagoners' Inn). The treasure is not on the islands: it is at the foot of a tree in an overgrown area towards a rock formation, a blanket with a purse (84 g) and a sword.",
+    "container": "purse on a blanket (pouch stash) + sword ItemSlot; not locked, no digging",
+    "level": "trosecko",
+    "entity_name": "Stash44",
+    "entity_id": "39834",
+    "entity_guid": "ee2a6540-eb4f-4415",
+    "pos": "1590.099,2130.904,16.1202",
+    "poi_name": null,
+    "alt_entities": [
+      {
+        "role": "weapon ItemSlot on the same blanket",
+        "entity_name": "ItemSlot224",
+        "entity_id": "11948",
+        "entity_guid": "d611bfb7-773a-48f8",
+        "pos": "1590.849,2130.946,16.15036"
+      }
+    ],
+    "how_matched": "Preset inventory_poi_zelejovskeMocaly_purse ('Zhelejov marshes purse') = 84 g, matching the guides (84 groschen + longsword); it lies ~40 m SE of the skeleton holding the map.",
+    "confidence": "verified",
+    "sources": [
+      "https://kingdomcomedeliverance2.wiki.fextralife.com/Map_of_The_Zhelejov_Marshes",
+      "https://gamerblurb.com/articles/how-to-get-the-map-of-the-zhelejov-marshes-kcd2-kingdom-come-deliverance-2-guide"
+    ],
+    "notes": "No dedicated treasure POI. Entity: (pouch_fancy_pickable)",
+    "source": {
+      "how": "world_pickup",
+      "summary": "Lying in the hand of the skeleton in the Zhelejov marshes (POI kostlivecVMokradech_poi 'Skeleton in wetlands').",
+      "level": "trosecko",
+      "entity_name": "ItemSlot216",
+      "entity_id": "11947",
+      "entity_guid": "cb5d80ef-4b96-4c2f",
+      "pos": "1564.172,2161.125,14.95286",
+      "confidence": "verified",
+      "sources": ["https://kingdomcomedeliverance2.wiki.fextralife.com/Map_of_The_Zhelejov_Marshes"],
+      "entity_check": "ok"
+    },
+    "entity_check": "ok"
+  },
+  {
+    "map": "poi_mnichovaSchovka_map",
+    "guid": "2ef04e80-e773-4120-b44a-7ff0715a97bb",
+    "en_name": "Map from chest by Sedletz",
+    "category": "treasure",
+    "destination_summary": "'Love nest' (Hnizdecko lasky): a small locked drying shed across the pond west of Sedletz monastery. The loot lies loose on shelves and a table inside: silver chalices, food, and Speech skillbook III ('Art of Demosthenes').",
+    "container": "locked building (door lock 0.8, key/manual) with loose items in ItemSlots; no chest entity in level data",
+    "level": "kutnohorsko",
+    "entity_name": "ItemSlot198",
+    "entity_id": "106110",
+    "entity_guid": "a814cdef-3059-430c",
+    "pos": "3531.945,564.7321,27.14776",
+    "poi_name": "prchajiciMnich_hnizdeckoLasky_poi (Love nest) 3531.606,563.7429,26.43254",
+    "alt_entities": [
+      {
+        "name": "prchajiciMnich_hnizdeckoLasky_poi",
+        "cls": "POI",
+        "pos": "3531.606,563.7429,26.43254"
+      },
+      {
+        "name": "AnimDoor[door_village_left6] (locked, fLockDifficulty 0.8)",
+        "cls": "AnimDoor",
+        "id": "52791",
+        "guid": "a913ebe2-29a8-0df8",
+        "pos": "3534.051,564.0587,26.59895"
+      },
+      {
+        "name": "chalice_silver_a4",
+        "cls": "ItemSlot",
+        "id": "106108",
+        "guid": "a057d0ac-ae77-41bb",
+        "pos": "3531.602,564.5028,27.0822"
+      },
+      {
+        "name": "chalice_silver_a3",
+        "cls": "ItemSlot",
+        "id": "106109",
+        "guid": "a5ba8469-bf0e-473c",
+        "pos": "3531.433,564.4963,27.0891"
+      },
+      {
+        "name": "Stash3 sack_apples (inventory_pileOfApples)",
+        "cls": "Stash",
+        "id": "106113",
+        "guid": "988aae71-feef-03d1",
+        "pos": "3533.528,562.0029,26.44397"
+      }
+    ],
+    "how_matched": "The map is found at POI prchajiciMnich_zebrik ('Hidden ladder') under the monastery wall. The same POI family, prchajiciMnich (fleeing monk), has a second POI, 'Love nest'. Patch Crazy says the Sedletz chest map leads across the pond to the building marked 'Love Nest', holding food, a silver cup and The Art of Demosthenes 3. At that POI the level data has a locked shed door and ItemSlots with silver chalices; the item GUID in ItemSlot 106110 resolves to skillbook_speech_iii_kcd2.",
+    "confidence": "verified",
+    "sources": [
+      "https://patchcrazy.co.uk/kcd2-all-treasure-map-locations/",
+      "https://kingdomcomedeliverance2.wiki.fextralife.com/Map_From_Chest_by_Sedletz"
+    ],
+    "notes": "Patch Crazy calls it a 'locked chest', but there is no Stash entity at the Love nest. The lock is on the shed door (52791), and the loot sits in ItemSlots. The klaster (monastery DLC) level duplicates the source chest (id 3009 at 1086.533,1123.381,25.874) but does not contain the Love nest. Entity: (skillbook_speech_iii_kcd2)",
+    "source": {
+      "how": "chest",
+      "summary": "Chest (inventory_poi_prchajiciMnich_chest) at the foot of the Sedletz monastery outer wall, next to the 'Hidden ladder' POI.",
+      "level": "kutnohorsko",
+      "entity_name": "stash[Chest/chest77_6d19c374-5b7e-406f-ac18-e626451e8827]",
+      "entity_id": "106115",
+      "pos": "3657.533,547.3812,25.87408",
+      "confidence": "verified",
+      "sources": [
+        "https://kingdomcomedeliverance2.wiki.fextralife.com/Map_From_Chest_by_Sedletz",
+        "https://patchcrazy.co.uk/kcd2-all-treasure-map-locations/"
+      ],
+      "alt": [
+        {
+          "level": "klaster",
+          "entity_id": "3009",
+          "pos": "1086.533,1123.381,25.87408",
+          "note": "same chest (same EntityGuid c0416229-44b6-0ac6) in the klaster DLC level"
+        }
+      ],
+      "entity_check": "ok",
+      "entity_guid": "c0416229-44b6-0ac6"
+    },
+    "entity_check": "ok"
+  },
+  {
+    "map": "poi_nedostavenaChalupa_huntingSpotsMap",
+    "guid": "f91c4738-fec3-4b1d-b70e-08d792119931",
+    "en_name": "Map of game near Slatego ",
+    "category": "area",
+    "destination_summary": "Hunting grounds around Slatejov. The guide follows it SE from the unfinished cottage along the rock formation to a wolf hunting ground (wolf pack), where a skeleton lies with a hazel longbow and arrows.",
+    "container": "none (area); bonus loot is a bow + arrows in world ItemSlots",
+    "level": "trosecko",
+    "entity_name": "tsla_animalSpawn_huntingSpotPOI_4 (wolf hunting spot POI)",
+    "entity_id": null,
+    "entity_guid": null,
+    "pos": "2937.481,1804.712,87.86604",
+    "poi_name": "tsla_animalSpawn_huntingSpotPOI_4",
+    "alt_entities": [
+      {
+        "poi": "tsla_animalSpawn_huntingSpotPOI_4",
+        "pos": "2937.481,1804.712,87.86604",
+        "note": "primary: wolf (POI type f470b5ac); wolf AnimalSpawner 50062 at 2940.242,1812.047; skeleton bow ItemSlot115 id 31712 at 2927.774,1809.111"
+      },
+      {
+        "poi": "tsla_animalSpawn_huntingSpotPOI_1",
+        "pos": "2857.79,1551.426,92.12132",
+        "note": "POI type 1d619452"
+      },
+      {
+        "poi": "tsla_animalSpawn_huntingSpotPOI_2",
+        "pos": "2763.417,1746.558,104.0779",
+        "note": "POI type 0ec7f7ca"
+      },
+      {
+        "poi": "tsla_animalSpawn_huntingSpotPOI_3",
+        "pos": "2693.332,1953.656,109.6334",
+        "note": "POI type 0ec7f7ca"
+      },
+      {
+        "role": "bow at the skeleton",
+        "entity_name": "ItemSlot115 (bow_a)",
+        "entity_id": "31712",
+        "entity_guid": "4ca999c8-c91d-4363",
+        "pos": "2927.774,1809.111,85.76345"
+      }
+    ],
+    "how_matched": "Item name 'huntingSpotsMap'; the tsla_ hunting-spot POIs are the Slatejov ones. Spot 4 is SE of the cottage (2817,1950), shares its POI type with the Kuttenberg 'Wolf hunting spot', has a wolf AnimalSpawner and ItemSlots bow_a + hunting/cutting arrows. This matches wotpack's wolf ground + skeleton with hazel longbow.",
+    "confidence": "likely",
+    "sources": [
+      "https://wotpack.ru/pl/karta-slateyovskih-ohotnichih-ugodiy-v-kingdom-come-deliverance-2-gde-nayti-sokrovische/"
+    ],
+    "notes": "Only one guide describes it (Polish, partly machine-written). I did not look at the map images, so I can't confirm whether the sketch also marks spots 1-3. Treat all four tsla spots as candidates, with spot 4 as the primary.",
+    "source": {
+      "how": "chest",
+      "summary": "Locked chest (difficulty 0.6) under an awning at the unfinished cottage near Slatejov (POI nedostavenaChalupa_poi). Its key poi_nedostavenaChalupa_key is in a clay jug nearby (Stash15 id 31611 at 2826.494,1947.285). Chest: map + 43 g + 31 improved hunting arrows + 2 bowyer kits.",
+      "level": "trosecko",
+      "entity_name": "Stash34",
+      "entity_id": "49525",
+      "entity_guid": "58720c36-2fc1-4d39",
+      "pos": "2816.983,1949.719,108.0853",
+      "confidence": "verified",
+      "sources": [
+        "https://wotpack.ru/pl/karta-slateyovskih-ohotnichih-ugodiy-v-kingdom-come-deliverance-2-gde-nayti-sokrovische/"
+      ],
+      "entity_check": "ok"
+    },
+    "entity_check": "no_id"
+  },
+  {
+    "map": "poi_podseminstiDrevorubci_map",
+    "guid": "f4623b5a-e9eb-453e-b196-9ff789b1a9a0",
+    "en_name": "Lower Semine woodcutters' map ",
+    "category": "treasure",
+    "destination_summary": "'Fresh clearing' NW of the Lower Semine woodcutters' camp: the woodcutters' pay chest (iron chest, very hard lock); its key is in a bird's nest on a dead log nearby.",
+    "container": "locked iron chest (very hard); key in a nearby nest",
+    "level": "trosecko",
+    "entity_name": "Stash20",
+    "entity_id": "29527",
+    "entity_guid": "6bdb4086-32f9-470c",
+    "pos": "919.4504,1408.693,24.59472",
+    "poi_name": "vyplataDrevorubcu_poi (Fresh clearing) 911.7474,1389.319",
+    "alt_entities": [
+      {
+        "role": "bird nest holding the chest key (inventory_poi_vyplataDrevorubcu_nestWithKey)",
+        "entity_name": "Nest1[Stash/nest132_b89f3a09-5a61-420b-9bf7-44cbf1b8c1eb]",
+        "entity_id": "30519",
+        "entity_guid": "57063e23-6cf2-09a6",
+        "pos": "914.515,1390.498,42.04322"
+      }
+    ],
+    "how_matched": "Preset inventory_poi_vyplataDrevorubcu_chestWithMoney ('woodcutters' pay', 381 g) at POI 'Fresh clearing', which is NW of the woodcutters' camp chest (1026.9,1279.3) as the guides state; the nest-with-key preset matches the guides' key-in-nest detail.",
+    "confidence": "verified",
+    "sources": [
+      "https://xboxplay.games/kingdom-come-deliverance-2/how-to-find-the-lower-semine-woodcutters-treasure-in-kingdom-come-deliverance-2-61705",
+      "https://patchcrazy.co.uk/kcd2-lower-semine-woodcutters-map-treasure-location/",
+      "https://prodigygamers.com/2026/05/23/where-to-find-the-lower-semine-woodcutters-map-in-kingdom-come-deliverance-2/"
+    ],
+    "notes": "",
+    "source": {
+      "how": "chest",
+      "summary": "Locked chest in a hut at the Lower Semine woodcutters' camp (south of Lower Semine mill); preset inventory_poi_podseminstiDrevorubci_map.",
+      "level": "trosecko",
+      "entity_name": "stash[Chest/chest1_a60ce408-23b7-478c-aee3-a8f3413924da]",
+      "entity_id": "20005",
+      "entity_guid": "0b544555-3c7f-0d25",
+      "pos": "1026.863,1279.331,35.12",
+      "confidence": "verified",
+      "sources": [
+        "https://xboxplay.games/kingdom-come-deliverance-2/how-to-find-the-lower-semine-woodcutters-treasure-in-kingdom-come-deliverance-2-61705"
+      ],
+      "entity_check": "ok"
+    },
+    "entity_check": "ok"
+  },
+  {
+    "map": "poi_skryseSPitim_map",
+    "guid": "b646ea7d-3ba6-4f2c-8784-b736402b95bb",
+    "en_name": "Map hidden at Vostatek",
+    "category": "treasure",
+    "destination_summary": "Gamekeeper Vostatek's five hidden booze stashes (bottles of spirits) in the woods between Kerchak Pond and Vidlak/Bukovina (map POIs 'Booze stash' 1-5).",
+    "container": "loose bottles in world ItemSlots (no container); each spot has an InteractionTrigger",
+    "level": "trosecko",
+    "entity_name": "vostatkovoPiti_stash_1",
+    "entity_id": "37251",
+    "entity_guid": "4254f559-a82c-425d",
+    "pos": "1387.022,2389.733,36.41229",
+    "poi_name": "vostatkovoPiti_1_poi .. vostatkovoPiti_5_poi (Booze stash)",
+    "alt_entities": [
+      {
+        "poi": "vostatkovoPiti_1_poi",
+        "entity_class": "InteractionTrigger",
+        "entity_id": "37251",
+        "entity_guid": "4254f559-a82c-425d",
+        "pos": "1387.022,2389.733,36.41229"
+      },
+      {
+        "poi": "vostatkovoPiti_2_poi",
+        "entity_class": "InteractionTrigger",
+        "entity_id": "37253",
+        "entity_guid": "9b786015-3b06-41e8",
+        "pos": "1477.562,2700.784,49.06112"
+      },
+      {
+        "poi": "vostatkovoPiti_3_poi",
+        "entity_class": "InteractionTrigger",
+        "entity_id": "37255",
+        "entity_guid": "fd53090a-5563-447a",
+        "pos": "1630.823,2915.331,64.34354"
+      },
+      {
+        "poi": "vostatkovoPiti_4_poi",
+        "entity_class": "InteractionTrigger",
+        "entity_id": "37252",
+        "entity_guid": "445407fb-8e63-4bd7",
+        "pos": "1858.643,2823.941,96.44122"
+      },
+      {
+        "poi": "vostatkovoPiti_5_poi",
+        "entity_class": "InteractionTrigger",
+        "entity_id": "37254",
+        "entity_guid": "d541aec8-e752-4339",
+        "pos": "1684.289,2781.141,83.85083"
+      }
+    ],
+    "how_matched": "The item's page images are named 'poi_hajnyVostatek_skryseSPitim' ('gamekeeper Vostatek - hiding places with drink'). Quest poi_trosecko/vostkovoPiti.xml ('Vostatek's drinking') binds firstStash..fifthStash via SmartObjectHolder vostatkovoPiti to these 5 triggers, each with ItemSlots holding 'spirits'. No online source describes this map.",
+    "confidence": "likely",
+    "sources": [
+      "https://kingdomcomedeliverance2.wiki.fextralife.com/Map_Hidden_at_Vostatek",
+      "https://www.gamerguides.com/kingdom-come-deliverance-ii/database/books/maps/map-hidden-at-vostatek"
+    ],
+    "notes": "Missing: (1) I did not look at the map images; (2) the item GUID and name appear nowhere except item.xml. No loot preset, level ItemSlot, shop or quest gives it, and no wiki lists a source. It is probably unobtainable/cut in 1.5.6, so markers would only matter if a player spawns it. Entity: (InteractionTrigger)",
+    "source": {
+      "how": "other",
+      "summary": "No in-game source found: the GUID and item name occur only in item.xml (no preset, ItemSlot, shop or quest). Wikis list no location. The description says it was found hidden at Hunter Vostatek's (his hut is lovciVostatek_poi 1412.141,2604.342).",
+      "level": null,
+      "entity_name": null,
+      "entity_id": null,
+      "entity_guid": null,
+      "pos": null,
+      "confidence": "unresolved",
+      "sources": [
+        "https://kingdomcomedeliverance2.wiki.fextralife.com/Map_Hidden_at_Vostatek",
+        "https://inara.cz/kingdom-come-2/item/3280/"
+      ],
+      "entity_check": "no_id"
+    },
+    "entity_check": "ok"
+  },
+  {
+    "map": "poi_tretiKrizovatkaVPodzemi_smugglersMap",
+    "guid": "00ec7e8d-4d4a-4365-97fe-5323d02bff49",
+    "en_name": "Smugglers's map",
+    "category": "treasure",
+    "destination_summary": "'Locked dugout' north of Old Kutna, between Old Kutna and Grund: a smugglers' storehouse behind a medium-lock door, with a hostile smuggler inside. Its very-hard locked chest holds 3620 groschen, 4 Saviour schnapps, spices, a warhammer, a fancy handgonne, a gambeson, scatter shot and the Duelling longsword recipe; a sack beside it holds crafting materials.",
+    "container": "locked chest inside a locked dugout",
+    "level": "kutnohorsko",
+    "entity_name": "stash[Chest/chest117_ba4057ff-d405-4a7a-a0a2-34521b6dff3c]",
+    "entity_id": "25805",
+    "entity_guid": "1718f6a2-cbcd-00d3",
+    "pos": "3099.342,1631.523,113.5938",
+    "poi_name": "skladPaseraku_poi (Locked dugout) 3100.602,1631.692,113.6692",
+    "alt_entities": [
+      {
+        "name": "Stash4 sack_generic7 (inventory_poi_skladPaseraku_sack)",
+        "cls": "Stash",
+        "id": "81767",
+        "guid": "19dc2f97-f0b4-04b3",
+        "pos": "3099.505,1632.698,113.5371"
+      },
+      {
+        "name": "kutnohorskePodzemi__skladPaseraku_poi (Smugglers' storehouse, underground): NOT the target, listed to avoid confusion",
+        "cls": "POI",
+        "pos": "3177.87,763.8649,47.06441"
+      }
+    ],
+    "how_matched": "Online guides (Patch Crazy, Deltia's, Fextralife 'Locked Dugout') say the map from the dead smuggler in the Kuttenberg tunnels marks the Locked Dugout. The only POI labelled 'Locked dugout' is skladPaseraku_poi. The chest beside it has its own preset, inventory_poi_skladPaseraku_chest. That preset's recipe_longswordduel matches guides that put the Duelling longsword sketch in the Locked Dugout chest.",
+    "confidence": "verified",
+    "sources": [
+      "https://patchcrazy.co.uk/kcd2-all-treasure-map-locations/",
+      "https://deltiasgaming.com/all-treasure-map-locations-in-kingdom-come-deliverance-2/",
+      "https://kingdomcomedeliverance2.wiki.fextralife.com/Locked_Dugout",
+      "https://kingdomcomedeliverance2.wiki.fextralife.com/Smugglers's_Map"
+    ],
+    "notes": "No quest graph references this map, so the match rests on the POI name, the preset family and online guides. A separate underground 'Smugglers' storehouse' exists (kutnohorskePodzemi__skladPaseraku_poi, presets inventory_poi_skladPaserakuVPodzemi_*); don't confuse the two. The internal name means 'third crossroads in the underground', which is where the map is found.",
+    "source": {
+      "how": "body",
+      "summary": "Carried by the dead smuggler kkut_deadSmuggler_2 (preset inventory_kkut_deadSmuggler_2) in the Kuttenberg underground, near the Smuggler's den POI below the path to the Hradek gate.",
+      "level": "kutnohorsko",
+      "entity_name": "kkut_deadSmuggler_2",
+      "entity_id": "22933",
+      "pos": "3109.878,704.1955,47.14195",
+      "confidence": "verified",
+      "sources": [
+        "https://kingdomcomedeliverance2.wiki.fextralife.com/Smugglers's_Map",
+        "https://www.gamerguides.com/kingdom-come-deliverance-ii/database/books/maps/smugglerss-map"
+      ],
+      "entity_check": "ok",
+      "entity_guid": "c540e588-713a-4a2b"
+    },
+    "entity_check": "ok"
+  },
+  {
+    "map": "poi_troskovickyHrbitov_map",
+    "guid": "fdee7fe7-2dd0-4ae1-8a50-e25ca7aa3a68",
+    "en_name": "Map left by the deceased",
+    "category": "treasure",
+    "destination_summary": "'Dead man's buried treasure' NW of the Zhelejov Wagoners' Inn and SW of the bandit camp at Kerchak Pond: a stash hidden under stones in a rocky alcove, with a decoy sack next to it.",
+    "container": "stash under a pile of stones (stash_stones_a); not locked, no shovel needed",
+    "level": "trosecko",
+    "entity_name": "Stash20",
+    "entity_id": "45592",
+    "entity_guid": "b1c474e0-febd-49ca",
+    "pos": "1532.428,2341.387,34.48995",
+    "poi_name": null,
+    "alt_entities": [
+      {
+        "role": "decoy sack right next to it (junk only)",
+        "entity_name": "Stash4[Stash/sack_generic2_eba7e407-de1c-4562-a8f4-e571b1edd11a]",
+        "entity_id": "45593",
+        "entity_guid": "049ae497-9122-020a",
+        "pos": "1532.233,2341.054,34.5646"
+      },
+      {
+        "role": "nearby enemy camp landmark",
+        "poi": "taborLapkuKrcak_poi (Bandits at Kerchak Pond)",
+        "pos": "1576.76,2372.435,41.62"
+      }
+    ],
+    "how_matched": "Layer Main/tkrc_krcak/Poi_zakopanyPokladMrtveho ('dead man's buried treasure'); preset inventory_poi_zakopanyPokladMrtveho_stash = 157 g, golden cross with garnets, 3 Saviour schnapps, 3 silver cups, identical to the loot GameRant/fandom list for this map. It lies NW of the inn (inn centroid ~1651,2164) and SW of the Kerchak bandit camp, as the guides say.",
+    "confidence": "verified",
+    "sources": [
+      "https://gamerant.com/kingdom-come-deliverance-2-kcd2-how-get-map-left-deceased/",
+      "https://kingdom-come-deliverance.fandom.com/wiki/Map_left_by_the_deceased",
+      "https://thefilibusterblog.com/kingdom-come-deliverance-2-locating-the-map-left-by-the-deceased-and-its-solution/"
+    ],
+    "notes": "No map POI for it in pois.csv. Don't confuse it with krizAKostlivec_poi 'Cross and skeleton' (1650.7,2333.1; stashes 11898/11970), which is also north of the inn.",
+    "source": {
+      "how": "chest",
+      "summary": "Locked chest (difficulty 0.7, opened with the Mortuary chest key) in the mortuary/chapel at Troskowitz cemetery; preset inventory_poi_troskovickyHrbitov_chestInMortuary.",
+      "level": "trosecko",
+      "entity_name": "Stash36",
+      "entity_id": "37839",
+      "entity_guid": "eb214501-c73b-4a82",
+      "pos": "2661.782,2046.269,109.6621",
+      "confidence": "verified",
+      "sources": [
+        "https://kingdom-come-deliverance.fandom.com/wiki/Map_left_by_the_deceased",
+        "https://gamerant.com/kingdom-come-deliverance-2-kcd2-how-get-map-left-deceased/"
+      ],
+      "entity_check": "ok"
+    },
+    "entity_check": "ok"
+  },
+  {
+    "map": "poi_vodnik_treasureMap",
+    "guid": "8ea0ebbc-fd34-49f2-a5e9-b1369e220d1c",
+    "en_name": "Drowner's map",
+    "category": "treasure",
+    "destination_summary": "Water Goblin's treasure: an urn against a rock face on the shore of Rocktower Pond, between the Nomad camp and the water goblin's hut (across the water from the hut).",
+    "container": "urn/vase (dose_b model); not locked",
+    "level": "trosecko",
+    "entity_name": "Stash10",
+    "entity_id": "29186",
+    "entity_guid": "59cb14ca-4eff-4bc7",
+    "pos": "1224.959,2084.947,10.47491",
+    "poi_name": "vodnik_vodniksTreasure_poi (Water goblin's treasure) 1224.695,2084.909",
+    "alt_entities": [
+      {
+        "role": "second stash with the same preset inventory_vodniksTreasure: lidded basket underwater at the water goblin hut (guides do not mention it)",
+        "entity_name": "Stash1[poi/stashes/basketUnderwater6_c35d85c7-3b05-4a31-9de5-801afe90cc14]",
+        "entity_id": "33879",
+        "entity_guid": "875256e5-5107-0abc",
+        "pos": "1125.363,2102.971,9.752093"
+      },
+      {
+        "role": "water goblin hut POI",
+        "poi": "vodnik_vodniksHut_poi",
+        "pos": "1123.837,2100.022,10.17"
+      }
+    ],
+    "how_matched": "Preset inventory_vodniksTreasure = 125 g, matching GamerGuides (urn, 125 groschen); dedicated POI vodnik_vodniksTreasure_poi sits on this stash.",
+    "confidence": "verified",
+    "sources": [
+      "https://www.gamerguides.com/kingdom-come-deliverance-ii/guide/free-form-quests/trosky/drowners-map-water-goblins-treasure-walkthrough",
+      "https://www.destructoid.com/how-to-find-the-drowners-map-treasure-in-kingdom-come-deliverance-2/"
+    ],
+    "notes": "Quest vodnik.xml has no StashAsset for the treasure; the match is by preset + POI. The underwater basket at the hut also rolls 125 g.",
+    "source": {
+      "how": "chest",
+      "summary": "Sack on the pier at the Bathing Spot where the drowned treasure hunters lie ('utopenci'); preset inventory_utopenciStash: map + 138 g + wine + roast duck.",
+      "level": "trosecko",
+      "entity_name": "Stash11",
+      "entity_id": "33621",
+      "entity_guid": "e2f40fa7-76fe-4ba9",
+      "pos": "841.018,1839.197,10.91303",
+      "confidence": "verified",
+      "sources": [
+        "https://www.gamerguides.com/kingdom-come-deliverance-ii/guide/free-form-quests/trosky/drowners-map-water-goblins-treasure-walkthrough"
+      ],
+      "entity_check": "ok",
+      "notes": "Entity: (sack_b)"
+    },
+    "entity_check": "ok"
+  },
+  {
+    "map": "poi_vyplavenyPoklad_map",
+    "guid": "84286824-882c-48a0-b261-e5ccea6929f6",
+    "en_name": "Vidlak bandit's map",
+    "category": "treasure",
+    "destination_summary": "Washed-up chest, half-submerged in reeds on the NW shore of a shallow pond SW of the 'Hollow tree' landmark, Vidlak pond area north of Tachov.",
+    "container": "locked chest (fancy chest, hard lock; a dedicated key poi_vyplavenyPoklad_treasureChestKey also exists)",
+    "level": "trosecko",
+    "entity_name": "stash[Chest/chest29_11fe2aef-9a55-48b3-8ec5-e33b9e1d1197]",
+    "entity_id": "15785",
+    "entity_guid": "bca68bb2-859d-021a",
+    "pos": "1545.787,3002.118,15.91506",
+    "poi_name": "vyplavenyPoklad_poi (Washed-up chest) 1545.57,3002.219",
+    "alt_entities": [
+      {
+        "role": "intermediate clue (Hollow tree, no loot)",
+        "poi": "vykotlanyStrom_poi",
+        "pos": "1606.812,3075.389,16.75656"
+      },
+      {
+        "role": "quest ItemSlots cup/plate at the hollow tree",
+        "level": "trosecko",
+        "entity_id": "28485/28484",
+        "pos": "1607.578,3075.083,15.744"
+      }
+    ],
+    "how_matched": "Quest vyplaveny_poklad.xml holds the map GUID and declares StashAsset 'chest'; SmartObjectHolder vyplavenyPoklad links asset['chest'] to stash 15785 (preset poi_vyplavenyPoklad_chest); POI vyplavenyPoklad_poi sits on it. GamerGuides: hollow tree, then washed-up chest in reeds, hard lock, ~300 g + golden crucifix.",
+    "confidence": "verified",
+    "sources": [
+      "https://www.gamerguides.com/kingdom-come-deliverance-ii/guide/free-form-quests/trosky/vidlak-bandits-map-treasure-location-guide"
+    ],
+    "notes": "Already-verified example; the online route matches (hollow tree -> SW pond -> chest).",
+    "source": {
+      "how": "npc_loot",
+      "summary": "Carried by the leader of the bandit camp at Bukovina above Vidlak Pond (NW of Tachov), met during 'Lackey'; loot his body (he also has the camp keys).",
+      "level": "trosecko",
+      "entity_name": "tbuk_man_1",
+      "entity_id": "12592",
+      "entity_guid": "ea2f60d3-5c56-4903",
+      "pos": "1831.618,2961.812,58.58729",
+      "confidence": "verified",
+      "sources": [
+        "https://www.gamerguides.com/kingdom-come-deliverance-ii/guide/free-form-quests/trosky/vidlak-bandits-map-treasure-location-guide"
+      ],
+      "entity_check": "ok"
+    },
+    "entity_check": "ok"
+  },
+  {
+    "map": "puvodNemoci_planOfBasement",
+    "guid": "f6297b59-375c-4bd7-93ab-7213bae4ec69",
+    "en_name": "Old cellar plans",
+    "category": "quest",
+    "quest_marks_destination": true,
+    "destination_summary": "Quest 'Anamnesis': old plans of the monastery cellars where translator Jaroslav went at night (down the stairs by the scriptorium). They point to the monastery underground and the locked secret room there; the quest marks basementArea, then secretDoorMarker/secretRoom.",
+    "container": "none (area: monastery cellars / secret room)",
+    "level": "klaster",
+    "entity_name": "basementArea",
+    "entity_id": "3716",
+    "entity_guid": "ed2e30ec-3d30-4293",
+    "pos": "1286.621,1023.652,19.11506",
+    "poi_name": null,
+    "alt_entities": [
+      {
+        "entity_name": "secretRoom",
+        "class": "TriggerArea",
+        "entity_id": "3704",
+        "entity_guid": "b6709171-4039-4c22",
+        "pos": "1322.57,1003.93,22.14673",
+        "role": "secret room in the cellar (marker once the key is found)"
+      },
+      {
+        "entity_name": "secretDoorMarker",
+        "class": "TriggerArea",
+        "entity_id": "3710",
+        "entity_guid": "b23c4332-f185-4029",
+        "pos": "1322.573,1004.756,22.35365",
+        "role": "secret door marker"
+      },
+      {
+        "entity_name": "wineCellarEntrance",
+        "class": "TriggerArea",
+        "entity_id": "3703",
+        "entity_guid": "35ca810a-4d0d-4ec2",
+        "pos": "1337.036,1109.953,22.67833",
+        "role": "separate wine-cellar objective (Zdik/Blazena thread), probably not this map"
+      }
+    ],
+    "how_matched": "No quest graph references the item GUID; it exists only in loot presets inventory_puvodNemoci_translatorsChest and inventory_puvodNemoci_deadMonk. puvodNemoci objective prozkoumej_podzemi_klastera ('find where in the cellars Jaroslav went at night') marks basementArea; follow-up prohledej_tajnou_mistnost_ve_sklepeni marks secretDoorMarker/secretRoom.",
+    "confidence": "likely",
+    "sources": [
+      "https://www.powerpyx.com/kingdom-come-deliverance-2-anamnesis-walkthrough/",
+      "https://wotpack.ru/en/prohozhdenie-kvesta-anamnez-v-kingdom-come-deliverance-2/"
+    ],
+    "notes": "Guides confirm where the plans are found but not what they depict; PowerPyx says the hidden room is found via wine footprints and is marked once other objectives are done. Choosing basementArea vs secretRoom as the destination is a judgement call. The quest already marks both; recommend skipping.",
+    "source": {
+      "how": "chest",
+      "summary": "In translator Jaroslav's chest in his cell on the top floor of the monks' dormitory (medium lock). Also in the inventory of the dead monk (Brother Arnost, the warden monk, in his cell) when that NPC is streamed for the quest.",
+      "level": "klaster",
+      "entity_name": "translatorsChest",
+      "entity_id": "3809",
+      "entity_guid": "cc08d5e1-6512-42b3",
+      "pos": "1327.51,1029.838,33.33699",
+      "alt": [
+        {
+          "entity_name": "puvodNemoci_deadMonk (NPC, preset inventory_puvodNemoci_deadMonk)",
+          "entity_id": "23192",
+          "entity_guid": "6db89c27-2454-47d9",
+          "pos": "1324.127,1015.363,26.35"
+        }
+      ],
+      "confidence": "verified",
+      "sources": [
+        "https://www.powerpyx.com/kingdom-come-deliverance-2-anamnesis-walkthrough/",
+        "https://wotpack.ru/en/prohozhdenie-kvesta-anamnez-v-kingdom-come-deliverance-2/"
+      ],
+      "entity_check": "ok"
+    },
+    "entity_check": "ok"
+  },
+  {
+    "map": "sedmStatecnychDva_borutsMap",
+    "guid": "6f8f9e73-188e-4237-8d9b-10467f97b882",
+    "en_name": "Bohuta's map",
+    "category": "treasure",
+    "quest_marks_destination": false,
+    "destination_summary": "Bohuta's buried equipment: dig spot inside a broken fence under a cluster of trees in the fields SW of Pschitoky (between Miskovitz and Pschitoky), POI 'Buried stash'. Needs a spade. Contents: near-full armour set (brigandine, mail, plate arms, bascinet, gauntlets...), battle axe, crossbow + 32 bolts.",
+    "container": "buried chest (Stash under graveHole dig spot)",
+    "level": "kutnohorsko",
+    "entity_name": "Stash15",
+    "entity_id": "65169",
+    "entity_guid": "744d59bc-3ff9-4a66",
+    "pos": "2068.119,1924.898,135.4047",
+    "poi_name": "borutovaZakopanaVybava_poi (Buried stash) 2068.07,1924.863,136.0465",
+    "alt_entities": [
+      {
+        "entity_name": "graveHole[special/graveHole1_7bc21a92-298c-4729-9389-c21ca678ccf7]",
+        "class": "Hole",
+        "entity_id": "65189",
+        "entity_guid": "a93af30e-52d7-0dcd",
+        "pos": "2067.99,1924.947,135.3004",
+        "role": "dig-spot hole over the stash"
+      },
+      {
+        "entity_name": "stash[Chest/chest29_6894d4fb-e268-4277-9d82-35e228ef02e7]",
+        "class": "Stash",
+        "entity_id": "65187",
+        "entity_guid": "c5cc75a6-fda0-08de",
+        "pos": "2102.477,1344.353,101.0241",
+        "role": "same editor layer poi_borutovaTruhla but preset inventory_poi_stodolaSPytlackouStashi_chest, ~580 m away - NOT the target"
+      }
+    ],
+    "how_matched": "Map images are named borutovaTruhla_treasureMap*; Stash15 sits in layer Main/kpri_pritoky/poi_borutovaTruhla with preset inventory_poi_borutovaTruhla, co-located with Hole 65189 and POI borutovaZakopanaVybava_poi ('Buried stash'). Online guides put the dig spot in a fenced tree cluster SW of Pschitoky / between Miskovitz and Pschitoky, matching the coordinates. No quest graph references the stash (plain POI treasure).",
+    "confidence": "verified",
+    "sources": [
+      "https://primagames.com/tips/kingdom-come-deliverance-2-how-to-find-bohuta-treasure-map",
+      "https://patchcrazy.co.uk/bohutas-treasure-map-location-kcd-2/"
+    ],
+    "notes": "Quest sedmStatecnych2 ('The Devil's Pack') only creates the map on Bohuta (borutova_mapa.xml AddSoulDefaultItem Mode=Create on quest start) and hands it over in dialogue s_borutem_u_hrobu; no objective marks the treasure. Guides warn the drawn roads do not match the world map well.",
+    "source": {
+      "how": "quest_reward",
+      "summary": "Carried by Bohuta (Borut) in Grund once The Devil's Pack starts. If you agree to pray with him he takes you to his brother's grave by Grund church and gives you the map (MoveItem_SoulToSoul borut->player); otherwise pickpocket, knock out or kill him for it.",
+      "level": "kutnohorsko",
+      "entity_name": "kgru_borut",
+      "entity_id": "968439",
+      "entity_guid": "221563d1-0760-45d7",
+      "pos": "3154.751,2130.827,102.6335",
+      "alt": [
+        {
+          "entity_name": "sedmStatecnych2_grave_borut (TagPoint asset 'grave', handover spot)",
+          "entity_id": "65318",
+          "pos": "3116.56,2117.9,102.6"
+        }
+      ],
+      "confidence": "verified",
+      "sources": [
+        "https://primagames.com/tips/kingdom-come-deliverance-2-how-to-find-bohuta-treasure-map",
+        "https://deltiasgaming.com/?p=154504"
+      ],
+      "entity_check": "ok"
+    },
+    "entity_check": "ok"
+  },
+  {
+    "map": "taboryUCesty_darkosTreasureMap",
+    "guid": "bafd2e04-be8e-4c44-96bc-6294dd42fcc5",
+    "en_name": "Darko's map",
+    "category": "treasure",
+    "destination_summary": "Kuttenberg region, Wolf Hills forest east of Sigismund's camp, at a 'Wolf hunting spot' den: a locked chest under a rock overhang with a carcass and bones in front of it (wolf pack around). Loot: reinforced heavy crossbow, hunting bolts, wolf pelts/teeth, Aesop potion.",
+    "container": "locked chest (chest_rustic_a)",
+    "level": "kutnohorsko",
+    "entity_name": "Stash36",
+    "entity_id": "17374",
+    "entity_guid": "76df628c-2cd5-4132",
+    "pos": "1996.673,2591.396,176.3336",
+    "poi_name": "kvlc_animalSpawn_huntingSpotPOI_1 (Wolf hunting spot) 1994.604,2585.559",
+    "alt_entities": [
+      {
+        "role": "wolf AnimalSpawner at the den",
+        "entity_id": "4804",
+        "pos": "1999.418,2581.331,178.2587"
+      }
+    ],
+    "how_matched": "No quest link (the map is a random-event reward). Two YouTube walkthroughs (Lootward, ifaPlays) show the custom marker on the 'Wolf hunting spot' just east of Sigismund's camp, the chest under a rock overhang with a carcass and bones, and the loot 'Reinforced heavy crossbow'. In the data this is the only stash at that wolf spot; preset inventory_kvrc_wolfChest = crossbowHeavyNormal01, 12 hunting bolts, 3 wolf skins, wolf tooth, Aesop. The map sketch (palisaded army camp + windmill) fits Sigismund's camp (1658,2789) and the burnt windmill POI (2073,2295).",
+    "confidence": "verified",
+    "sources": [
+      "https://www.youtube.com/watch?v=NsH9jxJj5Bg",
+      "https://www.youtube.com/watch?v=msrVmhgI78c",
+      "https://kingdomcomedeliverance2.wiki.fextralife.com/Black_Darko"
+    ],
+    "notes": "The only online confirmation is from videos (no text guide). The chest is a generic regional chest that exists whether or not the player has the map. Darko only spawns in Kutnohorsko.",
+    "source": {
+      "how": "npc_loot",
+      "summary": "Black Darko, a Hungarian/Cuman mercenary in the 'Camp by the road' random event (taboryUCesty duel variant 'darko', Kutnohorsko only). The event gives him the map when he spawns (eventreward_itemclass); loot him after the fight or duel. The camp location is random among the Kuttenberg roadside camps, so there is no fixed position.",
+      "level": "kutnohorsko",
+      "entity_name": "spawnedNPCs (random-event soul)",
+      "entity_id": null,
+      "entity_guid": null,
+      "pos": null,
+      "confidence": "verified",
+      "sources": [
+        "https://deltiasgaming.com/all-maps-in-kingdom-come-deliverance-2-listed/",
+        "https://kingdomcomedeliverance2.wiki.fextralife.com/Black_Darko"
+      ],
+      "entity_check": "no_id"
+    },
+    "entity_check": "ok"
+  },
+  {
+    "map": "treasureHunter_map1",
+    "guid": "a8fe8e05-2024-44a3-8161-4b5fe3929ed9",
+    "en_name": "Treasure map - First",
+    "category": "treasure",
+    "destination_summary": "Locked chest in the cave system under Trosky Castle ('Cave under Trosky' POI). Guides call it the Cave in Apollonia route: the entrance is right of the road north of Trosky, then up two ladders to the room with the locked chest. The key ('Key from Below Trosky') is in a sack with a cracked skull at the far end of the room.",
+    "container": "locked chest (Stash50, lock difficulty 0.7, key item d2dbf222-1f9a-4a27-90be-7d9d937d02bc); not buried",
+    "level": "trosecko",
+    "entity_name": "Stash50",
+    "entity_id": "44514",
+    "entity_guid": "7054c68d-98bc-404a",
+    "pos": "2618.204,2670.407,133.3482",
+    "poi_name": "pokladPodTroskami_poi (Cave under Trosky) 2617.636,2671.998,133.3093",
+    "alt_entities": [
+      {
+        "name": "jeskyneVApolene_poi (Cave in Apollonia, entrance area)",
+        "pos": "2737.584,2697.768,119.3688"
+      },
+      {
+        "name": "Stash4 sack 44523 (ttro underground sack, probably the cracked-skull/key sack)",
+        "pos": "2627.159,2674.127,136.1915"
+      },
+      {
+        "name": "Stash4 sack 44521 (charcoal sack beside the chest)",
+        "pos": "2618.896,2670.661,133.3471"
+      }
+    ],
+    "how_matched": "No named preset. Matched by loot: inventory_poi_pokladPodTroskami_chest = money 2230 (223 gr) + 2x bsmt_steelNormal + charcoal + cobwebs. Guides say about 200 groschen plus two Frankfurt Steel. The locked chest with its key in a nearby sack in the Trosky underground also matches the guides.",
+    "confidence": "likely",
+    "sources": [
+      "https://patchcrazy.co.uk/kcd2-all-treasure-map-locations/",
+      "https://kcd2.org/en/post/kcd2-treasure-map"
+    ],
+    "notes": "The quest graph only covers the sale; no data link from the map item to the chest, so the pairing rests on loot and description. Guides call it the 'Cave in Apollonia', but the chest sits at the 'Cave under Trosky' POI, about 120 m west of the Apollonia cave POI. The underground connects them. This chest is also an ordinary discoverable POI.",
+    "source": {
+      "how": "npc_sale",
+      "summary": "Carried by the wandering treasure hunter (soul pocestny_treasureHunter_1) in the 'Seeking Man' (Hledajici muz) random road encounter. treasurehunter_logic adds the map to his inventory on spawn; buy it (the graph's default price is 100), or steal or loot it from him. Each variant fires once. The spawn point is random (pocestny event spawn points), so there is no fixed position.",
+      "level": null,
+      "entity_name": "pocestny_treasureHunter_1",
+      "entity_id": null,
+      "pos": null,
+      "confidence": "verified",
+      "sources": [
+        "https://kcd2.org/en/post/kcd2-treasure-map",
+        "https://nightlygamingbinge.com/kingdom-come-deliverance-ii-treasure-maps/",
+        "quest:Barbora/random_events/pocestny/event_pocestny/pocestny/treasure_hunter/treasure_hunter_1.xml"
+      ],
+      "entity_check": "no_id"
+    },
+    "entity_check": "ok"
+  },
+  {
+    "map": "treasureHunter_map2",
+    "guid": "a98fb543-fa1d-4baa-9018-e758bab89958",
+    "en_name": "Treasure map - Second",
+    "category": "treasure",
+    "destination_summary": "A sack beside a skeleton on a rock ledge in the ravine below the Devil's Finger rock pinnacle, north of Rocktower Pond / Nomads' Camp (Vezicko). Reached by climbing down from above: down to the first fallen tree, west along the ravine edge, then south to the skeleton's rock.",
+    "container": "sack (sack_b_interactive) beside a skeleton; not buried",
+    "level": "trosecko",
+    "entity_name": "Stash4[Stash/sack_generic8_dd14f7c8-eb90-4762-8469-fe61e7d91468]",
+    "entity_id": "33800",
+    "entity_guid": "3229f758-a4ae-000a",
+    "pos": "966.6812,2157.671,37.06898",
+    "poi_name": "pokladSKostlivcem_poi (Skeleton with treasure) 966.4756,2157.269,37.29726",
+    "alt_entities": [
+      {
+        "name": "certuvPrst_poi (The Devil's Finger); Stash19 33640 inventory_certuvPrstStash",
+        "pos": "898.214,2249.29,76.73193"
+      }
+    ],
+    "how_matched": "No named preset. Matched by loot: inventory_poi_pokladUVezaku_sack = money 1830 (183 gr) + ring_silver_engraved + ring_silver_gem + loot_silverChalice + bsmt_pommelCoin (+ a cuirass). This matches Patch Crazy's list: 2 silver rings, Coin Sword Pommel, Silver Chalice, 183 Groschen. The sack sits exactly on the 'Skeleton with treasure' POI, about 115 m SE of the Devil's Finger.",
+    "confidence": "likely",
+    "sources": [
+      "https://patchcrazy.co.uk/kcd2-all-treasure-map-locations/",
+      "https://kcd2.org/en/post/kcd2-treasure-map"
+    ],
+    "notes": "The quest graph only covers the sale; no data link. The preset name pokladUVezaku means 'treasure at Vezak'. Guides also list a golden cup that is not in this preset; it may come from the generated junk inventory.",
+    "source": {
+      "how": "npc_sale",
+      "summary": "Carried by the wandering treasure hunter (soul pocestny_treasureHunter_2) in the 'Seeking Man' (Hledajici muz) random road encounter. treasurehunter_logic adds the map to his inventory on spawn; buy it (the graph's default price is 100), or steal or loot it from him. Each variant fires once. The spawn point is random (pocestny event spawn points), so there is no fixed position.",
+      "level": null,
+      "entity_name": "pocestny_treasureHunter_2",
+      "entity_id": null,
+      "pos": null,
+      "confidence": "verified",
+      "sources": [
+        "https://kcd2.org/en/post/kcd2-treasure-map",
+        "https://nightlygamingbinge.com/kingdom-come-deliverance-ii-treasure-maps/",
+        "quest:Barbora/random_events/pocestny/event_pocestny/pocestny/treasure_hunter/treasure_hunter_2.xml"
+      ],
+      "entity_check": "no_id"
+    },
+    "entity_check": "ok"
+  },
+  {
+    "map": "treasureHunter_map3",
+    "guid": "166273f0-9301-4a5c-9708-f4f93959a747",
+    "en_name": "Treasure Map - Third",
+    "category": "treasure",
+    "destination_summary": "Kuttenberg underground: enter through the ruined house by the road and river south of the city. Inside, take the first arch left, follow the water right where the cave splits, then go far right at the three-way junction. A circle-and-dots carving on a wooden pillar marks the spot; a small sack lies at the rubble.",
+    "container": "sack (sack_items model) at rubble; not buried",
+    "level": "kutnohorsko",
+    "entity_name": "Stash251",
+    "entity_id": "56766",
+    "entity_guid": "f9d6a60f-643b-4bf4",
+    "pos": "2834.594,835.4142,58.69184",
+    "poi_name": null,
+    "alt_entities": [
+      {
+        "name": "vstupDoKutnohorskehoPodzemi1_poi (underground entrance)",
+        "pos": "2827.159,804.1732,69.50757"
+      },
+      {
+        "name": "vstupDoKutnohorskehoPodzemi2_poi (underground entrance)",
+        "pos": "2840.252,860.1582,72.67416"
+      }
+    ],
+    "how_matched": "Named loot preset treasurehunterMap_3_chest (money 2100 = 210 gr, necklace_scapular_window, skillbook_strength_III_kcd2) on Stash251. Contents match the guides exactly: Scapular with Aperture, Strength of the Knight III, 210 Groschen.",
+    "confidence": "verified",
+    "sources": [
+      "https://patchcrazy.co.uk/kcd2-all-treasure-map-locations/",
+      "https://kcd2.org/en/post/kcd2-treasure-map"
+    ],
+    "notes": "Layer kkut_kutnaHora/city/underground. The stash is underground (z 58.7, about 11-14 m below the entrance POIs).",
+    "source": {
+      "how": "npc_sale",
+      "summary": "Carried by the wandering treasure hunter (soul pocestny_treasureHunter_3) in the 'Seeking Man' (Hledajici muz) random road encounter. treasurehunter_logic adds the map to his inventory on spawn; buy it (the graph's default price is 100), or steal or loot it from him. Each variant fires once. The spawn point is random (pocestny event spawn points), so there is no fixed position.",
+      "level": null,
+      "entity_name": "pocestny_treasureHunter_3",
+      "entity_id": null,
+      "pos": null,
+      "confidence": "verified",
+      "sources": [
+        "https://kcd2.org/en/post/kcd2-treasure-map",
+        "https://nightlygamingbinge.com/kingdom-come-deliverance-ii-treasure-maps/",
+        "quest:Barbora/random_events/pocestny/event_pocestny/pocestny/treasure_hunter/treasure_hunter_3.xml"
+      ],
+      "entity_check": "no_id"
+    },
+    "entity_check": "ok"
+  },
+  {
+    "map": "treasureHunter_map4",
+    "guid": "8991005c-98ac-4847-8e7e-9548a8c16e0b",
+    "en_name": "Treasure Map - Fourth",
+    "category": "treasure",
+    "destination_summary": "Chest in the wooded stream bed south of the Millstone Quarry (south of Bylany, NE of Maleshov). From the quarry, follow the white millstones southeast, turn right up the stream, then left past the fallen tree onto low, wet ground.",
+    "container": "chest (chest_rustic_a); not buried",
+    "level": "kutnohorsko",
+    "entity_name": "Stash28",
+    "entity_id": "113020",
+    "entity_guid": "f11cc4a2-57e5-4dce",
+    "pos": "1030.498,409.1957,106.568",
+    "poi_name": null,
+    "alt_entities": [
+      {
+        "name": "lomNaMlynskeKameny (Millstone quarry POI)",
+        "pos": "1113.995,650.3751,80.48697"
+      },
+      {
+        "name": "Stash19 113019 inventory_kmal_millStoneStash (stash at the quarry; not the target)",
+        "pos": "1103.505,654.4787,83.04651"
+      }
+    ],
+    "how_matched": "Named loot preset treasurehunterMap_4_chest (money 1250 = 125 gr, ring_silver_gem, KettleHat04 = Saxon kettle hat, skillbook_heavyWeapons_lvl3_kcd2 = Skullcrushers III) on Stash28. Contents match the guides exactly.",
+    "confidence": "verified",
+    "sources": [
+      "https://patchcrazy.co.uk/kcd2-all-treasure-map-locations/",
+      "https://kcd2.org/en/post/kcd2-treasure-map"
+    ],
+    "notes": "Layer kmal_malesov/_common. About 255 m SSW of the Millstone quarry POI. The preset is defined in InventoryPreset__krab.xml.",
+    "source": {
+      "how": "npc_sale",
+      "summary": "Carried by the wandering treasure hunter (soul pocestny_treasureHunter_4) in the 'Seeking Man' (Hledajici muz) random road encounter. treasurehunter_logic adds the map to his inventory on spawn; buy it (the graph's default price is 100), or steal or loot it from him. Each variant fires once. The spawn point is random (pocestny event spawn points), so there is no fixed position.",
+      "level": null,
+      "entity_name": "pocestny_treasureHunter_4",
+      "entity_id": null,
+      "pos": null,
+      "confidence": "verified",
+      "sources": [
+        "https://kcd2.org/en/post/kcd2-treasure-map",
+        "https://nightlygamingbinge.com/kingdom-come-deliverance-ii-treasure-maps/",
+        "quest:Barbora/random_events/pocestny/event_pocestny/pocestny/treasure_hunter/treasure_hunter_4.xml"
+      ],
+      "entity_check": "no_id"
+    },
+    "entity_check": "ok"
+  },
+  {
+    "map": "zachranaPtacka_malesovExterior",
+    "guid": "698912fd-ca7c-413d-8775-35c6700ee587",
+    "en_name": "Maleshov fort map",
+    "category": "quest",
+    "quest_marks_destination": true,
+    "destination_summary": "Main quest 'Taking French Leave': sketch of Maleshov fortress (Capon held in the main tower). Approach is via the secret tunnel found from the old chapel / stone crosses near Hashtal's stud farm, dug open with a spade; the quest marks chapel, passage area, tunnel entry and the fortress.",
+    "container": "none (area: Maleshov fortress)",
+    "level": "kutnohorsko",
+    "entity_name": "zachranaPtacka_malesovArea",
+    "entity_id": "85482",
+    "entity_guid": "1428eb19-3e7c-44d1",
+    "pos": "505.4331,388.2984,126.5",
+    "poi_name": null,
+    "alt_entities": [
+      {
+        "entity_name": "zachranaPtacka_secretPassageEntrySpot",
+        "class": "TagPoint",
+        "entity_id": "85531",
+        "entity_guid": "31abbaa2-d1c3-4a66",
+        "pos": "473.0976,564.914,90.79549",
+        "role": "tunnel entrance dig spot (marker)"
+      },
+      {
+        "entity_name": "zachranaPtacka_secretPassageArea",
+        "class": "TriggerArea",
+        "entity_id": "85485",
+        "entity_guid": "2afc588c-8d5e-4668",
+        "pos": "429.4761,638.7802,98.66644",
+        "role": "search area for passage (marker)"
+      },
+      {
+        "entity_name": "zachranaPtacka_oldChapelArea",
+        "class": "TriggerArea",
+        "entity_id": "85478",
+        "entity_guid": "ea548889-e4a7-4459",
+        "pos": "362.2485,627.1187,106.172",
+        "role": "old chapel start (marker)"
+      },
+      {
+        "entity_name": "zachranaPtacka_secretCorridorEnd",
+        "class": "TriggerArea",
+        "entity_id": "85480",
+        "entity_guid": "e2460f78-3a31-4351",
+        "pos": "456.1845,372.6061,108.3129",
+        "role": "tunnel exit inside fortress"
+      },
+      {
+        "entity_name": "zachranaPtacka (quest SO)",
+        "class": "SmartObjectHolder",
+        "entity_id": "85652",
+        "entity_guid": "8c0cc6fc-a8e0-44e0",
+        "pos": "468.7752,367.4908,113.1222",
+        "role": "quest holder inside fortress"
+      }
+    ],
+    "how_matched": "Item text (sketch of Maleshov fortress from Rosa Ruthard); GUID is constant planek_exterieru_malesova in zachranaPtacka constants.xml; handed over by rozinaKniha/zadani_questu/predani_planku.xml. Quest objectives all carry markers (oldChapelArea, secretPassageArea, secretPassageEntrySpot, ptacekSearchArea = zachranaPtacka_malesovArea).",
+    "confidence": "likely",
+    "sources": [
+      "https://www.powerpyx.com/kingdom-come-deliverance-2-taking-french-leave-walkthrough/",
+      "https://game-checklists.com/kcd2/guides/taking-french-leave-quest/"
+    ],
+    "notes": "Not a treasure map; an infiltration aid for a main quest that already marks everything. Recommend the mod skip it (or mark the fortress area only). Whether the sketch itself shows the tunnel is unconfirmed (no image access); the fortress is the certain subject. No quest node references the item after handover.",
+    "source": {
+      "how": "quest_reward",
+      "summary": "Rosa Ruthard hands over both Maleshov sketches at the Ruthard house in Kuttenberg (CreatePlayerReward on 'Henry got the plans'; the same talk starts 'Rosa's Book').",
+      "level": "kutnohorsko",
+      "entity_name": "kkut_rozaRuthard",
+      "entity_id": "946328",
+      "entity_guid": "fe7f4bc0-dbd9-4ca0",
+      "pos": "2993.062,665.0518,51.10302",
+      "confidence": "verified",
+      "sources": [
+        "https://game-checklists.com/kcd2/guides/rosas-book-quest/",
+        "https://www.powerpyx.com/kingdom-come-deliverance-2-taking-french-leave-walkthrough/"
+      ],
+      "entity_check": "ok"
+    },
+    "entity_check": "ok"
+  },
+  {
+    "map": "zachranaPtacka_malesovInterior",
+    "guid": "bd5a9f14-f64b-45b5-865e-35fe5106ae30",
+    "en_name": "Map of Maleshov tower",
+    "category": "quest",
+    "quest_marks_destination": true,
+    "destination_summary": "Interior of the main tower at Maleshov fortress; Hans Capon (and Brabant) are locked on the top floor, Rosa's book one floor below. Entry by the east door up the wooden stairs.",
+    "container": "none (area: Maleshov main tower)",
+    "level": "kutnohorsko",
+    "entity_name": "kmal_fortress_tower3_4_sh",
+    "entity_id": "42424",
+    "entity_guid": "2b3b4a5d-8d08-4a46",
+    "pos": "459.9382,373.7267,125.1095",
+    "poi_name": null,
+    "alt_entities": [
+      {
+        "entity_name": "zachranaPtacka_malesovArea",
+        "class": "TriggerArea",
+        "entity_id": "85482",
+        "entity_guid": "1428eb19-3e7c-44d1",
+        "pos": "505.4331,388.2984,126.5",
+        "role": "quest marker 'find Capon'"
+      },
+      {
+        "entity_name": "kmal_fortress_tower3_1_sh",
+        "class": "AreaShape",
+        "entity_id": "42427",
+        "entity_guid": null,
+        "pos": "466.7414,365.9691,112.1806",
+        "role": "main tower ground-floor audio shape"
+      }
+    ],
+    "how_matched": "Item text (tower interior sketch); GUID is constant planek_interieru_malesova. Main tower identified as the 'tower3' audio shapes (floors 1-4) in Main/kmal_malesov/fortress/_script/audio; top-floor shape used as a point. Quest find-Capon objective marks zachranaPtacka_malesovArea.",
+    "confidence": "likely",
+    "sources": [
+      "https://www.powerpyx.com/kingdom-come-deliverance-2-taking-french-leave-walkthrough/",
+      "https://game-checklists.com/kcd2/guides/taking-french-leave-quest/"
+    ],
+    "notes": "Not a treasure map. The tower point is an audio AreaShape (no gameplay entity marks the cell); entity_guid not captured. Recommend the mod skip it.",
+    "source": {
+      "how": "quest_reward",
+      "summary": "Given together with the fort map by Rosa Ruthard in Kuttenberg.",
+      "level": "kutnohorsko",
+      "entity_name": "kkut_rozaRuthard",
+      "entity_id": "946328",
+      "entity_guid": "fe7f4bc0-dbd9-4ca0",
+      "pos": "2993.062,665.0518,51.10302",
+      "confidence": "verified",
+      "sources": ["https://game-checklists.com/kcd2/guides/rosas-book-quest/"],
+      "entity_check": "ok"
+    },
+    "entity_check": "ok"
+  },
+  {
+    "map": "zakopanyZitrek_mysteriousMap",
+    "guid": "a8b789d7-558a-40d6-8ea2-a1304e880dac",
+    "en_name": "Mysterious map",
+    "category": "quest",
+    "quest_marks_destination": true,
+    "destination_summary": "NOT the heirloom treasure. Drat's charcoal map marks the ambush site: the crossroads in the forest SW of Bylany toward Mesoles, where blood traces (and Mikush's hat further on) lead south to the bandit camp. Quest 'The Heirloom' objective jdi_na_krizovatku_u_lesa, state ActiveFarMapa ('according to the rough map...'), sets marker ambushRoughSpot, then the prepadeni area, completing at the blood interaction.",
+    "container": "none (location: ambush crossroads / blood trail)",
+    "level": "kutnohorsko",
+    "entity_name": "zakopanyZitrek_ambushSpot",
+    "entity_id": "60522",
+    "entity_guid": "760db9f8-954c-4cd2",
+    "pos": "870.7698,1329.794,131.3037",
+    "poi_name": null,
+    "alt_entities": [
+      {
+        "entity_name": "zakopanyZitrek_bloodTrigger",
+        "class": "InteractionTrigger",
+        "entity_id": "60554",
+        "entity_guid": "add8feaf-4d5e-4d70",
+        "pos": "870.6826,1330.039,131.6959",
+        "role": "blood trace examined to complete the objective"
+      },
+      {
+        "entity_name": "zakopanyZitrek_ambushRoughSpot",
+        "class": "TagPoint",
+        "entity_id": "60509",
+        "entity_guid": "3eba5537-918e-42c9",
+        "pos": "910.7459,1280.69,127.5345",
+        "role": "quest marker while far (ActiveFar/ActiveFarMapa)"
+      },
+      {
+        "entity_name": "zakopanyZitrek_ambush",
+        "class": "TriggerArea",
+        "entity_id": "60490",
+        "entity_guid": "8af801a8-a3dd-4899",
+        "pos": "1015.285,1313.87,110.0664",
+        "role": "quest marker when near (pos is area origin)"
+      },
+      {
+        "entity_name": "zakopanyZitrek_ambushTrailAreaMarker",
+        "class": "TriggerArea",
+        "entity_id": "60488",
+        "entity_guid": "7a04a3c6-e99a-49fc",
+        "pos": "871.9199,1322.007,100.6745",
+        "role": "follow-trail marker"
+      },
+      {
+        "entity_name": "zakopanyZitrek_treasureStash",
+        "class": "Stash",
+        "entity_id": "60550",
+        "entity_guid": "65e33a1d-f44c-4753",
+        "pos": "675.9164,1577.333,161.7337",
+        "role": "the buried heirloom (5000 gr), reached from Svatava's verbal directions and quest-marked via treasureHunt_* areas; NOT what this map shows"
+      }
+    ],
+    "how_matched": "Item text 'A map marking the ambush site'; quest_itemy.xml spawns it into alias dratStash; zakopanyZitrek.xml objective proklepni_drata log 'In the chest at the farm I found a mysterious map', and objective jdi_na_krizovatku_u_lesa enum ActiveFarMapa (map-specific) uses Marker=ambushRoughSpot. Entities resolved via SmartObjectHolder zakopanyZitrek links. Guides describe the crossroads SW of Bylany with blood on the ground and tracks to the bandit tent.",
+    "confidence": "verified",
+    "sources": [
+      "https://www.powerpyx.com/?p=268221",
+      "https://www.gamerguides.com/kingdom-come-deliverance-ii/guide/side-quests/kuttenberg/the-heirloom-quest-walkthrough",
+      "https://game-checklists.com/kcd2/guides/the-heirloom-quest/"
+    ],
+    "notes": "Quest is 'The Heirloom' (CZ Zakopany zitrek). The lead given (zakopanyZitrek_treasureStash) is the heirloom stash, which this map does not point to. Map is a quest item and the quest already marks the destination, so the mod can skip it or add a low-priority marker at ambushSpot. Online guides do not mention the map itself (it is a fallback clue when Drat is not persuaded or is dead).",
+    "source": {
+      "how": "chest",
+      "summary": "Placed by the quest (AddQuestItem StartingLocation=dratStash) in Drat's chest at the farmstead in Bylany when the 'check out Drat' route needs it (Drat dead or not talking).",
+      "level": "kutnohorsko",
+      "entity_name": "stash[Chest/chest9_8972aacc-b854-4a66-b22b-18d12fea644a]",
+      "entity_id": "125048",
+      "entity_guid": "242a0b91-a79c-00cf",
+      "pos": "1763.444,1118.485,105.5964",
+      "alt": [
+        {
+          "entity_name": "stash[Chest/chest10_e471fa73-dbb5-4998-a1b7-a0fc7526bcd5] (preset inventory_zakopanyZitrek_dratStash = Drat's belongings, but NOT the asset-linked chest)",
+          "entity_id": "125057",
+          "pos": "1772.958,1119.122,102.3502"
+        }
+      ],
+      "confidence": "likely",
+      "sources": [],
+      "entity_check": "ok"
+    },
+    "entity_check": "ok"
+  },
+  {
+    "map": "zbranePanaSemina_vasekMap",
+    "guid": "b9317950-5255-4129-ab66-a231108f1293",
+    "en_name": "Hired hand Ventza's map",
+    "category": "treasure",
+    "destination_summary": "'Tunnel in the cliffs' south of the Apollonia bandit camp. Follow the exposed white rock to two caves. In the western arch-shaped cave, a sack watched over by a skull holds a hunting crossbow, fine bolts, Bowman's Brew and marksman's kits. The eastern cave has a skeleton under a map carved in the rock, which leads to a different treasure.",
+    "container": "sack (not locked)",
+    "level": "trosecko",
+    "entity_name": "Stash4[Stash/sack_generic8_f0a74d9e-0cca-4885-969b-5936ae2f82df]",
+    "entity_id": "32801",
+    "entity_guid": "1f9a4d0e-43f4-0fed",
+    "pos": "2803.865,2186.89,116.1533",
+    "poi_name": "tunelVeSkalach_poi (Tunnel in the cliffs) 2819.443,2183.283",
+    "alt_entities": [
+      {
+        "role": "bandit camp landmark",
+        "poi": "taborLapkuApolena_poi",
+        "pos": "2834.216,2239.881,122.3176"
+      }
+    ],
+    "how_matched": "Preset inventory_zbranePanaSemina_stashWithCrossbow (quest prefix of 'The Jaunt') = light crossbow, 27 fine bolts, 2 strong Bowman's Brew, 2 bowyer kits, which matches GamerGuides. The sack sits 16 m W of the 'Tunnel in the cliffs' POI, south of the bandit camp.",
+    "confidence": "verified",
+    "sources": [
+      "https://www.gamerguides.com/kingdom-come-deliverance-ii/guide/free-form-quests/trosky/hired-hand-ventzas-map-treasure-location-guide"
+    ],
+    "notes": "The map is handled in quest zbranePanaSemina (konstanty__itemy, constant vaskova_mapa). The carved wall map in the east cave is a separate item (another batch).",
+    "source": {
+      "how": "npc_loot",
+      "summary": "Ventza (soul alias 'pacholek'), the hired hand in side quest 'The Jaunt' (zbranePanaSemina). He offers the map as a bribe in the bandit camp; you can also take it by killing, pickpocketing or Speech. If he is hanged afterwards (aftermath/vasek.xml re-adds the map to him), it is on his corpse hanging from a tree by the road near Semine. Where he is depends on quest state, so there is no fixed point.",
+      "level": "trosecko",
+      "entity_name": "pacholek (quest soul)",
+      "entity_id": null,
+      "entity_guid": null,
+      "pos": null,
+      "confidence": "verified",
+      "sources": [
+        "https://www.gamerguides.com/kingdom-come-deliverance-ii/guide/free-form-quests/trosky/hired-hand-ventzas-map-treasure-location-guide"
+      ],
+      "entity_check": "no_id"
+    },
+    "entity_check": "ok"
+  }
+]

@@ -1,0 +1,29 @@
+[project]
+name = "treasure-finder"
+version = "0.1.0"
+description = "Tooling for the treasure-finder KCD2 mod: game data extraction, indexing and map table validation."
+requires-python = ">=3.12"
+dependencies = []
+
+[project.scripts]
+treasure-data = "treasure_data.__main__:main"
+
+[build-system]
+requires = ["uv_build>=0.13.1,<0.14"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-root = "tools"
+module-name = "treasure_data"
+
+[tool.ruff]
+indent-width = 4
+line-length = 120
+
+[tool.ruff.format]
+docstring-code-format = false
+
+[dependency-groups]
+dev = [
+    "ruff>=0.17.1",
+]
