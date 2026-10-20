@@ -51,7 +51,7 @@ local function mark(m, t, label, source, open)
 		return nil
 	end
 	local pos = entity:GetWorldPos()
-	return { map = m.map, label = label, source = source, wuid = wuid, x = pos.x, y = pos.y, z = pos.z }
+	return { map = m.map, item = m.item, label = label, source = source, wuid = wuid, x = pos.x, y = pos.y, z = pos.z }
 end
 
 -- Adds to `targets` every place a map the player has leads to and is not dealt with yet, or else where the map
@@ -84,6 +84,7 @@ local function publish(p)
 	for n, t in ipairs(p.targets) do
 		_G["TreasureFinderProbe_map_" .. n] = t.map
 		_G["TreasureFinderProbe_label_" .. n] = t.label
+		_G["TreasureFinderProbe_item_" .. n] = t.item
 		_G["TreasureFinderProbe_source_" .. n] = t.source
 		_G["TreasureFinderProbe_wuid_" .. n] = t.wuid
 		_G["TreasureFinderProbe_x_" .. n] = t.x

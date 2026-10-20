@@ -1,6 +1,8 @@
 #include <windows.h>
 
+#include <map>
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "Engine.h"
@@ -43,6 +45,28 @@ namespace {
                        t.source ? "lies at" : "leads to", t.wuid, t.pos.x, t.pos.y, t.pos.z);
     }
 
+    // Per carried map item, whether it was read when last checked, so a map being read shows up as one log line.
+    std::map<std::string, bool> g_read;
+
+    // Whether the player has read the map a destination belongs to; maps that are not items (a carving) count as
+    // read once found.
+    bool MapRead(const ProbeResult::Target &target) {
+        if (target.item.empty())
+            return true;
+        const auto id = Game::ParseItemClassId(target.item);
+        if (!id) {
+            Log::Write("read: {} has a malformed item GUID '{}'; its destinations show unread", target.map,
+                       target.item);
+            return true;
+        }
+        const bool read = Game::ReadProgress(*id) >= 1.f;
+        if (const auto it = g_read.find(target.map); it == g_read.end() || it->second != read) {
+            g_read[target.map] = read;
+            Log::Write("read: {} is {}", target.map, read ? "read" : "not read yet; its destinations wait");
+        }
+        return read;
+    }
+
     void Tick() {
         if (!g_announced) {
             Log::Write("running");
@@ -63,6 +87,7 @@ namespace {
                 GameMark::Clear();
                 g_destinations.clear();
                 g_sources.clear();
+                g_read.clear();
             }
         }
         g_wasStarted = started;
@@ -70,11 +95,17 @@ namespace {
         if (const ULONGLONG now = GetTickCount64(); started && now >= g_nextProbe) {
             g_nextProbe = now + kProbeIntervalMs;
             LogProbe(Probe::Run());
+            // A map's destinations wait until the player has read it.
+            std::vector<ProbeResult::Target> shown;
             g_destinations.clear();
             g_sources.clear();
-            for (const auto &t : g_last->targets)
+            for (const auto &t : g_last->targets) {
+                if (!t.source && !MapRead(t))
+                    continue;
+                shown.push_back(t);
                 (t.source ? g_sources : g_destinations).push_back(t.pos);
-            GameMark::Sync(g_last->targets);
+            }
+            GameMark::Sync(shown);
         }
         const auto *map = Game::GetMap();
         FloatingIcon::Update(MarkType::kDestination, g_destinations,

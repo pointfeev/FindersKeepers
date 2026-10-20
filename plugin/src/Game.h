@@ -1,7 +1,10 @@
 #pragma once
 
+#include <array>
 #include <cstdint>
 #include <memory>
+#include <optional>
+#include <string_view>
 
 #include "Flash.h"
 
@@ -39,6 +42,15 @@ namespace Game {
 
     // The linkable object (an AI object's link node) for a WUID, which marks track; null when unknown.
     void *FindLinkable(std::uint64_t wuid);
+
+    // An item class GUID as the game keeps it (CryGUID: the Windows GUID layout, Data1..3 little-endian, then the
+    // last eight bytes in order).
+    using ItemClassId = std::array<std::uint8_t, 16>;
+    // Parses "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"; empty when malformed.
+    std::optional<ItemClassId> ParseItemClassId(std::string_view text);
+    // How far the player has read an item class, 0..1: a document counts as read at 1 (its inventory "new" marker
+    // goes then).
+    float ReadProgress(const ItemClassId &item);
 
     // The AI object manager's listener (I_ObjectManagerBaseListener): its vtable is this one function, called on the
     // main thread with kObjectRemoved when the watched object is destroyed (a load, a level unload, the object going

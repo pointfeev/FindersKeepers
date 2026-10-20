@@ -74,11 +74,14 @@ ProbeResult Probe::Run() {
             r.errors += std::format("{}target {} not readable", r.errors.empty() ? "" : "; ", n);
             continue;
         }
-        r.targets.push_back({.map = map.string,
-                             .label = label.string,
-                             .source = GetBool(Field("source", n)),
-                             .wuid = static_cast<std::uint64_t>(wuid.handle),
-                             .pos = Engine::Vec3(x, y, z)});
+        ScriptValue item;
+        r.targets.push_back(
+            {.map = map.string,
+             .label = label.string,
+             .item = Get(Field("item", n), item) && item.type == ScriptValue::String && item.string ? item.string : "",
+             .source = GetBool(Field("source", n)),
+             .wuid = static_cast<std::uint64_t>(wuid.handle),
+             .pos = Engine::Vec3(x, y, z)});
     }
     if (ScriptValue errors; Get("errors", errors) && errors.type == ScriptValue::String && errors.string)
         r.errors += std::format("{}{}", r.errors.empty() ? "" : "; ", errors.string);

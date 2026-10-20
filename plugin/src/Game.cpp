@@ -1,5 +1,6 @@
 #include "Game.h"
 
+#include <charconv>
 #include <new>
 
 #include "Engine.h"
@@ -88,7 +89,6 @@ namespace {
              "C3 CC 40 53 48 83 EC 20 48 8B D9 41 B8 08 00 00 00 48 B9 25 23 22 84 E4 9C F2 CB",
          .offset = -0x28},
     };
-
     // S_GameContext: +0x00 the framework (C_Framework, whose C_GameplayManager at +0xB8 keeps the started flag at
     // +0x10), +0xE8 the GUI module.
     constexpr std::size_t kFramework = 0x00;
@@ -107,6 +107,12 @@ namespace {
     constexpr std::size_t kMapContent = 0x208;
     constexpr std::size_t kFilterFlags = 0x618;
     constexpr std::uint32_t kFilterCount = 0x61;
+    // S_GameContext +0x130 is the RPG module, whose +0x98 tracks book reading: slot 36 gives an item class's reading
+    // progress (0..1) by its GUID. The inventory's document info marks a document new while it is below 1
+    // (C_UIFlashInfoItemDocument, 0x18119EDD8).
+    constexpr std::size_t kRpgModule = 0x130;
+    constexpr std::size_t kReading = 0x98;
+    constexpr std::size_t kReadProgressSlot = 0x120 / 8;
 
     using ContextFn = std::uint8_t *(__fastcall *)();
     using ScreenFn = std::uint8_t *(__fastcall *)(void *guiModule);
@@ -205,6 +211,34 @@ std::shared_ptr<Game::EntityMark> Game::AddEntityMark(Map *map, const std::uint3
 void Game::RemoveEntityMark(Map *map, const std::shared_ptr<EntityMark> &mark) { PassMark(g_removeMark, map, mark); }
 
 void *Game::FindLinkable(const std::uint64_t wuid) { return g_find(nullptr, &wuid); }
+
+std::optional<Game::ItemClassId> Game::ParseItemClassId(const std::string_view text) {
+    // Hex digit pairs in text order, and where each byte goes: Data1, Data2 and Data3 are stored little-endian.
+    constexpr std::array<std::size_t, 16> kOrder{3, 2, 1, 0, 5, 4, 7, 6, 8, 9, 10, 11, 12, 13, 14, 15};
+    ItemClassId id{};
+    std::size_t byte = 0;
+    for (std::size_t i = 0; i < text.size(); ++i) {
+        if (text[i] == '-')
+            continue;
+        if (byte == id.size() || i + 1 >= text.size())
+            return std::nullopt;
+        std::uint8_t value = 0;
+        if (const auto [end, error] = std::from_chars(text.data() + i, text.data() + i + 2, value, 16);
+            error != std::errc() || end != text.data() + i + 2)
+            return std::nullopt;
+        id[kOrder[byte++]] = value;
+        ++i;
+    }
+    if (byte != id.size())
+        return std::nullopt;
+    return id;
+}
+
+float Game::ReadProgress(const ItemClassId &item) {
+    const std::uint8_t *context = g_context();
+    const void *reading = At<void *>(At<void *>(context, kRpgModule), kReading);
+    return Engine::VCall<float>(reading, kReadProgressSlot, &item);
+}
 
 void Game::WatchObject(const std::uint64_t *wuid, ObjectListener *listener) {
     g_watch(ObjectManager(), wuid, listener);

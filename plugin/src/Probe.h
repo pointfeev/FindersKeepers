@@ -19,6 +19,7 @@ struct ProbeResult {
     struct Target {
         std::string map;    // the map item's name
         std::string label;  // the map tooltip's localization label
+        std::string item;   // the map item's class GUID; empty for a map that is not an item (a carving)
         bool source;        // the map's own location rather than where it leads
         std::uint64_t wuid; // the marked object's WUID (XGenAIModule.GetMyWUID)
         Engine::Vec3 pos;
