@@ -26,7 +26,7 @@ namespace {
         const std::uintptr_t step = info.dwAllocationGranularity;
         constexpr std::uintptr_t reach = std::uintptr_t{0x7FFF0000};
         const std::uintptr_t lowest = base > reach ? base - reach : step;
-        for (std::uintptr_t address = (base - step) & ~(step - 1); address >= lowest; address -= step) {
+        for (std::uintptr_t address = base - step & ~(step - 1); address >= lowest; address -= step) {
             void *memory = VirtualAlloc(reinterpret_cast<void *>(address), kPatchMemory, MEM_COMMIT | MEM_RESERVE,
                                         PAGE_EXECUTE_READWRITE);
             if (memory) {
