@@ -1,121 +1,145 @@
-# Treasure maps in KCD2 1.5.6: where each one leads
+# Treasure maps in KCD2: research notes
 
-Research for the treasure-finder mod. Game build: Steam 1.5.6 (release_1_5-15693). Full per-map data, including sources (URLs), alternates and notes, is in [treasure_maps.json](treasure_maps.json).
+Game build: Steam 1.5.6 (`release_1_5-15693`). Per-map data (entity ids, positions, sources) is in [treasure_maps.json](treasure_maps.json); this file keeps what we learned about each map and the game rules the mod relies on. "Data" means the extracted game files; "guides" means the linked walkthroughs. Fandom, Deltia's, Prima, Nexus and Steam threads block fetching, so claims from them rest on search snippets.
 
-## How a map is tied to its destination
+## How a map ties to a place
 
-- A map is an item in `Tables.pak → Libs/Tables/item/item.xml` (`<Document Type="4">`). It carries only images and text, never a location.
-- Some maps are linked through quest data: a quest graph (`Scripts.pak → Quests/Final/...`) holds the map's GUID and declares a `StashAsset`, and a `SmartObjectHolder` entity in the level binds that asset to a real `Stash` entity (`asset['chest'] → EntityId`). Example: Vidlak bandit's map → Stash 15785.
-- The rest are linked only by the picture. For those, the destination was found from guides and matched to the level entity by loot table, layer and position.
-- `poi_X_map` names say where the map is **found**, not where it leads.
-- Coordinates are world metres, X east, Y north (checked against known places).
+- A map is an item in `item.xml` (`<Document Type="4">`) with images and text, never a location.
+- Some maps are tied through quest data: the quest graph names the map's GUID and a `StashAsset`, and a `SmartObjectHolder` in the level binds that asset to a `Stash` entity. The rest are tied only by the picture; for those, guides gave the place and loot table, layer and position matched it to an entity.
+- `poi_X_map` names say where a map is found, not where it leads.
+- Coordinates are world metres, X east, Y north.
 
-## Summary
+## Game rules
 
-- 38 map items: 26 treasure, 3 area, 6 quest (the quest already marks the way), 3 not location maps.
-- 27 verified (data and guides agree), 10 likely, 1 unresolved.
-- Every destination and source entity ID was checked against the extracted level data and lies within 2 m of the reported position.
+- **Quest markers:** only tracked quests (three at most) put markers on the map and compass ([TheGamer](https://www.thegamer.com/kingdom-come-deliverance-2-find-side-quests-tipsters-how-to/)). The game's own gather (0x180DC5E68) matches: tracked quests, plus every quest while the quest log page is open. Areas are yellow search areas of unstated size; treasure maps never get a quest marker.
+- **Restocking:** since 1.5, "Chests no longer restock themselves if all their owners are dead". No destination chest or sack has an owner (no `bOwnedByHome`, no entity links), so none refills ([patch notes](https://kingdomcomedeliverance2.wiki.fextralife.com/Patch_Notes)).
+- **Holes:** stay dug since 1.3 ("Holes dug by the player now stay dug out after level switch").
+- **Loose items:** players report they do not respawn (Steam snippet; nothing official).
+- **Quest items:** an `AddQuestItem` exists only while its quest state is active. Some quests hand over a normal copy when they end (`CreatePlayerReward` on an `_afterQuest` state).
+- **Failure:** quests have a Failed state (patch notes). Main quests do not fail; losing a key NPC is a game over.
+- **Open world:** `socky` (M03) is Laboratores (game string `socky_CpmD`); its end opens the Trosky region ([kcd2.org](https://kcd2.org/en/post/kcd2-walkthrough)).
 
-## Notable findings
+## Maps
 
-- **Brunswick's maps are off by one.** Map I leads to the 2nd armour stash, II to the 3rd, III to the 4th, IV to the 5th (entity 9534). Maps I and II are both given when you take the first piece; that first stash (11107, needs a shovel) has no map. The quest shows no map markers for these.
-- **Krizhan's and the Bandit's treasure maps are forgeries.** Both lead to three empty holes at the treasure hunters' camp near Lorec. After the quest, copies of the Bandit's map are added to five other NPCs.
-- **Map left by the deceased** (found in the Troskowitz mortuary chest) leads to a stash under stones near Zhelejov (45592), not to the cemetery.
-- **Darko's map** spawns only in the Kuttenberg region and leads to a wolf-den chest there (17374).
-- **Treasure maps 1 and 2** lead to ordinary POI loot (Cave under Trosky chest, skeleton's sack below the Devil's Finger), so the treasure can be looted without the map.
-- **Mysterious map** (Buried Tomorrow) marks the ambush crossroads, not the heirloom.
-- **Two maps seem unobtainable in 1.5.6:** Map hidden at Vostatek and Miners' Underground Map exist only in `item.xml` (no loot table, trader, slot or quest).
-- Destinations that are not chests: Map from chest by Sedletz (loose items in a locked shed), Map of Kuttenberg underground (Goatskin's barrel trigger), the area maps (hunting spots).
+### Treasure maps
 
-## Table
+**Treasure map - First** (`treasureHunter_map1`)
+- Found: the wandering treasure hunter in the "Seeking Man" road encounter (buy, steal or loot).
+- Leads to: the locked chest in the cave under Trosky (223 groschen, 2 Frankfurt steel). Its key, "Key from Below Trosky", is in ItemSlot271 (44518) on a sack prop 7 m away ("a cracked skull on a sack"). The other sack in the room (44523) holds 18 groschen, shoes and a gambeson. [Patch Crazy](https://patchcrazy.co.uk/?p=7260), [kcd2.org](https://kcd2.org/en/post/kcd2-treasure-map)
 
-Rows grouped by category. Level / entity / pos = destination entity id and its X,Y.
+**Treasure map - Second** (`treasureHunter_map2`)
+- Found: as First.
+- Leads to: the sack beside the skeleton in the ravine below the Devil's Finger (183 groschen, two silver rings, a silver chalice).
+- The 281 groschen by the cross on top of the Devil's Finger (Stash19 33640) is a separate container guides call "not the main treasure"; one guide's "second sack nearby" is a doubled write-up of the skeleton's sack. [Patch Crazy](https://patchcrazy.co.uk/treasure-map-second-kcd2-treasure-location/)
 
-| Map (in game)                        | Item                                       | Category           | Leads to                                                                                                       | Level / entity / pos             | Conf.      | Obtained from                                                                              |
-|--------------------------------------|--------------------------------------------|--------------------|----------------------------------------------------------------------------------------------------------------|----------------------------------|------------|--------------------------------------------------------------------------------------------|
-| Bandit's treasure map                | `map_u49_mapakpokladu_bandit`              | treasure           | Identical copy of Krizhan's forged map: the same abandoned mine at the treasure hunters' camp near Lorec, w... | kutnohorsko / 952782 / 3788,1147 | verified   | Carried by the treasure-hunter (bandit) leader at the camp/mine near Lorec. He hands it... |
-| Bohuta's map                         | `sedmStatecnychDva_borutsMap`              | treasure           | Bohuta's buried equipment: dig spot inside a broken fence under a cluster of trees in the fields SW of Psch... | kutnohorsko / 65169 / 2068,1925  | verified   | Carried by Bohuta (Borut) in Grund once The Devil's Pack starts. If you agree to pray w... |
-| Darko's map                          | `taboryUCesty_darkosTreasureMap`           | treasure           | Kuttenberg region, Wolf Hills forest east of Sigismund's camp, at a 'Wolf hunting spot' den: a locked chest... | kutnohorsko / 17374 / 1997,2591  | verified   | Black Darko, a Hungarian/Cuman mercenary in the 'Camp by the road' random event (tabory... |
-| Footpad's hideout map                | `nemcuvPoklad_mapStashLoot_1`              | treasure           | Sunken locked chest in the marsh under a birch tree south-east of Kuttenberg, near Sedletz. The key is in a... | kutnohorsko / 99806 / 3421,269   | verified   | Hidden compartment behind a breakable brick wall in the cellar of the All Saints tavern... |
-| Krizhan's treasure map               | `map_u49_mapakpokladu`                     | treasure           | Abandoned mine shaft at the treasure hunters' (bandit) camp near Lorec, north-east of Kuttenberg toward Sed... | kutnohorsko / 952782 / 3788,1147 | verified   | Bought from hired hand Krizhan in Pschitoky (about 100 groschen), or stolen from him or... |
-| Map from chest by Sedletz            | `poi_mnichovaSchovka_map`                  | treasure           | 'Love nest' (Hnizdecko lasky): a small locked drying shed across the pond west of Sedletz monastery. The lo... | kutnohorsko / 106110 / 3532,565  | verified   | Chest (inventory_poi_prchajiciMnich_chest) at the foot of the Sedletz monastery outer w... |
-| Map of Kuttenberg underground        | `andelStrazny_underground_map`             | treasure           | Goatskin's (Kozina's) hideout in the Kuttenberg underground on the east side of the city, below Leflirska s... | kutnohorsko / 139871 / 3233,686  | verified   | Sewn into the coat of the hanged thief Angel at the Kuttenberg gallows/execution site s... |
-| Old hideout map                      | `nemcuvPoklad_mapStashLoot_2`              | treasure           | Buried sack in a fresh grave under a two-forked tree, in the forest north-east of Bohunovice near Opatovice... | kutnohorsko / 140292 / 2197,3281 | verified   | Same hidden wall compartment in the All Saints tavern cellar, Kuttenberg ('The German's... |
-| Smugglers's map                      | `poi_tretiKrizovatkaVPodzemi_smugglersMap` | treasure           | 'Locked dugout' north of Old Kutna, between Old Kutna and Grund: a smugglers' storehouse behind a medium-lo... | kutnohorsko / 25805 / 3099,1632  | verified   | Carried by the dead smuggler kkut_deadSmuggler_2 (preset inventory_kkut_deadSmuggler_2)... |
-| Storage Yard Plan                    | `dlc2_mrtvyNemluvi_mapStash`               | treasure           | Legacy of the Forge guild job 'In the Service of the Guild' (A203 mrtviNemluvi): the stolen guild steel is ... | kutnohorsko / 108724 / 675,1110  | verified   | Carried by the dying bandit (Ondrej) near the dead bandits' camp in the forest west of ... |
-| Treasure Map - Fourth                | `treasureHunter_map4`                      | treasure           | Chest in the wooded stream bed south of the Millstone Quarry (south of Bylany, NE of Maleshov). From the qu... | kutnohorsko / 113020 / 1030,409  | verified   | Carried by the wandering treasure hunter (soul pocestny_treasureHunter_4) in the 'Seeki... |
-| Treasure Map - Third                 | `treasureHunter_map3`                      | treasure           | Kuttenberg underground: enter through the ruined house by the road and river south of the city. Inside, tak... | kutnohorsko / 56766 / 2835,835   | verified   | Carried by the wandering treasure hunter (soul pocestny_treasureHunter_3) in the 'Seeki... |
-| Brunswick's map I                    | `map_bruncvik_01`                          | treasure           | Second Brunswick piece (plate legs): a sack behind the two small trees above the wolf den ('Vlci doupe') no... | trosecko / 36209 / 1928,3000     | verified   | Granted by the quest (CreatePlayerReward) when the player takes the first armour piece ... |
-| Brunswick's map II                   | `map_bruncvik_02`                          | treasure           | Third Brunswick piece (plate arms and gauntlets): a sack at the large cliffs with three crosses ('Krize na ... | trosecko / 15711 / 1308,2771     | verified   | Granted by the quest (CreatePlayerReward) when the player takes the first armour piece ... |
-| Brunswick's map III                  | `map_bruncvik_03`                          | treasure           | Fourth Brunswick piece (cuirass): a cloth bag next to a skeleton leaning against a cross at the foot of a t... | trosecko / 11970 / 1651,2333     | verified   | Granted by the quest when the player takes the plate legs from the second stash (asset ... |
-| Brunswick's map IV                   | `map_bruncvik_04`                          | treasure           | Fifth and final Brunswick piece (helmet/bascinet): a small stone cairn / burial mound with a stone cross at... | trosecko / 9534 / 1285,1977      | verified   | Granted by the quest when the player takes the plate arms/gauntlets from the third stas... |
-| Caught thief's map                   | `poi_MapkaZlodeje_map`                     | treasure           | Thief's camp in the woods on the cliffs east of Nebakov Mill. Locked chest just south-east of the camp cook... | trosecko / 21924 / 2192,1329     | verified   | Black Bartosch at Trosky Castle (dice tables by the combat arena, west side of the cast... |
-| Drowner's map                        | `poi_vodnik_treasureMap`                   | treasure           | Water Goblin's treasure: an urn against a rock face on the shore of Rocktower Pond, between the Nomad camp ... | trosecko / 29186 / 1225,2085     | verified   | Sack on the pier at the Bathing Spot where the drowned treasure hunters lie ('utopenci'... |
-| Hired hand Ventza's map              | `zbranePanaSemina_vasekMap`                | treasure           | 'Tunnel in the cliffs' south of the Apollonia bandit camp. Follow the exposed white rock to two caves. In t... | trosecko / 32801 / 2804,2187     | verified   | Ventza (soul alias 'pacholek'), the hired hand in side quest 'The Jaunt' (zbranePanaSem... |
-| Lower Semine woodcutters' map        | `poi_podseminstiDrevorubci_map`            | treasure           | 'Fresh clearing' NW of the Lower Semine woodcutters' camp: the woodcutters' pay chest (iron chest, very har... | trosecko / 29527 / 919,1409      | verified   | Locked chest in a hut at the Lower Semine woodcutters' camp (south of Lower Semine mill... |
-| Map hidden at Vostatek               | `poi_skryseSPitim_map`                     | treasure           | Gamekeeper Vostatek's five hidden booze stashes (bottles of spirits) in the woods between Kerchak Pond and ... | trosecko / 37251 / 1387,2390     | likely     | No in-game source found: the GUID and item name occur only in item.xml (no preset, Item... |
-| Map left by the deceased             | `poi_troskovickyHrbitov_map`               | treasure           | 'Dead man's buried treasure' NW of the Zhelejov Wagoners' Inn and SW of the bandit camp at Kerchak Pond: a ... | trosecko / 45592 / 1532,2341     | verified   | Locked chest (difficulty 0.7, opened with the Mortuary chest key) in the mortuary/chape... |
-| Map of the Zhelejov marshes          | `poi_kostlivecVMocalech_map`               | treasure           | Zhelejov marshes (west of Zhelejov / the Wagoners' Inn). The treasure is not on the islands: it is at the f... | trosecko / 39834 / 1590,2131     | verified   | Lying in the hand of the skeleton in the Zhelejov marshes (POI kostlivecVMokradech_poi ... |
-| Treasure map - First                 | `treasureHunter_map1`                      | treasure           | Locked chest in the cave system under Trosky Castle ('Cave under Trosky' POI). Guides call it the Cave in A... | trosecko / 44514 / 2618,2670     | likely     | Carried by the wandering treasure hunter (soul pocestny_treasureHunter_1) in the 'Seeki... |
-| Treasure map - Second                | `treasureHunter_map2`                      | treasure           | A sack beside a skeleton on a rock ledge in the ravine below the Devil's Finger rock pinnacle, north of Roc... | trosecko / 33800 / 967,2158      | likely     | Carried by the wandering treasure hunter (soul pocestny_treasureHunter_2) in the 'Seeki... |
-| Vidlak bandit's map                  | `poi_vyplavenyPoklad_map`                  | treasure           | Washed-up chest, half-submerged in reeds on the NW shore of a shallow pond SW of the 'Hollow tree' landmark... | trosecko / 15785 / 1546,3002     | verified   | Carried by the leader of the bandit camp at Bukovina above Vidlak Pond (NW of Tachov), ... |
-| Miners' Underground Map              | `kuttenberg_underground_map`               | area               | General map of the Kuttenberg underground tunnels (the miners' own map). Not tied to a container.              | kutnohorsko / — / 2862,707       | unresolved | No in-game source found: it is not in any loot preset, trader table, level entity or qu... |
-| Poacher's map                        | `hunting_map_suchdol`                      | area               | Area map marking about 4-5 hunting grounds (animal spawn spots) around Suchdol and the Ratbor poachers' cam... | kutnohorsko / — / 752,3760       | likely     | Medium-lock chest in the ruined building of the poachers' camp near Ratbor, north-west ... |
-| Map of game near Slatego             | `poi_nedostavenaChalupa_huntingSpotsMap`   | area               | Hunting grounds around Slatejov. The guide follows it SE from the unfinished cottage along the rock formati... | trosecko / — / 2937,1805         | likely     | Locked chest (difficulty 0.6) under an awning at the unfinished cottage near Slatejov (... |
-| Crypt map                            | `nakaza_mapOfCrypt`                        | quest              | Plan of the chapel crypt under the Sedletz church. It is found inside the crypt and is a navigation aid for... | klaster / 382 / 1372,1047        | likely     | Picked up inside the crypt while searching it in 'Silent Witnesses' (ItemSlot nakaza_cr... |
-| Old cellar plans                     | `puvodNemoci_planOfBasement`               | quest              | Quest 'Anamnesis': old plans of the monastery cellars where translator Jaroslav went at night (down the sta... | klaster / 3716 / 1287,1024       | likely     | In translator Jaroslav's chest in his cell on the top floor of the monks' dormitory (me... |
-| Maleshov fort map                    | `zachranaPtacka_malesovExterior`           | quest              | Main quest 'Taking French Leave': sketch of Maleshov fortress (Capon held in the main tower). Approach is v... | kutnohorsko / 85482 / 505,388    | likely     | Rosa Ruthard hands over both Maleshov sketches at the Ruthard house in Kuttenberg (Crea... |
-| Map of Maleshov tower                | `zachranaPtacka_malesovInterior`           | quest              | Interior of the main tower at Maleshov fortress; Hans Capon (and Brabant) are locked on the top floor, Rosa... | kutnohorsko / 42424 / 460,374    | likely     | Given together with the fort map by Rosa Ruthard in Kuttenberg.                            |
-| Map to the secret mint               | `kralovskeStribro_mapToSecretMint`         | quest              | The secret mint south-east of Grund (Sukov woods). A hole with a ladder (the secret adit) leads down a tunn... | kutnohorsko / 40419 / 3543,1790  | verified   | Carried by smelter Volkmar (Vokrak) in Grund during Via Argentum; you get it from him a... |
-| Mysterious map                       | `zakopanyZitrek_mysteriousMap`             | quest              | NOT the heirloom treasure. Drat's charcoal map marks the ambush site: the crossroads in the forest SW of By... | kutnohorsko / 60522 / 871,1330   | verified   | Placed by the quest (AddQuestItem StartingLocation=dratStash) in Drat's chest at the fa... |
-| Boleslav Bavor's coat of arms sketch | `artefakt_BavorCoatofArmsDrawing`          | not_a_location_map | Reference sketch of Bavor's arms (arrow symbol), used to recognise his mural in the church (3rd from the ri... | klaster / — / —                  | verified   | Given by the monastery librarian Brother Crispin in the library after you discuss your ... |
-| Filthy parchment from the crypt      | `nakaza_dirtyPageFromCrypt`                | not_a_location_map | Drawing of a Jerusalem cross (images jerusalem_1/2, quest constant nakres_erbu), a clue rather than a map. ... | klaster / — / —                  | verified   | Lying on the altar in the monastery crypt during 'Silent Witnesses' (ItemSlot nakaza_co... |
-| Diagrams of mounted archery tracks   | `hadkaKonaru_archeryTracks`                | not_a_location_map | Not a treasure or area map. It is a set of diagrams of the mounted-archery contest courses Bibrek builds (H... | trosecko / 181390 / 1092,1709    | likely     | Given by Bibrek in dialogue during the horse-archery contest setup (CreatePlayerReward ... |
+**Treasure Map - Third** (`treasureHunter_map3`): as First; a small sack at a carved pillar in the Kuttenberg underground, entered through the ruined house south of the city.
 
-## Open items
+**Treasure Map - Fourth** (`treasureHunter_map4`): as First; a chest in the stream bed south of the Millstone Quarry.
 
-- Likely, not verified: Treasure maps 1 and 2 (matched on loot only), Map hidden at Vostatek (destination inferred from image names; map seems unobtainable), Poacher's map and Map of game near Slatego (which hunting spots the sketch marks), the two Maleshov sketches, Crypt map and Old cellar plans (quest maps; exact target is a judgement call), Diagrams of mounted archery tracks (not a location map).
-- Unresolved: Miners' Underground Map (no source, no target).
-- Map sources with no fixed position: the four treasure hunter maps and Darko's map (random road encounters), Ventza's map (quest NPC), and the Bandit's map copies handed to NPCs after X Marks the Spot.
-- Nothing here has been checked in the game itself.
+**Brunswick's maps I-IV** (`map_bruncvik_01..04`)
+- Off by one: map I leads to the 2nd armour stash, II to the 3rd, III to the 4th, IV to the 5th. The 1st stash (11107, needs a spade) has no map.
+- Found: quest rewards; I and II together when the first piece is taken, III and IV after the next pieces.
+- III leads to the shrine (Stash27 11898) and the bag by the skeleton (11970). [PowerPyx](https://www.powerpyx.com/kingdom-come-deliverance-2-the-lions-crest-walkthrough/)
+- The quest shows no map markers for these.
 
-## Follow-up research for marking (2026-10-19, online guides)
+**Krizhan's and the Bandit's maps** (`map_u49_mapakpokladu`, `_bandit`), quest X Marks the Spot (`mapaKPokladu`)
+- Forgeries: three empty dig spots in the mine at the treasure hunters' camp near Lorec (holes 952782-952784). Digging is optional; the quest moves on through the bandit leader. A fourth spot the bandits dig is possible. [Game-Checklists](https://game-checklists.com/kcd2/guides/x-marks-the-spot-quest/)
+- Krizhan's is a quest item; after the quest, copies of the Bandit's map are added to five NPCs.
+- Marks retire with the quest, since the holes may never be dug.
 
-The first pass matched each map to one destination. This pass asked what marking needs: every place a map sends the player, when a destination counts as done, and where a quest already marks it. The sources are guides and wikis. Several sites (fandom, Prima, Deltia's, Nexus) blocked fetching, so some claims rest on one guide; disagreements are noted.
+**Vidlak bandit's map** (`poi_vyplavenyPoklad_map`)
+- Found: the Bukovina bandit leader, met in Lackey.
+- Leads to: the hollow tree (a tin plate and silver cup at its roots, ItemSlot41 28485), then the washed-up chest (15785; about 300 groschen and a golden crucifix). [Selphie](https://selphie1999gaming.com/game-guides/kcd2-kingdom-come-deliverance-2/kingdom-come-deliverance-2-vidlak-bandits-map-treasure/)
 
-### Maps that lead to more than one place
+**Map from chest by Sedletz** (`poi_mnichovaSchovka_map`)
+- Found: the chest at the foot of the monastery wall, which also holds the shed's key.
+- Leads to: loose items (silver chalice, silver jug, Art of Demosthenes III, food) in the locked Love nest shed; no container. We mark ItemSlot198 (106110).
 
-- **Krizhan's and the Bandit's maps:** at least three empty dig spots at the mine near Lorec (holes 952782, 952783, 952784 in the data; Game-Checklists says "the remaining three spots"). The objective may need every hole, and that is not confirmed. Today we mark one hole and clear when it is dug. The Minimap mod (Nexus 3330) shipped this exact bug: its decoy marker "stayed on the map forever" until v1.22. Sources: https://game-checklists.com/kcd2/guides/x-marks-the-spot-quest/, https://www.powerpyx.com/kingdom-come-deliverance-2-x-marks-the-spot-walkthrough/
-- **Vidlak bandit's map:** the hollow tree first (a tin plate and silver cup in the water, per Selphie and Patch Crazy; no loot, per Gamer Guides), then the washed-up chest. We mark the chest. https://selphie1999gaming.com/game-guides/kcd2-kingdom-come-deliverance-2/kingdom-come-deliverance-2-vidlak-bandits-map-treasure/
-- **Treasure map First:** the chest plus a sack holding the "Key from Below Trosky", in one room. **Second:** the skeleton's bag, plus a second container where guides disagree (a grave on top of the Devil's Finger, or "a second sack nearby"). https://www.gamerguides.com/kingdom-come-deliverance-ii/guide/free-form-quests/trosky/treasure-map-second-treasure-location-guide
-- **Brunswick's map III:** the shrine (Stash27 11898 in the data), then the bag by the skeleton. https://www.powerpyx.com/kingdom-come-deliverance-2-the-lions-crest-walkthrough/
-- **Map of game near Slatego:** the payoff is one hole near the wolf hunting spot SE of the unfinished cottage, holding a skeleton with a hazel longbow (three guides agree). That supports marking ItemSlot115 / spot 4 rather than all four spots. https://gamerant.com/kingdom-come-deliverance-2-kcd2-map-game-near-slatego-treasure-solution/, https://www.100pguides.com/guides/kingdom-come-deliverance-2-all-treasure-map-solutions
-- All other treasure maps: one place each.
+**Map of game near Slatego** (`poi_nedostavenaChalupa_huntingSpotsMap`)
+- The sketch shows one red spot: the wolf hunting ground SE of the unfinished cottage, a skeleton with a hazel longbow (ItemSlot115 31712), maybe some arrows; no container. [GameRant](https://gamerant.com/kingdom-come-deliverance-2-kcd2-map-game-near-slatego-treasure-solution/)
 
-### Destinations the mark cannot tell are done
+**Map left by the deceased** (`poi_troskovickyHrbitov_map`): from the Troskowitz mortuary chest; a stash under stones NW of the Zhelejov Wagoners' Inn (45592), not the cemetery.
 
-- **Map from chest by Sedletz:** the loot is loose (a skill book on a stool, food, a silver cup) in the locked Love nest shed. Our mark is on ItemSlot198, and the probe only knows dug holes and emptied inventories, so it stays while the map is carried.
-- **Quest maps** (secret mint, crypt, cellar plans, both Maleshov maps, mysterious map): their destinations are areas and triggers with no done state, so their marks stay while the map is carried, including after the quest.
-- Patch notes: since hotfix 1.3, "Holes dug by the player now stay dug out after level switch", so the hole check holds. Since 1.5, chests restock only while an owner is alive. https://kingdomcomedeliverance2.wiki.fextralife.com/Patch_Notes
+**Map of the Zhelejov marshes** (`poi_kostlivecVMocalech_map`): in the skeleton's hand; a purse and sword at the foot of a tree towards the rocks, not on the islands.
 
-### Where a quest marks the same place
+**Drowner's map** (`poi_vodnik_treasureMap`): from the sack on the Bathing Spot pier; the urn on the south shore of Rocktower Pond, 125 groschen. Only the ordinary "Water Goblin's Treasure" POI appears once close. [Gamer Guides](https://www.gamerguides.com/kingdom-come-deliverance-ii/guide/free-form-quests/trosky/drowners-map-water-goblins-treasure-walkthrough)
 
-- **Quests that also mark the place:** Via Argentum ("Find the secret mint", a search area), Anamnesis (cellar stairs, then the hidden room once the other objectives are done), Taking French Leave (the chapel, a yellow search area), The Heirloom (the crossroads), and Seek and You Shall Find (the graveyard). Their markers are search areas, so ours is more exact but doubles up while the quest step is active. https://www.powerpyx.com/kingdom-come-deliverance-2-via-argentum-walkthrough/, https://www.powerpyx.com/kingdom-come-deliverance-2-anamnesis-walkthrough/, https://www.powerpyx.com/kingdom-come-deliverance-2-taking-french-leave-walkthrough/
-- **No quest marker (ours adds information):** Brunswick I-IV ("There are no helpful map markers"), Bohuta (a Steam user says the map's roads are "completely wrong"), the Storage Yard Plan, Krizhan's decoy, Ventza, and the Caught thief's map. https://www.dtgre.com/2025/02/kcd2-lions-crest-guide.html, https://steamcommunity.com/app/1771300/discussions/0/592893278285736259/
-- **Unclear:** Master Schindel's Toys. Game-Checklists says reading the map "marks" the stash, while our quest data has no Marker. Comments also say the barrel cannot be looted until the quest is started through Adam. Drowner's map: a "Water Goblin's Treasure" POI appears only once you are close. https://www.powerpyx.com/kingdom-come-deliverance-2-master-schindels-toys-walkthrough/, https://www.gamerguides.com/kingdom-come-deliverance-ii/guide/free-form-quests/trosky/drowners-map-water-goblins-treasure-walkthrough
+**Caught thief's map** (`poi_MapkaZlodeje_map`): Black Bartosch at Trosky (buy, dice or pickpocket); the thief's camp chest east of Nebakov Mill.
+
+**Lower Semine woodcutters' map** (`poi_podseminstiDrevorubci_map`): the camp hut chest; the pay chest at the fresh clearing, key in a bird's nest.
+
+**Hired hand Ventza's map** (`zbranePanaSemina_vasekMap`), quest The Jaunt: the sack in the western cave of the Tunnel in the Cliffs.
+
+**Carving in the Tunnel in the Cliffs** (`tunelVeSkalach_carving`)
+- Not an item: examined on the east cave wall (trigger 20483), one-shot; its prompt goes off once examined.
+- Leads to: the "Hidden treasure" north of Trosky Castle, a chest (16919) and a sack (16775). [Gamer Guides](https://www.gamerguides.com/kingdom-come-deliverance-ii/guide/free-form-quests/trosky/apollonia-cave-wall-map-treasure-location-guide)
+- The trigger is also off before the open world; we count it only after Laboratores. Whether the cave is reachable earlier is undocumented.
+
+**Bohuta's map** (`sedmStatecnychDva_borutsMap`), The Devil's Pack: a buried armour set SW of Pschitoky (needs a spade). Guides say the map's roads are wrong.
+
+**Darko's map** (`taboryUCesty_darkosTreasureMap`): Black Darko in a random roadside camp, Kuttenberg region only; a wolf-den chest in the Wolf Hills (17374).
+
+**Footpad's hideout map, Old hideout map** (`nemcuvPoklad_mapStashLoot_1`, `_2`), The German's Treasure: both behind the tavern cellar wall; a sunken chest SE of Kuttenberg (key in a nest) and a buried sack NE of Bohunovice.
+
+**Smugglers's map** (`poi_tretiKrizovatkaVPodzemi_smugglersMap`): on a dead smuggler in the Kuttenberg underground; the locked dugout north of Old Kutna.
+
+**Map of Kuttenberg underground** (`andelStrazny_underground_map`)
+- Found: sewn into hanged Angel's coat, or Striped Tonies' reward.
+- Leads to: Goatskin's barrel (Master Schindel's stolen items), a trigger with no done state. The barrel cannot be used before the quest is taken from Adam, and the quest marks no stash. [wotpack](https://wotpack.ru/en/igrushki-mastera-shindelya-v-kingdom-come-deliverance-2-gde-nayti-ukradennye-veschi-v-podzemnom-taynike/)
+
+**Storage Yard Plan** (`dlc2_mrtvyNemluvi_mapStash`), Legacy of the Forge: from the dying bandit Ondrej; the steel chest in the Rabstein ruin.
+
+### Quest maps
+
+Their destinations are areas or triggers with no done state. Each retires when its quest ends (done or failed), except places flagged `after_quest`, which are marked only from then on. A destination is hidden while a tracked quest marker covers it.
+
+**Map to the secret mint** (`kralovskeStribro_mapToSecretMint`), main quest Via Argentum
+- Found: Volkmar in Grund, after the fight or from his body. A quest item; if carried when the quest ends, the game gives a normal copy.
+- Leads to: the adit SE of Grund (40419), at the southern edge of the quest's search area. [PowerPyx](https://www.powerpyx.com/kingdom-come-deliverance-2-via-argentum-walkthrough/)
+- The quest cannot fail. The mint's chests can be left behind after it. [Gamer Guides](https://www.gamerguides.com/kingdom-come-deliverance-ii/guide/main-quests/kuttenberg/via-argentum-quest-walkthrough)
+- Once the quest ends, the mark moves from the entrance to the ledger chest (91882: 205 groschen, schnapps, shot recipes; locked, key from Buresh's men) and clears when it is emptied. The mint's other containers hold generic pantry and bedside loot.
+
+**Mysterious map** (`zakopanyZitrek_mysteriousMap`), The Heirloom
+- Found: the quest puts it in Drat's chest when the Drat route needs it. A quest item, returned as a normal copy when the quest ends.
+- Leads to: the ambush crossroads SW of Bylany (60522), not the heirloom.
+- No guide mentions the item; every guide gets the crossroads by talking to Drat. Data only. The quest can fail.
+
+**Crypt map** (`nakaza_mapOfCrypt`), Silent Witnesses (Mysteria Ecclesiae)
+- Found: on an open tomb to the right of the crypt entrance, apart from the parchment on the altar. The quest puts it in its slot when "search the crypt" starts and removes it when the quest ends. [Fextralife](https://kingdomcomedeliverance2.wiki.fextralife.com/Crypt+Map)
+- Leads to: the crypt itself (382). Later quests return there with their own markers. No hard failure found.
+
+**Old cellar plans** (`puvodNemoci_planOfBasement`), Anamnesis (Mysteria Ecclesiae)
+- Found: Jaroslav's chest in his cell above the library; the quest's "check the translator's stand and chest" objective is that chest.
+- Leads to: the monastery cellar (3716) and, by the wine footprints and scaffold, the hidden scriptorium under the library stairs. The quest marks the cellar only once it is the last objective. [PowerPyx](https://www.powerpyx.com/kingdom-come-deliverance-2-anamnesis-walkthrough/)
+- Fails only with the whole DLC questline (serious crimes in the monastery).
+
+**Maleshov fort map, Map of Maleshov tower** (`zachranaPtacka_malesovExterior`, `_malesovInterior`), Taking French Leave
+- Found: Rosa hands both over in the "Předání plánků" module of Rosa's Book (`rozinaKniha`), as normal items.
+- Leads to: the fortress (85482) and its main tower (42424); Capon is on the top floor and is not marked on the map. The quest's chapel step is a yellow search area. [Game-Checklists](https://game-checklists.com/kcd2/guides/taking-french-leave-quest/)
+- No failure. The fortress returns in Dancing with the Devil, with its own markers.
 
 ### Area maps
 
-- **Poacher's map:** no source says which spots it shows or that anything is there besides animals, and the game marks hunting spots once you are near. There is no point worth marking.
-- **Miners' Underground Map:** still no in-game source (Gamer Guides gives only the console command). This fits "unobtainable".
+**Poacher's map** (`hunting_map_suchdol`): hunting grounds around Suchdol and Ratborsch; no place or loot. Not marked.
 
-### Not in the table
+**Diagrams of mounted archery tracks** (`hadkaKonaru_archeryTracks`): Bibrek's horse-archery courses; no place or loot.
 
-- **The carved map on the east cave wall of the Tunnel in the Cliffs:** it leads to the "Hidden treasure" north of Trosky Castle (a chest and a sack). It cannot be picked up ("you can't take this map with you like the others"), so an inventory check cannot trigger it. https://www.gamerguides.com/kingdom-come-deliverance-ii/guide/free-form-quests/trosky/apollonia-cave-wall-map-treasure-location-guide
-- No inventory map is missing: Fextralife's gallery (34 maps and 2 sketches) and Critical Hits' list match the table. Mysteria Ecclesiae adds only the crypt map and sketches; Legacy of the Forge adds only the Storage Yard Plan.
-- **Map hidden at Vostatek:** no guide or checklist mentions it, which fits "unobtainable" but does not prove it.
+### Not location maps
 
-### Other mods
+**Filthy parchment from the crypt**, **Boleslav Bavor's coat of arms sketch**: quest clues, every step quest-marked.
 
-- **Minimap (Nexus 3330):** marks "buried-treasure sites you've got the map for". It has a Treasures option (Discovered, Reveal all greyed until you own the map, Off) and a "Dug-up treasures" option (Keep, Mark done, Hide). It has no in-world icon and does not cover area maps. https://www.nexusmods.com/kingdomcomedeliverance2/mods/3330
-- No other KCD2 mod found marks treasure-map destinations.
+### Unobtainable
+
+**Map hidden at Vostatek** (`poi_skryseSPitim_map`): only in `item.xml`; no guide shows how to get it. Most likely shows Vostatek's five booze stashes in the Vidlak woods.
+
+**Miners' Underground Map** (`kuttenberg_underground_map`): only in `item.xml`; no source, no target.
+
+## Other mods
+
+- **Minimap** ([Nexus 3330](https://www.nexusmods.com/kingdomcomedeliverance2/mods/3330)) marks buried treasure for maps you own, with options to keep, mark done or hide dug-up spots. No in-world icon, no area maps. Its decoy marker "stayed on the map forever" until v1.22.
+- No other mod found marks treasure-map destinations.
+
+## Open
+
+- Whether an item slot keeps its item while its part of the level is not loaded (in-game test).
+- Guide claims have not been checked in the game.
