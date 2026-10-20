@@ -102,6 +102,63 @@ namespace {
          .ripLength = 17},
     };
 
+    // An item slot by EntityId (0x18047DE0C: the entity's proxy 0x12 asked for its C_ItemSlot, null for other
+    // entities), from the Skald item slot check that then reads the slot's item at +0x98 (0x180D595D4).
+    constexpr Hooks::Rung kItemSlotRungs[] = {
+        {.pattern = "48 8B 06 48 8B CE FF 50 08 8B C8 E8 ?? ?? ?? ?? 48 85 C0 0F 84 ?? ?? ?? ?? 48 8B B0 98 00 00 00",
+         .ripDisp = 12,
+         .ripLength = 16},
+    };
+    // The quest log's tracking toggle (0x180DC760C) finds a quest by name in the quest manager (0x180DC4988:
+    // (manager, quest pointer *out, const char *const *name), null when there is none) and reads its progress
+    // (0x1823D5EF0), in two places.
+    constexpr char kTrackQuest[] =
+        "E8 ?? ?? ?? ?? 4C 8D 45 ?? 48 8D 55 ?? 48 8B 88 18 01 00 00 48 8B 49 10 E8 ?? ?? ?? ?? "
+        "48 8B 4D ?? E8 ?? ?? ?? ?? 83 F8 01";
+    constexpr char kTrackQuestOther[] = "E8 ?? ?? ?? ?? 4C 8D 45 ?? 48 8D 55 ?? 48 8B 88 18 01 00 00 48 8B 49 10 "
+                                        "E8 ?? ?? ?? ?? 48 8B 5D ?? 48 8B CB E8";
+    constexpr Hooks::Rung kFindQuestRungs[] = {
+        {.pattern = kTrackQuest, .ripDisp = 25, .ripLength = 29},
+        {.pattern = kTrackQuestOther, .ripDisp = 25, .ripLength = 29},
+    };
+    constexpr Hooks::Rung kQuestProgressRungs[] = {
+        {.pattern = kTrackQuest, .ripDisp = 34, .ripLength = 38},
+        {.pattern = kTrackQuestOther, .ripDisp = 37, .ripLength = 41},
+    };
+    // Releasing a quest pointer (0x1804C44A0: (quest pointer *)), from the active quest walk (0x180DC4AD0).
+    constexpr Hooks::Rung kReleaseQuestRungs[] = {
+        {.pattern =
+             "4C 8D 44 24 30 48 8B D0 48 8B CB E8 ?? ?? ?? ?? 48 8D 4C 24 30 E8 ?? ?? ?? ?? 48 83 C7 08 48 3B FE 75",
+         .ripDisp = 22,
+         .ripLength = 26},
+    };
+    // The map screen's quest marker refresh (0x180DC577C) gathers the markers from the quest log screen at apse
+    // +0x10C8 (0x180DC5E68: (quest log, records *out)) and frees them (0x1823D5EFC: (records *)).
+    constexpr Hooks::Rung kGatherMarkersRungs[] = {
+        {.pattern = "4C 8B F9 48 8D 55 ?? 48 8B 89 70 03 00 00 48 81 C1 C8 10 00 00 E8",
+         .ripDisp = 22,
+         .ripLength = 26},
+        {.pattern = "48 89 5C 24 08 48 89 74 24 10 57 48 83 EC 50 48 8B F2 48 C7 02 00 00 00 00 48 8B D9 "
+                    "48 C7 42 08 00 00 00 00 48 C7 42 10 00 00 00 00 E8 ?? ?? ?? ?? 48 8D 54 24 30 "
+                    "48 8B 88 18 01 00 00 48 8B 49 10"},
+    };
+    constexpr Hooks::Rung kFreeMarkersRungs[] = {
+        {.pattern = "E8 ?? ?? ?? ?? 48 8D 4D 07 E8 ?? ?? ?? ?? 48 8D 4D EF E8 ?? ?? ?? ?? 4C 8D 9C 24 C0 00 00 00",
+         .ripDisp = 1,
+         .ripLength = 5},
+        {.pattern = "48 8D 4D EF E8 ?? ?? ?? ?? 4C 8D 9C 24 C0 00 00 00 49 8B 5B 38 49 8B 73 40 49 8B E3 "
+                    "41 5F 41 5E 41 5C 5F 5D C3",
+         .ripDisp = 5,
+         .ripLength = 9},
+    };
+    // The map's quest marker (0x1814A81D0) tells a search area from a point by its target's WUID (0x1814A8444) and
+    // looks the area up (0x1823D14E8: the area, or null); neither reads rcx.
+    constexpr char kQuestMarkerTarget[] =
+        "E8 ?? ?? ?? ?? 48 8B 88 60 01 00 00 48 8B 89 A8 00 00 00 48 8B 01 FF 50 78 48 8B 53 08 E8 ?? ?? ?? ?? "
+        "84 C0 0F 84 ?? ?? ?? ?? 48 8B 53 08 E8";
+    constexpr Hooks::Rung kIsAreaRungs[] = {{.pattern = kQuestMarkerTarget, .ripDisp = 30, .ripLength = 34}};
+    constexpr Hooks::Rung kFindAreaRungs[] = {{.pattern = kQuestMarkerTarget, .ripDisp = 47, .ripLength = 51}};
+
     // S_GameContext: +0x00 the framework (C_Framework, whose C_GameplayManager at +0xB8 keeps the started flag at
     // +0x10), +0xE8 the GUI module.
     constexpr std::size_t kFramework = 0x00;
@@ -130,6 +187,23 @@ namespace {
     constexpr std::size_t kInventoryItems = 0x08;
     constexpr std::size_t kInventoryClassIndex = 0xE8;
     constexpr std::size_t kEntityGuidSlot = 2; // CEntity: 0x180638480, the EntityGUID at +0x10
+    // C_ItemSlot: the item it holds at +0x98, null once taken (IsItemInSlot, 0x1809E5498).
+    constexpr std::size_t kSlotItem = 0x98;
+    // S_GameContext +0x118 holds the quest module, whose +0x10 is the quest manager.
+    constexpr std::size_t kQuestModule = 0x118;
+    constexpr std::size_t kQuestManager = 0x10;
+    // The apse screen's quest log, whose pointer at +0x420 (by its use, back to the apse) the marker gather
+    // dereferences (0x181F45A20).
+    constexpr std::size_t kQuestLogInApse = 0x10C8;
+    constexpr std::size_t kQuestLogApse = 0x420;
+    // A gathered marker record (0x38 bytes, built in 0x181F457F0) points at its target at +0x30: the target's slot 2
+    // gives its position, and its WUID is at +8. An area's slot 3 fills its bounds (min, then max) into a buffer and
+    // returns them (0x1814A81D0).
+    constexpr std::size_t kMarkerRecordSize = 0x38;
+    constexpr std::size_t kMarkerTarget = 0x30;
+    constexpr std::size_t kTargetPositionSlot = 2;
+    constexpr std::size_t kTargetWuid = 0x08;
+    constexpr std::size_t kAreaBoundsSlot = 3;
 
     using ContextFn = std::uint8_t *(__fastcall *)();
     using ScreenFn = std::uint8_t *(__fastcall *)(void *guiModule);
@@ -140,6 +214,18 @@ namespace {
     using FindFn = void *(__fastcall *)(void *, const std::uint64_t *);
     using WuidLookupFn = const std::uint64_t *(__fastcall *)(const void *map, std::uint64_t entityGuid);
     using CountOfClassFn = int(__fastcall *)(const void *index, const Game::ItemClassId *);
+    using ItemSlotFn = const void *(__fastcall *)(std::uint32_t entityId);
+    using FindQuestFn = void **(__fastcall *)(void *manager, void **out, const char *const *name);
+    using QuestProgressFn = int(__fastcall *)(void *quest);
+    using ReleaseQuestFn = void(__fastcall *)(void **quest);
+    // The records vector the marker gather fills (an MSVC std::vector of 0x38-byte records).
+    struct MarkerRecords {
+        const std::uint8_t *begin = nullptr, *end = nullptr, *capacity = nullptr;
+    };
+    using GatherMarkersFn = MarkerRecords *(__fastcall *)(void *questLog, MarkerRecords *out);
+    using FreeMarkersFn = void(__fastcall *)(MarkerRecords *);
+    using IsAreaFn = bool(__fastcall *)(const void *, std::uint64_t wuid);
+    using FindAreaFn = const void *(__fastcall *)(const void *, std::uint64_t wuid);
 
     ContextFn g_context;
     ScreenFn g_apse;
@@ -153,6 +239,14 @@ namespace {
     const void *const *g_wuidMap;
     WuidLookupFn g_wuidLookup;
     CountOfClassFn g_countOfClass;
+    ItemSlotFn g_itemSlot;
+    FindQuestFn g_findQuest;
+    QuestProgressFn g_questProgress;
+    ReleaseQuestFn g_releaseQuest;
+    GatherMarkersFn g_gatherMarkers;
+    FreeMarkersFn g_freeMarkers;
+    IsAreaFn g_isArea;
+    FindAreaFn g_findArea;
 
     template <typename T> T At(const void *base, const std::size_t offset) {
         return *reinterpret_cast<const T *>(static_cast<const std::uint8_t *>(base) + offset);
@@ -193,8 +287,17 @@ bool Game::Install() {
     g_wuidMap = reinterpret_cast<const void *const *>(Hooks::Find("WUID map", kWuidMapRungs));
     g_wuidLookup = reinterpret_cast<WuidLookupFn>(Hooks::Find("WUID lookup", kWuidLookupRungs));
     g_countOfClass = reinterpret_cast<CountOfClassFn>(Hooks::Find("item class count", kCountOfClassRungs));
+    g_itemSlot = reinterpret_cast<ItemSlotFn>(Hooks::Find("item slot lookup", kItemSlotRungs));
+    g_findQuest = reinterpret_cast<FindQuestFn>(Hooks::Find("quest lookup", kFindQuestRungs));
+    g_questProgress = reinterpret_cast<QuestProgressFn>(Hooks::Find("quest progress", kQuestProgressRungs));
+    g_releaseQuest = reinterpret_cast<ReleaseQuestFn>(Hooks::Find("quest release", kReleaseQuestRungs));
+    g_gatherMarkers = reinterpret_cast<GatherMarkersFn>(Hooks::Find("quest marker gather", kGatherMarkersRungs));
+    g_freeMarkers = reinterpret_cast<FreeMarkersFn>(Hooks::Find("quest marker free", kFreeMarkersRungs));
+    g_isArea = reinterpret_cast<IsAreaFn>(Hooks::Find("area WUID check", kIsAreaRungs));
+    g_findArea = reinterpret_cast<FindAreaFn>(Hooks::Find("area lookup", kFindAreaRungs));
     return g_context && g_apse && g_compass && g_createMark && g_registerMark && g_removeMark && g_watch && g_unwatch &&
-           g_find && g_wuidMap && g_wuidLookup && g_countOfClass;
+           g_find && g_wuidMap && g_wuidLookup && g_countOfClass && g_itemSlot && g_findQuest && g_questProgress &&
+           g_releaseQuest && g_gatherMarkers && g_freeMarkers && g_isArea && g_findArea;
 }
 
 bool Game::GameplayStarted() {
@@ -265,6 +368,49 @@ int Game::CountOfClass(const Inventory *inventory, const ItemClassId &item) {
 
 std::uint64_t Game::EntityWuid(const Engine::Entity *entity) {
     return *g_wuidLookup(*g_wuidMap, Engine::VCall<std::uint64_t>(entity, kEntityGuidSlot));
+}
+
+std::optional<bool> Game::SlotHoldsItem(const std::uint32_t entityId) {
+    const void *slot = g_itemSlot(entityId);
+    if (!slot)
+        return std::nullopt;
+    return At<void *>(slot, kSlotItem) != nullptr;
+}
+
+Game::QuestProgress Game::GetQuestProgress(const char *name) {
+    void *manager = At<void *>(At<void *>(g_context(), kQuestModule), kQuestManager);
+    void *quest = nullptr;
+    g_findQuest(manager, &quest, &name);
+    if (!quest)
+        return QuestProgress::None;
+    const auto progress = static_cast<QuestProgress>(g_questProgress(quest));
+    g_releaseQuest(&quest);
+    return progress;
+}
+
+std::vector<Game::QuestMarker> Game::QuestMarkers() {
+    std::vector<QuestMarker> markers;
+    void *gui = GuiModule();
+    std::uint8_t *apse = gui ? g_apse(gui) : nullptr;
+    // The gather dereferences the quest log's +0x420 pointer; without one the quest log is not set up yet.
+    if (!apse || !At<void *>(apse + kQuestLogInApse, kQuestLogApse))
+        return markers;
+    MarkerRecords records;
+    g_gatherMarkers(apse + kQuestLogInApse, &records);
+    for (const std::uint8_t *record = records.begin; record != records.end; record += kMarkerRecordSize) {
+        const void *target = At<void *>(record, kMarkerTarget);
+        const auto wuid = At<std::uint64_t>(target, kTargetWuid);
+        if (const void *area = g_isArea(nullptr, wuid) ? g_findArea(nullptr, wuid) : nullptr) {
+            float buffer[6];
+            const float *bounds = Engine::VCall<const float *>(area, kAreaBoundsSlot, buffer);
+            markers.push_back({.min = {bounds[0], bounds[1], bounds[2]}, .max = {bounds[3], bounds[4], bounds[5]}});
+        } else {
+            const Engine::Vec3 pos = *Engine::VCall<const Engine::Vec3 *>(target, kTargetPositionSlot);
+            markers.push_back({.min = pos, .max = pos});
+        }
+    }
+    g_freeMarkers(&records);
+    return markers;
 }
 
 void Game::WatchObject(const std::uint64_t *wuid, ObjectListener *listener) {

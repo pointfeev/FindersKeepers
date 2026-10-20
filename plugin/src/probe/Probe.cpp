@@ -2,6 +2,8 @@
 
 #include <algorithm>
 #include <map>
+#include <optional>
+#include <span>
 #include <string_view>
 #include <vector>
 
@@ -12,8 +14,16 @@
 using Engine::ScriptValue;
 
 namespace {
+    // How close to a quest marker a destination counts as already marked by the quest, in metres.
+    constexpr float kQuestMarkerReach = 15.f;
+    constexpr const char *kProgressNames[] = {"not started", "active", "done", "failed"};
+
     // Per map item, whether it was read when last checked, so a map being read shows up as one log line.
     std::map<std::string_view, bool> g_read;
+    // Per quest, its progress when last checked, logged when it changes.
+    std::map<std::string_view, Game::QuestProgress> g_quests;
+    // The destinations a quest marker covered at the last probe, logged when that changes.
+    std::vector<std::uint64_t> g_covered;
     // Maps whose carving trigger could not be asked, logged once each.
     std::vector<std::string_view> g_loggedTrigger;
 
@@ -27,15 +37,47 @@ namespace {
         return std::ranges::any_of(map.item, [](const std::uint8_t byte) { return byte != 0; });
     }
 
-    // Whether a destination has been dealt with: a hole dug (Hole.lua's nDepth is 1 once dug) or a container emptied.
-    // Destinations with neither (loose items in item slots, areas, triggers) stay marked while the map is had.
-    bool Done(const Engine::Entity *entity) {
+    // Whether a destination has been dealt with: a hole dug (Hole.lua's nDepth is 1 once dug), a loose item taken
+    // from its item slot, or a container emptied. Destinations with none of these (areas, triggers) stay marked while
+    // the map is had.
+    bool Done(const MapTable::Place &place, const Engine::Entity *entity) {
         if (const Engine::ScriptTable *script = Engine::EntityScript(entity)) {
             if (ScriptValue depth; Engine::TableGet(script, "nDepth", depth) && depth.type == ScriptValue::Number)
                 return depth.number >= 1.f;
         }
+        if (const std::optional<bool> holds = Game::SlotHoldsItem(place.entity))
+            return !*holds;
         const Game::Inventory *inventory = Game::EntityInventory(entity);
         return inventory && Game::ItemCount(inventory) == 0;
+    }
+
+    // A quest's progress, logging each change so quest gates show up in the log.
+    Game::QuestProgress ProgressOf(const char *quest) {
+        const Game::QuestProgress progress = Game::GetQuestProgress(quest);
+        if (const auto it = g_quests.find(quest); it == g_quests.end() || it->second != progress) {
+            g_quests[quest] = progress;
+            Log::Write("quest: {} is {}", quest, kProgressNames[static_cast<int>(progress)]);
+        }
+        return progress;
+    }
+
+    // Whether a map's quest is over (done or failed): the quest has had its use of the map, so only the places left
+    // worth a visit afterwards (afterQuest) are marked, and not where the map is found.
+    bool QuestOver(const MapTable::Map &map) {
+        if (!map.quest)
+            return false;
+        const Game::QuestProgress progress = ProgressOf(map.quest);
+        return progress == Game::QuestProgress::Done || progress == Game::QuestProgress::Failed;
+    }
+
+    // Whether a quest marker on the map already points at a position: it lies within reach of the marker's point or
+    // inside (or within reach of) its search area, on the ground plane.
+    bool Covered(const Engine::Vec3 &pos, const std::span<const Game::QuestMarker> markers) {
+        return std::ranges::any_of(markers, [&](const Game::QuestMarker &marker) {
+            const float dx = std::max({marker.min.x - pos.x, 0.f, pos.x - marker.max.x});
+            const float dy = std::max({marker.min.y - pos.y, 0.f, pos.y - marker.max.y});
+            return dx * dx + dy * dy <= kQuestMarkerReach * kQuestMarkerReach;
+        });
     }
 
     // Whether a carving's one-shot quest trigger still takes a press: it stops once the carving has been examined
@@ -55,12 +97,14 @@ namespace {
         return true;
     }
 
-    // Whether the player has a map: carries its item, or has examined its carving.
+    // Whether the player has a map: carries its item, or has examined its carving. A carving's trigger is also off
+    // before its quest gate (the open world unlocking), so it only counts as examined once that quest is done.
     bool HasMap(const MapTable::Map &map, const Game::Inventory *player) {
         if (IsItem(map))
             return Game::CountOfClass(player, map.item) > 0;
         const Engine::Entity *trigger = Find(map.seen);
-        return trigger && !PressEnabled(map, trigger);
+        return trigger && (!map.seenAfter || ProgressOf(map.seenAfter) == Game::QuestProgress::Done) &&
+               !PressEnabled(map, trigger);
     }
 
     // Whether the player has read a map item (its reading progress reaches 1, when the inventory's "new" marker goes);
@@ -76,10 +120,13 @@ namespace {
         return read;
     }
 
-    // Whether the object a map is found on still holds it: an inventory that has been filled and lacks the map no
-    // longer does (taken and sold, say). An empty inventory may simply not be filled yet, and objects without one (an
-    // item slot, a carving's trigger) have no say; both count as holding it while the player does not have the map.
+    // Whether the object a map is found on still holds it: an item slot while it holds an item (a quest may fill it
+    // only for a while), an inventory that has been filled unless it lacks the map (taken and sold, say). An empty
+    // inventory may simply not be filled yet, and objects with neither (a carving's trigger) have no say; both count
+    // as holding it while the player does not have the map.
     bool HoldsMap(const MapTable::Map &map, const Engine::Entity *entity) {
+        if (const std::optional<bool> holds = Game::SlotHoldsItem(map.source.entity))
+            return *holds;
         const Game::Inventory *inventory = IsItem(map) ? Game::EntityInventory(entity) : nullptr;
         return !inventory || Game::ItemCount(inventory) == 0 || Game::CountOfClass(inventory, map.item) > 0;
     }
@@ -103,21 +150,45 @@ ProbeResult Probe::Run() {
         return result;
     result.playerReady = true;
     for (const MapTable::Map &map : MapTable::kMaps) {
+        const bool questOver = QuestOver(map);
         if (HasMap(map, inventory)) {
             if (!Read(map))
                 continue;
             for (const MapTable::Place &place : map.targets)
-                if (const Engine::Entity *entity = Find(place); entity && !Done(entity))
-                    Add(result, map, entity, map.label, false);
-        } else if (map.source.entity) {
+                if (place.afterQuest == questOver)
+                    if (const Engine::Entity *entity = Find(place); entity && !Done(place, entity))
+                        Add(result, map, entity, map.label, false);
+        } else if (!questOver && map.source.entity) {
             if (const Engine::Entity *entity = Find(map.source); entity && HoldsMap(map, entity))
                 Add(result, map, entity, map.sourceLabel, true);
         }
     }
+
+    // A destination a quest marker already points at is left to the quest while that marker shows.
+    std::vector<std::uint64_t> covered;
+    if (std::ranges::any_of(result.targets, [](const auto &t) { return !t.source; })) {
+        const std::vector<Game::QuestMarker> markers = Game::QuestMarkers();
+        std::erase_if(result.targets, [&](const ProbeResult::Target &t) {
+            if (t.source || !Covered(t.pos, markers))
+                return false;
+            covered.push_back(t.wuid);
+            if (!std::ranges::contains(g_covered, t.wuid))
+                Log::Write("quest: a quest marker points at {}'s destination {:016x}; it is left to the quest", t.map,
+                           t.wuid);
+            return true;
+        });
+    }
+    for (const std::uint64_t wuid : g_covered)
+        if (!std::ranges::contains(covered, wuid) &&
+            std::ranges::any_of(result.targets, [&](const auto &t) { return !t.source && t.wuid == wuid; }))
+            Log::Write("quest: no quest marker points at destination {:016x} any more; it is marked again", wuid);
+    g_covered = std::move(covered);
     return result;
 }
 
 void Probe::Reset() {
     g_read.clear();
+    g_quests.clear();
+    g_covered.clear();
     g_loggedTrigger.clear();
 }

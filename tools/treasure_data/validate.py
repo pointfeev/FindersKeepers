@@ -9,10 +9,13 @@ from __future__ import annotations
 
 import json
 import math
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
 from .index import Levels, load_levels, load_map_items, load_strings
+
+QUEST_NAME = re.compile(r'<Quest Name="([^"]+)"')
 
 
 @dataclass
@@ -64,12 +67,28 @@ class Checker:
             self.report.errors.append(f"{label}: entity {entity_id} moved {moved:.1f} m, now at {entity.pos}")
 
 
+def quest_names(root: Path) -> set[str]:
+    """The names of the game's quests, as the plugin looks them up (each quest graph's Skald Quest node)."""
+    names: set[str] = set()
+    for path in (root / "scripts" / "Quests").rglob("*.xml"):
+        names.update(QUEST_NAME.findall(path.read_text(encoding="utf-8-sig", errors="replace")))
+    return names
+
+
 def validate(root: Path, table_path: Path, tolerance: float) -> Report:
     report = Report()
     strings = load_strings(root)
     game_maps = load_map_items(root, strings)
     checker = Checker(load_levels(root, strings), tolerance, report)
     rows = json.loads(table_path.read_text(encoding="utf-8"))
+    quests = quest_names(root)
+    for row in rows:
+        for label, quest in (
+            ("quest", row.get("quest")),
+            ("after_quest", (row.get("examined") or {}).get("after_quest")),
+        ):
+            if quest and quest not in quests:
+                report.errors.append(f"{row['map']}: {label} '{quest}' is not a quest in this build")
 
     table_guids = {row["guid"] for row in rows}
     for guid, item in sorted(game_maps.items(), key=lambda kv: kv[1]["name"]):

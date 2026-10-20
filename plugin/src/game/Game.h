@@ -3,6 +3,8 @@
 #include <array>
 #include <cstdint>
 #include <memory>
+#include <optional>
+#include <vector>
 
 #include "game/Engine.h"
 #include "game/Flash.h"
@@ -58,6 +60,23 @@ namespace Game {
     int CountOfClass(const Inventory *inventory, const ItemClassId &item);
     // An entity's WUID, as XGenAIModule.GetMyWUID gives it; 0 for entities without one.
     std::uint64_t EntityWuid(const Engine::Entity *entity);
+
+    // Whether an item slot (C_ItemSlot) still holds its item, as the Skald check IsItemInSlot reads it; empty for
+    // entities that are not item slots.
+    std::optional<bool> SlotHoldsItem(std::uint32_t entityId);
+
+    // A quest's progress (E_QuestProgress).
+    enum class QuestProgress : int { None = 0, Active = 1, Done = 2, Failed = 3 };
+    // A quest's progress by its name; None for a name the game does not know.
+    QuestProgress GetQuestProgress(const char *name);
+
+    // Where a quest marker on the map points, in world coordinates: a point (min == max), or a search area's bounds.
+    struct QuestMarker {
+        Engine::Vec3 min, max;
+    };
+    // The quest markers the map shows right now (the tracked quests' active objectives), gathered the way the map
+    // screen does it; works while the map is closed.
+    std::vector<QuestMarker> QuestMarkers();
 
     // The AI object manager's listener (I_ObjectManagerBaseListener): its vtable is this one function, called on the
     // main thread with kObjectRemoved when the watched object is destroyed (a load, a level unload, the object going

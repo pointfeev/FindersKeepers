@@ -21,10 +21,11 @@ def cpp_string(text: str) -> str:
 
 def cpp_place(place: dict | None) -> str:
     """A level entity: its EntityId and name (ids repeat across levels and names within one, so the plugin checks
-    both); an empty place has id 0."""
+    both), and whether it is marked only once the map's quest has ended; an empty place has id 0."""
     if place is None:
         return "{}"
-    return f"{{{int(place['entity_id'])}, {cpp_string(place['entity_name'])}}}"
+    after_quest = ", true" if place.get("after_quest") else ""
+    return f"{{{int(place['entity_id'])}, {cpp_string(place['entity_name'])}{after_quest}}}"
 
 
 def cpp_item_class(guid: str) -> str:
@@ -57,9 +58,14 @@ def tooltip_label(row: dict, source: bool = False) -> str:
     return f"ui_treasurefinder_{'mapsource' if source else 'map'}_{row['map']}"
 
 
+def cpp_optional_string(text: str | None) -> str:
+    return cpp_string(text) if text else "nullptr"
+
+
 def build(table_path: Path) -> str:
     """One MapTable::Map per map (plugin/src/probe/MapTable.h): how the player gets it (an item class carried, or a
-    trigger examined), every place it leads to, where it is found, and the tooltip labels of both."""
+    trigger examined, and the quest before which examining does not count), every place it leads to, where it is
+    found, the tooltip labels of both, and the quest whose end retires it."""
     targets, maps = [], []
     for n, row in enumerate(marked_rows(table_path)):
         places = ", ".join(cpp_place(place) for place in [row, *row.get("extra_targets", [])])
@@ -70,10 +76,12 @@ def build(table_path: Path) -> str:
             f"    {{.name = {cpp_string(row['map'])},\n"
             f"     .item = {'{}' if examined else cpp_item_class(row['guid'])},\n"
             f"     .seen = {cpp_place(examined)},\n"
+            f"     .seenAfter = {cpp_optional_string((examined or {}).get('after_quest'))},\n"
             f"     .label = {cpp_string(tooltip_label(row))},\n"
             f"     .targets = kTargets{n},\n"
             f"     .source = {cpp_place(source)},\n"
-            f"     .sourceLabel = {cpp_string(tooltip_label(row, source=True)) if source else 'nullptr'}}},"
+            f"     .sourceLabel = {cpp_string(tooltip_label(row, source=True)) if source else 'nullptr'},\n"
+            f"     .quest = {cpp_optional_string(row.get('quest'))}}},"
         )
     return (
         f"// Generated from {table_path.name} by treasure-data; do not edit.\n"

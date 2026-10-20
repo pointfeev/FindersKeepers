@@ -274,6 +274,7 @@
     "guid": "b0af19a6-8dd2-4306-9fec-90cea54935de",
     "en_name": "Map to the secret mint",
     "category": "quest",
+    "quest": "kralovskeStribro",
     "destination_summary": "The secret mint south-east of Grund (Sukov woods). A hole with a ladder (the secret adit) leads down a tunnel to Buresh's illegal mint (main quest 'Via Argentum').",
     "container": "none (underground quest location)",
     "level": "kutnohorsko",
@@ -313,6 +314,17 @@
     "sources": [
       "https://www.powerpyx.com/kingdom-come-deliverance-2-where-to-find-the-secret-mint/",
       "https://www.powerpyx.com/kingdom-come-deliverance-2-via-argentum-walkthrough/"
+    ],
+    "extra_targets": [
+      {
+        "role": "the mint's ledger chest (inventory_kralovskeStribro_vavakStash: 205 groschen, schnapps, shot recipes; key keyToSecretMintStash), marked once the quest ends",
+        "after_quest": true,
+        "level": "kutnohorsko",
+        "entity_name": "stash[Chest/chest1_26c5cf2b-78be-4333-ae26-e35214671e6f]",
+        "entity_id": "91882",
+        "entity_guid": "8b9d6e76-6776-099a",
+        "pos": "3576.506,1815.083,94.66642"
+      }
     ],
     "notes": "Main-quest item; the quest already shows markers (first the search area, then the mint), so a mod marker is redundant. The mint is on level layer ksus_sukov/secretMint; the stashes there (91849-91996) are the mint's own containers. For a single point, use secretAditEntrance (z 104, at the surface).",
     "source": {
@@ -559,6 +571,7 @@
     "guid": "4f636944-e9d3-4bae-85b8-165b5a049486",
     "en_name": "Krizhan's treasure map",
     "category": "treasure",
+    "quest": "mapaKPokladu",
     "destination_summary": "Abandoned mine shaft at the treasure hunters' (bandit) camp near Lorec, north-east of Kuttenberg toward Sedletz. The three diggable spots inside the adit are EMPTY because the map is a forgery (quest 'X Marks the Spot').",
     "container": "3 diggable holes (shovel), no loot",
     "level": "kutnohorsko",
@@ -645,6 +658,7 @@
     "guid": "0b54dfe4-7c6b-41bd-b6f5-6f079c98a14d",
     "en_name": "Bandit's treasure map",
     "category": "treasure",
+    "quest": "mapaKPokladu",
     "destination_summary": "Identical copy of Krizhan's forged map: the same abandoned mine at the treasure hunters' camp near Lorec, with the same three empty dig spots. Nothing to find.",
     "container": "3 diggable holes (shovel), no loot",
     "level": "kutnohorsko",
@@ -773,6 +787,7 @@
     "guid": "cb10e1c5-d8b7-4244-b1ba-57884b26f66e",
     "en_name": "Crypt map",
     "category": "quest",
+    "quest": "nakaza",
     "quest_marks_destination": true,
     "destination_summary": "Plan of the chapel crypt under the Sedletz church. It is found inside the crypt and is a navigation aid for it (the crypt is revisited in 'Seek and You Shall Find' to find Bavor's sarcophagus behind the weak wall).",
     "container": "none (area: monastery crypt)",
@@ -801,7 +816,7 @@
       }
     ],
     "how_matched": "nakaza itemconstants mapa_v_krypte ('map in the crypt') = this GUID, spawned by spawnitemandbarkafterinteraction into ItemSlot cryptMapSlot inside the crypt; objective prohledej_kryptu marks cryptArea.",
-    "confidence": "likely",
+    "confidence": "verified",
     "sources": ["https://www.powerpyx.com/?p=313902"],
     "notes": "Not a treasure map; its destination is the crypt it is found in, already quest-marked. Recommend skipping. What the drawing shows in detail is unverified; no guide found mentions this item.",
     "source": {
@@ -1128,7 +1143,7 @@
       }
     ],
     "how_matched": "Item name 'huntingSpotsMap'; the tsla_ hunting-spot POIs are the Slatejov ones. Spot 4 is SE of the cottage (2817,1950), shares its POI type with the Kuttenberg 'Wolf hunting spot', has a wolf AnimalSpawner and ItemSlots bow_a + hunting/cutting arrows. This matches wotpack's wolf ground + skeleton with hazel longbow.",
-    "confidence": "likely",
+    "confidence": "verified",
     "sources": [
       "https://wotpack.ru/pl/karta-slateyovskih-ohotnichih-ugodiy-v-kingdom-come-deliverance-2-gde-nayti-sokrovische/"
     ],
@@ -1488,6 +1503,7 @@
     "guid": "f6297b59-375c-4bd7-93ab-7213bae4ec69",
     "en_name": "Old cellar plans",
     "category": "quest",
+    "quest": "puvodNemoci",
     "quest_marks_destination": true,
     "destination_summary": "Quest 'Anamnesis': old plans of the monastery cellars where translator Jaroslav went at night (down the stairs by the scriptorium). They point to the monastery underground and the locked secret room there; the quest marks basementArea, then secretDoorMarker/secretRoom.",
     "container": "none (area: monastery cellars / secret room)",
@@ -1524,7 +1540,7 @@
       }
     ],
     "how_matched": "No quest graph references the item GUID; it exists only in loot presets inventory_puvodNemoci_translatorsChest and inventory_puvodNemoci_deadMonk. puvodNemoci objective prozkoumej_podzemi_klastera ('find where in the cellars Jaroslav went at night') marks basementArea; follow-up prohledej_tajnou_mistnost_ve_sklepeni marks secretDoorMarker/secretRoom.",
-    "confidence": "likely",
+    "confidence": "verified",
     "sources": [
       "https://www.powerpyx.com/kingdom-come-deliverance-2-anamnesis-walkthrough/",
       "https://wotpack.ru/en/prohozhdenie-kvesta-anamnez-v-kingdom-come-deliverance-2/"
@@ -1691,7 +1707,7 @@
       }
     ],
     "how_matched": "No named preset. Matched by loot: inventory_poi_pokladPodTroskami_chest = money 2230 (223 gr) + 2x bsmt_steelNormal + charcoal + cobwebs. Guides say about 200 groschen plus two Frankfurt Steel. The locked chest with its key in a nearby sack in the Trosky underground also matches the guides.",
-    "confidence": "likely",
+    "confidence": "verified",
     "sources": [
       "https://patchcrazy.co.uk/kcd2-all-treasure-map-locations/",
       "https://kcd2.org/en/post/kcd2-treasure-map"
@@ -1715,12 +1731,12 @@
     "entity_check": "ok",
     "extra_targets": [
       {
-        "role": "underground sack in the same cave (inventory_ttro_undergroundSack), likely the key sack guides mention",
+        "role": "item slot on a sack prop holding the chest's key, Key from Below Trosky (guides: a cracked skull on a sack)",
         "level": "trosecko",
-        "entity_name": "Stash4[Stash/sack_generic13_9d187ba4-da8a-4577-85c6-93f476713a7e]",
-        "entity_id": "44523",
-        "entity_guid": "72257b34-95b4-021f",
-        "pos": "2627.159,2674.127,136.1915"
+        "entity_name": "ItemSlot271",
+        "entity_id": "44518",
+        "entity_guid": "c48c48f8-83b4-441b",
+        "pos": "2610.904,2669.218,135.0044"
       }
     ]
   },
@@ -1744,7 +1760,7 @@
       }
     ],
     "how_matched": "No named preset. Matched by loot: inventory_poi_pokladUVezaku_sack = money 1830 (183 gr) + ring_silver_engraved + ring_silver_gem + loot_silverChalice + bsmt_pommelCoin (+ a cuirass). This matches Patch Crazy's list: 2 silver rings, Coin Sword Pommel, Silver Chalice, 183 Groschen. The sack sits exactly on the 'Skeleton with treasure' POI, about 115 m SE of the Devil's Finger.",
-    "confidence": "likely",
+    "confidence": "verified",
     "sources": [
       "https://patchcrazy.co.uk/kcd2-all-treasure-map-locations/",
       "https://kcd2.org/en/post/kcd2-treasure-map"
@@ -1765,17 +1781,7 @@
       ],
       "entity_check": "no_id"
     },
-    "entity_check": "ok",
-    "extra_targets": [
-      {
-        "role": "grave on top of the Devil's Finger (inventory_certuvPrstStash)",
-        "level": "trosecko",
-        "entity_name": "Stash19",
-        "entity_id": "33640",
-        "entity_guid": "62f82ebb-cb4d-41b1",
-        "pos": "897.5383,2247.094,76.67227"
-      }
-    ]
+    "entity_check": "ok"
   },
   {
     "map": "treasureHunter_map3",
@@ -1876,6 +1882,7 @@
     "guid": "698912fd-ca7c-413d-8775-35c6700ee587",
     "en_name": "Maleshov fort map",
     "category": "quest",
+    "quest": "zachranaPtacka",
     "quest_marks_destination": true,
     "destination_summary": "Main quest 'Taking French Leave': sketch of Maleshov fortress (Capon held in the main tower). Approach is via the secret tunnel found from the old chapel / stone crosses near Hashtal's stud farm, dug open with a spade; the quest marks chapel, passage area, tunnel entry and the fortress.",
     "container": "none (area: Maleshov fortress)",
@@ -1928,7 +1935,7 @@
       }
     ],
     "how_matched": "Item text (sketch of Maleshov fortress from Rosa Ruthard); GUID is constant planek_exterieru_malesova in zachranaPtacka constants.xml; handed over by rozinaKniha/zadani_questu/predani_planku.xml. Quest objectives all carry markers (oldChapelArea, secretPassageArea, secretPassageEntrySpot, ptacekSearchArea = zachranaPtacka_malesovArea).",
-    "confidence": "likely",
+    "confidence": "verified",
     "sources": [
       "https://www.powerpyx.com/kingdom-come-deliverance-2-taking-french-leave-walkthrough/",
       "https://game-checklists.com/kcd2/guides/taking-french-leave-quest/"
@@ -1936,7 +1943,7 @@
     "notes": "Not a treasure map; an infiltration aid for a main quest that already marks everything. Recommend the mod skip it (or mark the fortress area only). Whether the sketch itself shows the tunnel is unconfirmed (no image access); the fortress is the certain subject. No quest node references the item after handover.",
     "source": {
       "how": "quest_reward",
-      "summary": "Rosa Ruthard hands over both Maleshov sketches at the Ruthard house in Kuttenberg (CreatePlayerReward on 'Henry got the plans'; the same talk starts 'Rosa's Book').",
+      "summary": "Rosa Ruthard hands over both Maleshov sketches at the Ruthard house in Kuttenberg (CreatePlayerReward in Rosa's Book (rozinaKniha), module 'Předání plánků', during Taking French Leave; normal items).",
       "level": "kutnohorsko",
       "entity_name": "kkut_rozaRuthard",
       "entity_id": "946328",
@@ -1956,6 +1963,7 @@
     "guid": "bd5a9f14-f64b-45b5-865e-35fe5106ae30",
     "en_name": "Map of Maleshov tower",
     "category": "quest",
+    "quest": "zachranaPtacka",
     "quest_marks_destination": true,
     "destination_summary": "Interior of the main tower at Maleshov fortress; Hans Capon (and Brabant) are locked on the top floor, Rosa's book one floor below. Entry by the east door up the wooden stairs.",
     "container": "none (area: Maleshov main tower)",
@@ -1984,7 +1992,7 @@
       }
     ],
     "how_matched": "Item text (tower interior sketch); GUID is constant planek_interieru_malesova. Main tower identified as the 'tower3' audio shapes (floors 1-4) in Main/kmal_malesov/fortress/_script/audio; top-floor shape used as a point. Quest find-Capon objective marks zachranaPtacka_malesovArea.",
-    "confidence": "likely",
+    "confidence": "verified",
     "sources": [
       "https://www.powerpyx.com/kingdom-come-deliverance-2-taking-french-leave-walkthrough/",
       "https://game-checklists.com/kcd2/guides/taking-french-leave-quest/"
@@ -2009,6 +2017,7 @@
     "guid": "a8b789d7-558a-40d6-8ea2-a1304e880dac",
     "en_name": "Mysterious map",
     "category": "quest",
+    "quest": "zakopanyZitrek",
     "quest_marks_destination": true,
     "destination_summary": "NOT the heirloom treasure. Drat's charcoal map marks the ambush site: the crossroads in the forest SW of Bylany toward Mesoles, where blood traces (and Mikush's hat further on) lead south to the bandit camp. Quest 'The Heirloom' objective jdi_na_krizovatku_u_lesa, state ActiveFarMapa ('according to the rough map...'), sets marker ambushRoughSpot, then the prepadeni area, completing at the blood interaction.",
     "container": "none (location: ambush crossroads / blood trail)",
@@ -2158,6 +2167,7 @@
     "examined": {
       "how": "interaction",
       "summary": "Not an item: a map carved into the east cave wall of the Tunnel in the cliffs, examined with E (one-shot quest trigger, enabled when the open world unlocks). Its interactionTrigger:IsPressEnabled() turns false once examined.",
+      "after_quest": "socky",
       "level": "trosecko",
       "entity_name": "tunelVeSkalach_map",
       "entity_id": "20483",
