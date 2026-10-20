@@ -11,7 +11,7 @@ Treasure and what leads to it: treasure maps, the carved map in the Tunnel in th
 **State.** The mod stores nothing but its options. Every mark is worked out from game state at each probe.
 
 **Destinations** (mark type `TreasureFinder`)
-- A map's destinations are marked once the player has read it, carried or not: the game keeps reading progress per item class. A carving counts once examined, and only after Laboratores (`socky`), because its trigger is also off before the open world unlocks.
+- A map's destinations are marked once the player has read it, carried or not: the game keeps reading progress per item class, and it survives the map being dropped and a reload (tested in game). A carving counts once examined, and only after Laboratores (`socky`), because its trigger is also off before the open world unlocks.
 - A map that leads to several places marks each one.
 - A destination clears when its hole is dug, its container is emptied or its item is taken.
 - A riddle note's destination also clears once the player has, or has read, the next note.
@@ -50,18 +50,23 @@ INI or MCM is undecided: it depends on how KCD2's MCM works and whether requirin
 | In-world icon height above the target (m)      | 1.2     | `kHeightAbove`, FloatingIcon.cpp      |
 | Quest marker covers ours within (m)            | 15      | `kQuestMarkerReach`, Probe.cpp        |
 
+**Icons.** Treasure uses the game's debt-notes chest icon and map locations the map book; both read well enough for now. Custom icons are feasible without new tools (our own BC7 encoder writing into a game icon's DDS header, with undiscovered and shadow variants generated), and mock-ups exist (a wax seal with an X and one with a folded map was the favourite). Revisit only if more mark types are added and need a matching set.
+
 Map and compass markers come from one game entity mark (`RegisterEntityMark` builds the compass marker), so toggling them apart needs RE. The compass range is the game's.
 
 ## Open questions (need play)
 
 - Do item slots keep their item while their part of the level is unloaded?
 - Is the Tunnel in the Cliffs reachable before Laboratores?
-- Does reading progress survive a map leaving the inventory and a reload? (The log's `read:` lines show it.)
 - Is 15 m right for the quest marker check, and what does gathering quest markers every probe cost?
 
 ## Set aside
 
-Each would be its own mark type and can be derived from game state.
+Each would be its own mark type and can be derived from game state. A worth filter could bring some back without clutter: mark a place only while what is left in it is worth having, judged by:
+- a minimum total value in groschen (money plus item prices);
+- or anything valuable regardless of price: an unread skill book or recipe, a unique or quest item, a dice badge.
+
+It would read the container's live contents, falling back to its loot table in the game data while the container is not filled yet. Needs RE: walking an inventory's items, their classes and amounts, prices, and whether a recipe is known.
 
 - **Hidden stashes:** 269 containers with the game's hand-placed loot (`inventory_poi_*`) at 112 sites. Best: Otter's Treasure (about 850 groschen), the Pschitoky buried armour, the Two Dead Trees jar, Vagrant's Hut. Left out as clutter: the Scholarship perk Explorer already reveals every site.
 - **Dig sites:** 70 diggable holes, some empty (the Unmarked Grave, the mass graves). Same reason.
