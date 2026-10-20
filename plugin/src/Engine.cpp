@@ -34,18 +34,28 @@ namespace {
 
     // gEnv members, each read by game code that then calls the interface below on it.
     constexpr std::size_t kScriptSystem = 0x28;
+    constexpr std::size_t kEntitySystem = 0xA0;
     constexpr std::size_t kLog = 0xE0;
     constexpr std::size_t kRenderer = 0x108;
 
     // Interface slots, checked in their vtables in Ghidra.
     constexpr std::size_t kLogAlways = 12;       // CLog 0x183B27C30: 0x18079B32C, LogV(always, fmt, args)
-    constexpr std::size_t kExecuteBuffer = 6;    // script system 0x183B8C610: 0x1804D4484 (buffer, size, desc, env)
-    constexpr std::size_t kGetGlobalAny = 32;    // script system: 0x180AD48E4 (name, may be dotted; ScriptAnyValue &)
+    constexpr std::size_t kBeginCall = 15;       // script system 0x183B8C610: 0x1808FE42C (table, function name)
+    constexpr std::size_t kEndCallAny = 20;      // script system: 0x180A286AC (ScriptAnyValue &result)
+    constexpr std::size_t kPushParamAny = 30;    // script system: 0x180718548 (const ScriptAnyValue &)
+    constexpr std::size_t kTableRelease = 4;     // CScriptTable 0x183A4A700: 0x180715EF0
+    constexpr std::size_t kTableGetAny = 8;      // CScriptTable: 0x18071624C (key, ScriptAnyValue &, bool chain)
+    constexpr std::size_t kGetEntity = 14;       // entity system: called by System.GetEntity, 0x18082B440 (EntityId)
     constexpr std::size_t kGetHeight = 70;       // CD3D9Renderer 0x183DFC008: 0x1809A8730
     constexpr std::size_t kGetWidth = 71;        // CD3D9Renderer: 0x1807F52A0
     constexpr std::size_t kProjectToScreen = 97; // CD3D9Renderer: 0x1809356D8 (wx, wy, wz, &sx, &sy, &sz), percent
     constexpr std::size_t kClientEntity = 66;    // CCryAction 0x1840472D0: 0x1835711A4
     constexpr std::size_t kWorldPos = 46;        // CEntity 0x184072C78: 0x180648030, translation into a Vec3
+    constexpr std::size_t kEntityName = 18;      // CEntity: 0x181A76100, the name at +0xE0
+    // CEntity slot 74 (proxy by type) with 2, the script proxy, whose slot 18 is its script table (0x1805D7094).
+    constexpr std::size_t kEntityProxy = 74;
+    constexpr int kScriptProxy = 2;
+    constexpr std::size_t kProxyScriptTable = 18;
 
     const std::uint8_t *g_env = nullptr;
     void *const *g_framework = nullptr;
@@ -81,24 +91,57 @@ bool Engine::ProjectToScreen(const Vec3 &world, float &x, float &y, float &z) {
     return renderer && VCall<bool>(renderer, kProjectToScreen, world.x, world.y, world.z, &x, &y, &z);
 }
 
-bool Engine::GetGlobal(const char *name, ScriptValue &out) {
-    const void *scripts = Member(kScriptSystem);
-    return scripts && VCall<bool>(scripts, kGetGlobalAny, name, &out);
+Engine::ScriptValue::~ScriptValue() {
+    if (type == Table && table)
+        VCall<void>(table, kTableRelease);
 }
 
-bool Engine::Execute(const std::string_view code, const char *description) {
+bool Engine::TableGet(const ScriptTable *table, const char *key, ScriptValue &out) {
+    return VCall<bool>(table, kTableGetAny, key, &out, false);
+}
+
+bool Engine::CallMethod(const ScriptTable *self, const char *method, ScriptValue &result) {
     const void *scripts = Member(kScriptSystem);
-    return scripts &&
-           VCall<bool>(scripts, kExecuteBuffer, code.data(), code.size(), description, static_cast<void *>(nullptr));
+    if (!scripts || !VCall<bool>(scripts, kBeginCall, self, method))
+        return false;
+    ScriptValue argument;
+    argument.type = ScriptValue::Table;
+    argument.table = self;
+    VCall<void>(scripts, kPushParamAny, &argument);
+    // Borrowed: pushing does not take a reference, so this value must not release one.
+    argument.type = ScriptValue::Nil;
+    return VCall<bool>(scripts, kEndCallAny, &result);
 }
 
 void *Engine::Framework() { return g_framework ? *g_framework : nullptr; }
 
-bool Engine::PlayerPosition(Vec3 &out) {
+const Engine::Entity *Engine::PlayerEntity() {
     const void *framework = Framework();
-    const void *entity = framework ? VCall<void *>(framework, kClientEntity) : nullptr;
-    if (!entity)
-        return false;
+    return framework ? VCall<const Entity *>(framework, kClientEntity) : nullptr;
+}
+
+const Engine::Entity *Engine::GetEntity(const std::uint32_t id) {
+    const void *entities = Member(kEntitySystem);
+    return entities ? VCall<const Entity *>(entities, kGetEntity, id) : nullptr;
+}
+
+const char *Engine::EntityName(const Entity *entity) { return VCall<const char *>(entity, kEntityName); }
+
+Engine::Vec3 Engine::EntityPosition(const Entity *entity) {
+    Vec3 out;
     VCall<void>(entity, kWorldPos, &out);
+    return out;
+}
+
+const Engine::ScriptTable *Engine::EntityScript(const Entity *entity) {
+    const void *proxy = VCall<void *>(entity, kEntityProxy, kScriptProxy);
+    return proxy ? VCall<const ScriptTable *>(proxy, kProxyScriptTable) : nullptr;
+}
+
+bool Engine::PlayerPosition(Vec3 &out) {
+    const Entity *player = PlayerEntity();
+    if (!player)
+        return false;
+    out = EntityPosition(player);
     return true;
 }

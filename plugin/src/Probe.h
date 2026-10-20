@@ -1,41 +1,28 @@
 #pragma once
 
 #include <cstdint>
-#include <string>
 #include <vector>
 
 #include "Engine.h"
 
-// Results of TreasureFinder.Probe() in Scripts/Mods/treasurefinder.lua, read back from its Lua globals.
+// What should be marked right now, worked out from the game's own state for every map in MapTable.
 struct ProbeResult {
-    enum class Status {
-        NoGlobal,      // TreasureFinderLoaded is unset: the mod's Lua init script did not run
-        ExecuteFailed, // the call into Lua failed to load or raised an error
-        NotRun,        // the call returned but TreasureFinderProbe_ran is not true
-        Ran,
-    };
-    // Where a map the player has leads, or where a map the player does not have yet is found; in the loaded level
-    // and not dealt with yet.
+    // Where a map the player has (and has read) leads, or where a map the player does not have yet is found; in the
+    // loaded level and not dealt with yet.
     struct Target {
-        std::string map;    // the map item's name
-        std::string label;  // the map tooltip's localization label
-        std::string item;   // the map item's class GUID; empty for a map that is not an item (a carving)
+        const char *map;    // the map's id in the table
+        const char *label;  // the map tooltip's localization label
         bool source;        // the map's own location rather than where it leads
-        std::uint64_t wuid; // the marked object's WUID (XGenAIModule.GetMyWUID)
+        std::uint64_t wuid; // the marked object's WUID
         Engine::Vec3 pos;
-
-        bool operator==(const Target &) const = default;
     };
 
-    Status status = Status::NoGlobal;
-    bool playerReady = false;
+    bool playerReady = false; // the player exists, with an inventory
     std::vector<Target> targets;
-    std::string errors; // maps whose check raised a Lua error, "map: message; ..."
-
-    bool operator==(const ProbeResult &) const = default;
 };
 
 namespace Probe {
     ProbeResult Run();
-    const char *StatusName(ProbeResult::Status status);
+    // Forgets which maps were logged as read, so the next run logs each afresh (after a load).
+    void Reset();
 } // namespace Probe

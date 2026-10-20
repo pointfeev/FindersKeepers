@@ -1,6 +1,5 @@
 #include "Game.h"
 
-#include <charconv>
 #include <new>
 
 #include "Engine.h"
@@ -88,7 +87,21 @@ namespace {
              "48 83 EC 28 48 8B 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 8B C8 33 C0 48 85 C9 74 ?? 48 8B 41 18 48 83 C4 28 "
              "C3 CC 40 53 48 83 EC 20 48 8B D9 41 B8 08 00 00 00 48 B9 25 23 22 84 E4 9C F2 CB",
          .offset = -0x28},
+    }; // An entity's WUID, as XGenAIModule.GetMyWUID finds it (0x1819771B8): the entity GUID (entity slot 2) looked up
+    // in the GUID -> WUID map (global 0x185496338, lookup 0x18047E638, which returns a pointer to the WUID).
+    constexpr char kGetMyWuid[] =
+        "48 8B 03 48 8B CB 8B 54 24 48 FF 50 70 48 85 C0 0F 84 ?? ?? ?? ?? 48 8B 10 48 8B C8 48 8B 1D ?? ?? ?? ?? "
+        "FF 52 10 48 8B D0 48 8B CB E8 ?? ?? ?? ?? 48 8B 08";
+    constexpr Hooks::Rung kWuidMapRungs[] = {{.pattern = kGetMyWuid, .ripDisp = 31, .ripLength = 35}};
+    constexpr Hooks::Rung kWuidLookupRungs[] = {{.pattern = kGetMyWuid, .ripDisp = 45, .ripLength = 49}};
+    // An inventory's count of an item class, as inventory:GetCountOfClass finds it (0x182ABB538): the inventory's
+    // item index at +0xE8 and the class GUID (0x180514834).
+    constexpr Hooks::Rung kCountOfClassRungs[] = {
+        {.pattern = "48 8D 8F E8 00 00 00 48 8D 54 24 28 E8 ?? ?? ?? ?? 48 8D 54 24 20 89 44 24 20",
+         .ripDisp = 13,
+         .ripLength = 17},
     };
+
     // S_GameContext: +0x00 the framework (C_Framework, whose C_GameplayManager at +0xB8 keeps the started flag at
     // +0x10), +0xE8 the GUI module.
     constexpr std::size_t kFramework = 0x00;
@@ -113,6 +126,10 @@ namespace {
     constexpr std::size_t kRpgModule = 0x130;
     constexpr std::size_t kReading = 0x98;
     constexpr std::size_t kReadProgressSlot = 0x120 / 8;
+    // C_Inventory: its items in a vector at +8 (inventory:GetCount, 0x182ABB49C), the class index at +0xE8.
+    constexpr std::size_t kInventoryItems = 0x08;
+    constexpr std::size_t kInventoryClassIndex = 0xE8;
+    constexpr std::size_t kEntityGuidSlot = 2; // CEntity: 0x180638480, the EntityGUID at +0x10
 
     using ContextFn = std::uint8_t *(__fastcall *)();
     using ScreenFn = std::uint8_t *(__fastcall *)(void *guiModule);
@@ -121,6 +138,8 @@ namespace {
     using RegisterMarkFn = void(__fastcall *)(Game::Map *, std::shared_ptr<Game::EntityMark> *);
     using WatchFn = void(__fastcall *)(void *manager, const std::uint64_t *, Game::ObjectListener *);
     using FindFn = void *(__fastcall *)(void *, const std::uint64_t *);
+    using WuidLookupFn = const std::uint64_t *(__fastcall *)(const void *map, std::uint64_t entityGuid);
+    using CountOfClassFn = int(__fastcall *)(const void *index, const Game::ItemClassId *);
 
     ContextFn g_context;
     ScreenFn g_apse;
@@ -131,6 +150,9 @@ namespace {
     WatchFn g_watch;
     WatchFn g_unwatch;
     FindFn g_find;
+    const void *const *g_wuidMap;
+    WuidLookupFn g_wuidLookup;
+    CountOfClassFn g_countOfClass;
 
     template <typename T> T At(const void *base, const std::size_t offset) {
         return *reinterpret_cast<const T *>(static_cast<const std::uint8_t *>(base) + offset);
@@ -168,8 +190,11 @@ bool Game::Install() {
     g_watch = reinterpret_cast<WatchFn>(Hooks::Find("object watch", kWatchRungs));
     g_unwatch = reinterpret_cast<WatchFn>(Hooks::Find("object unwatch", kUnwatchRungs));
     g_find = reinterpret_cast<FindFn>(Hooks::Find("linkable lookup", kFindRungs));
+    g_wuidMap = reinterpret_cast<const void *const *>(Hooks::Find("WUID map", kWuidMapRungs));
+    g_wuidLookup = reinterpret_cast<WuidLookupFn>(Hooks::Find("WUID lookup", kWuidLookupRungs));
+    g_countOfClass = reinterpret_cast<CountOfClassFn>(Hooks::Find("item class count", kCountOfClassRungs));
     return g_context && g_apse && g_compass && g_createMark && g_registerMark && g_removeMark && g_watch && g_unwatch &&
-           g_find;
+           g_find && g_wuidMap && g_wuidLookup && g_countOfClass;
 }
 
 bool Game::GameplayStarted() {
@@ -212,32 +237,34 @@ void Game::RemoveEntityMark(Map *map, const std::shared_ptr<EntityMark> &mark) {
 
 void *Game::FindLinkable(const std::uint64_t wuid) { return g_find(nullptr, &wuid); }
 
-std::optional<Game::ItemClassId> Game::ParseItemClassId(const std::string_view text) {
-    // Hex digit pairs in text order, and where each byte goes: Data1, Data2 and Data3 are stored little-endian.
-    constexpr std::array<std::size_t, 16> kOrder{3, 2, 1, 0, 5, 4, 7, 6, 8, 9, 10, 11, 12, 13, 14, 15};
-    ItemClassId id{};
-    std::size_t byte = 0;
-    for (std::size_t i = 0; i < text.size(); ++i) {
-        if (text[i] == '-')
-            continue;
-        if (byte == id.size() || i + 1 >= text.size())
-            return std::nullopt;
-        std::uint8_t value = 0;
-        if (const auto [end, error] = std::from_chars(text.data() + i, text.data() + i + 2, value, 16);
-            error != std::errc() || end != text.data() + i + 2)
-            return std::nullopt;
-        id[kOrder[byte++]] = value;
-        ++i;
-    }
-    if (byte != id.size())
-        return std::nullopt;
-    return id;
-}
-
 float Game::ReadProgress(const ItemClassId &item) {
     const std::uint8_t *context = g_context();
     const void *reading = At<void *>(At<void *>(context, kRpgModule), kReading);
     return Engine::VCall<float>(reading, kReadProgressSlot, &item);
+}
+
+const Game::Inventory *Game::EntityInventory(const Engine::Entity *entity) {
+    // The script's `inventory` table carries its C_Inventory as `__this` (made in 0x180A2F6F4).
+    const Engine::ScriptTable *script = Engine::EntityScript(entity);
+    Engine::ScriptValue table, self;
+    if (!script || !Engine::TableGet(script, "inventory", table) || table.type != Engine::ScriptValue::Table ||
+        !Engine::TableGet(static_cast<const Engine::ScriptTable *>(table.table), "__this", self) ||
+        self.type != Engine::ScriptValue::Handle)
+        return nullptr;
+    return reinterpret_cast<const Inventory *>(self.handle);
+}
+
+int Game::ItemCount(const Inventory *inventory) {
+    const auto *items = reinterpret_cast<const std::uint8_t *>(inventory) + kInventoryItems;
+    return static_cast<int>((At<std::uintptr_t>(items, 8) - At<std::uintptr_t>(items, 0)) / sizeof(void *));
+}
+
+int Game::CountOfClass(const Inventory *inventory, const ItemClassId &item) {
+    return g_countOfClass(reinterpret_cast<const std::uint8_t *>(inventory) + kInventoryClassIndex, &item);
+}
+
+std::uint64_t Game::EntityWuid(const Engine::Entity *entity) {
+    return *g_wuidLookup(*g_wuidMap, Engine::VCall<std::uint64_t>(entity, kEntityGuidSlot));
 }
 
 void Game::WatchObject(const std::uint64_t *wuid, ObjectListener *listener) {

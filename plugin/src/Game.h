@@ -3,9 +3,8 @@
 #include <array>
 #include <cstdint>
 #include <memory>
-#include <optional>
-#include <string_view>
 
+#include "Engine.h"
 #include "Flash.h"
 
 // Warhorse's game objects the plugin uses, declared from WHGame.dll 1.5.6.
@@ -46,11 +45,19 @@ namespace Game {
     // An item class GUID as the game keeps it (CryGUID: the Windows GUID layout, Data1..3 little-endian, then the
     // last eight bytes in order).
     using ItemClassId = std::array<std::uint8_t, 16>;
-    // Parses "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"; empty when malformed.
-    std::optional<ItemClassId> ParseItemClassId(std::string_view text);
     // How far the player has read an item class, 0..1: a document counts as read at 1 (its inventory "new" marker
     // goes then).
     float ReadProgress(const ItemClassId &item);
+
+    // An entity's native inventory (C_Inventory), the one its script's `inventory` table works on; null for entities
+    // without one.
+    struct Inventory;
+    const Inventory *EntityInventory(const Engine::Entity *entity);
+    // How many items it holds, and how many of an item class.
+    int ItemCount(const Inventory *inventory);
+    int CountOfClass(const Inventory *inventory, const ItemClassId &item);
+    // An entity's WUID, as XGenAIModule.GetMyWUID gives it; 0 for entities without one.
+    std::uint64_t EntityWuid(const Engine::Entity *entity);
 
     // The AI object manager's listener (I_ObjectManagerBaseListener): its vtable is this one function, called on the
     // main thread with kObjectRemoved when the watched object is destroyed (a load, a level unload, the object going

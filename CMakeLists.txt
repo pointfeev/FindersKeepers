@@ -26,7 +26,7 @@ set(MOD_PAK "${MOD_STAGE}/Data/${MOD_ID}.pak")
 set(MOD_MANIFEST "${CMAKE_CURRENT_SOURCE_DIR}/mod/mod.manifest")
 # Game assets the pak reuses under our names (the mark type's icons), read from the KCD2_DIR install at build time.
 set(MOD_GAME_FILES "${CMAKE_CURRENT_SOURCE_DIR}/mod/game_files.json")
-# The curated map table, generated into the pak as the Lua table the probe walks.
+# The curated map table: the plugin's map data (generated C++) and the map tooltip strings come from it.
 set(MAP_TABLE "${CMAKE_CURRENT_SOURCE_DIR}/research/treasure_maps.json")
 file(GLOB_RECURSE MOD_DATA_FILES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/mod/data/*")
 # The file list as a dependency: it is rewritten only when files are added or removed, so a deleted data file
@@ -35,12 +35,23 @@ string(REPLACE ";" "\n" MOD_DATA_LIST "${MOD_DATA_FILES}")
 file(CONFIGURE OUTPUT "${CMAKE_BINARY_DIR}/mod-data-files.txt" CONTENT "${MOD_DATA_LIST}\n")
 
 find_program(UV_EXECUTABLE uv REQUIRED)
+
+set(MAP_TABLE_DATA "${CMAKE_BINARY_DIR}/generated/MapTableData.inc")
+add_custom_command(
+    OUTPUT "${MAP_TABLE_DATA}"
+    COMMAND "${UV_EXECUTABLE}" run --project "${CMAKE_CURRENT_SOURCE_DIR}" treasure-data maptable "${MAP_TABLE}"
+            "${MAP_TABLE_DATA}"
+    DEPENDS "${MAP_TABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tools/treasure_data/maptable.py"
+    COMMENT "Generating the map table"
+    VERBATIM)
+target_sources(TreasureFinder PRIVATE "${MAP_TABLE_DATA}")
+target_include_directories(TreasureFinder PRIVATE "${CMAKE_BINARY_DIR}/generated")
+
 add_custom_command(
     OUTPUT "${MOD_PAK}"
     COMMAND "${UV_EXECUTABLE}" run --project "${CMAKE_CURRENT_SOURCE_DIR}" treasure-data --game "${KCD2_DIR}" pack
-            "${CMAKE_CURRENT_SOURCE_DIR}/mod/data" "${MOD_PAK}" --game-files "${MOD_GAME_FILES}" --map-table "${MAP_TABLE}"
-    DEPENDS ${MOD_DATA_FILES} "${CMAKE_BINARY_DIR}/mod-data-files.txt" "${MOD_GAME_FILES}" "${MAP_TABLE}"
-            "${CMAKE_CURRENT_SOURCE_DIR}/tools/treasure_data/maptable.py"
+            "${CMAKE_CURRENT_SOURCE_DIR}/mod/data" "${MOD_PAK}" --game-files "${MOD_GAME_FILES}"
+    DEPENDS ${MOD_DATA_FILES} "${CMAKE_BINARY_DIR}/mod-data-files.txt" "${MOD_GAME_FILES}"
     COMMENT "Packing ${MOD_ID}.pak"
     VERBATIM)
 

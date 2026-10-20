@@ -1,11 +1,11 @@
-"""The Lua table of maps the mod marks, generated from the curated map table into the mod's .pak."""
+"""The table of maps the mod marks, generated from the curated map table as C++ data for the plugin."""
 
 from __future__ import annotations
 
 import json
+import uuid
 from pathlib import Path
 
-PAK_PATH = "Scripts/Mods/treasurefinder_maps.lua"
 # Maps that lead somewhere; "not_a_location_map" items do not.
 MARKED_CATEGORIES = {"treasure", "quest", "area"}
 # Sources marked as the map's own location: an object that holds the map until the player takes it. Quest rewards
@@ -13,14 +13,23 @@ MARKED_CATEGORIES = {"treasure", "quest", "area"}
 SOURCE_KINDS = {"chest", "body", "npc_loot", "npc_sale", "world_pickup"}
 
 
-def lua_string(text: str) -> str:
+def cpp_string(text: str) -> str:
     if not text.isascii():
         raise SystemExit(f"non-ASCII text in the map table: {text!r}")
     return '"' + text.replace("\\", "\\\\").replace('"', '\\"') + '"'
 
 
-def lua_entity(place: dict) -> str:
-    return f"{{ entity = {int(place['entity_id'])}, name = {lua_string(place['entity_name'])} }}"
+def cpp_place(place: dict | None) -> str:
+    """A level entity: its EntityId and name (ids repeat across levels and names within one, so the plugin checks
+    both); an empty place has id 0."""
+    if place is None:
+        return "{}"
+    return f"{{{int(place['entity_id'])}, {cpp_string(place['entity_name'])}}}"
+
+
+def cpp_item_class(guid: str) -> str:
+    """A GUID string as the game keeps it in memory (CryGUID: the Windows GUID layout)."""
+    return "{" + ", ".join(f"0x{byte:02X}" for byte in uuid.UUID(guid).bytes_le) + "}"
 
 
 def marked_rows(table_path: Path) -> list[dict]:
@@ -48,26 +57,28 @@ def tooltip_label(row: dict, source: bool = False) -> str:
     return f"ui_treasurefinder_{'mapsource' if source else 'map'}_{row['map']}"
 
 
-def build(table_path: Path) -> bytes:
-    """One entry per map: how the player gets it (an item class carried, or a trigger examined), every place it leads
-    to and where it is found, each a level entity id and name (ids repeat across levels and names within one, so the
-    probe checks both), and the tooltip labels of both."""
-    entries = []
-    for row in marked_rows(table_path):
-        if row.get("examined"):
-            how = f"seen = {lua_string(row['examined']['entity_name'])}"
-        else:
-            how = f"item = {lua_string(row['guid'])}"
-        targets = ", ".join(lua_entity(place) for place in [row, *row.get("extra_targets", [])])
-        found = ""
-        if (where := map_source(row)) is not None:
-            found = f",\n\t\tsource = {lua_entity(where)}, sourceLabel = {lua_string(tooltip_label(row, source=True))}"
-        entries.append(
-            f"\t{{ map = {lua_string(row['map'])}, {how}, label = {lua_string(tooltip_label(row))}, "
-            f"level = {lua_string(row['level'])},\n\t\ttargets = {{ {targets} }}{found} }},"
+def build(table_path: Path) -> str:
+    """One MapTable::Map per map (plugin/src/MapTable.h): how the player gets it (an item class carried, or a trigger
+    examined), every place it leads to, where it is found, and the tooltip labels of both."""
+    targets, maps = [], []
+    for n, row in enumerate(marked_rows(table_path)):
+        places = ", ".join(cpp_place(place) for place in [row, *row.get("extra_targets", [])])
+        targets.append(f"inline constexpr Place kTargets{n}[] = {{{places}}};")
+        examined = row.get("examined")
+        source = map_source(row)
+        maps.append(
+            f"    {{.name = {cpp_string(row['map'])},\n"
+            f"     .item = {'{}' if examined else cpp_item_class(row['guid'])},\n"
+            f"     .seen = {cpp_place(examined)},\n"
+            f"     .label = {cpp_string(tooltip_label(row))},\n"
+            f"     .targets = kTargets{n},\n"
+            f"     .source = {cpp_place(source)},\n"
+            f"     .sourceLabel = {cpp_string(tooltip_label(row, source=True)) if source else 'nullptr'}}},"
         )
-    lua = (
-        f"-- Generated from {table_path.name} by treasure-data; do not edit.\n"
-        "TreasureFinder.Maps = {\n" + "\n".join(entries) + "\n}\n"
+    return (
+        f"// Generated from {table_path.name} by treasure-data; do not edit.\n"
+        + "\n".join(targets)
+        + "\ninline constexpr Map kMaps[] = {\n"
+        + "\n".join(maps)
+        + "\n};\n"
     )
-    return lua.encode("utf-8")

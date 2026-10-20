@@ -1,8 +1,7 @@
 #include <windows.h>
 
-#include <map>
+#include <algorithm>
 #include <optional>
-#include <string>
 #include <vector>
 
 #include "Engine.h"
@@ -18,7 +17,8 @@
 // A KCSE plugin (see the exports at the end) that brings its own game access: it runs on the game framework's
 // per-frame update.
 namespace {
-    constexpr ULONGLONG kProbeIntervalMs = 2000;
+    // Often enough that marks follow what the player does at once; one probe costs a few dozen lookups.
+    constexpr ULONGLONG kProbeIntervalMs = 100;
 
     ULONGLONG g_nextProbe = 0;
     // Empty until the first probe after start-up or a save load, so that one is always logged.
@@ -29,42 +29,24 @@ namespace {
     bool g_announced = false;
     bool g_wasStarted = false;
 
-    // Logs the probe when its result changes, so picking up a map or digging up its treasure shows up in the log.
+    // Whether two probes mark the same things; positions are left out, since an NPC holding a map moves.
+    bool SameMarks(const ProbeResult &a, const ProbeResult &b) {
+        return a.playerReady == b.playerReady &&
+               std::ranges::equal(a.targets, b.targets, [](const auto &x, const auto &y) {
+                   return x.map == y.map && x.source == y.source && x.wuid == y.wuid;
+               });
+    }
+
+    // Logs the probe when what it marks changes, so picking up a map or digging up its treasure shows up in the log.
     void LogProbe(const ProbeResult &r) {
-        if (g_last && *g_last == r)
-            return;
+        const bool same = g_last && SameMarks(*g_last, r);
         g_last = r;
-        if (r.status != ProbeResult::Status::Ran) {
-            Log::Write("probe: {}", Probe::StatusName(r.status));
+        if (same)
             return;
-        }
-        Log::Write("probe: player={} targets={}{}{}", r.playerReady, r.targets.size(),
-                   r.errors.empty() ? "" : " errors: ", r.errors);
+        Log::Write("probe: player={} targets={}", r.playerReady, r.targets.size());
         for (const auto &t : r.targets)
             Log::Write("probe: {} {} WUID {:016x} at ({:.1f}, {:.1f}, {:.1f})", t.map,
                        t.source ? "lies at" : "leads to", t.wuid, t.pos.x, t.pos.y, t.pos.z);
-    }
-
-    // Per carried map item, whether it was read when last checked, so a map being read shows up as one log line.
-    std::map<std::string, bool> g_read;
-
-    // Whether the player has read the map a destination belongs to; maps that are not items (a carving) count as
-    // read once found.
-    bool MapRead(const ProbeResult::Target &target) {
-        if (target.item.empty())
-            return true;
-        const auto id = Game::ParseItemClassId(target.item);
-        if (!id) {
-            Log::Write("read: {} has a malformed item GUID '{}'; its destinations show unread", target.map,
-                       target.item);
-            return true;
-        }
-        const bool read = Game::ReadProgress(*id) >= 1.f;
-        if (const auto it = g_read.find(target.map); it == g_read.end() || it->second != read) {
-            g_read[target.map] = read;
-            Log::Write("read: {} is {}", target.map, read ? "read" : "not read yet; its destinations wait");
-        }
-        return read;
     }
 
     void Tick() {
@@ -81,13 +63,13 @@ namespace {
             if (started) {
                 // A save finished loading or a new game started: probe afresh.
                 g_last.reset();
+                Probe::Reset();
                 g_nextProbe = 0;
             } else {
                 // Loading is starting: marks go before the objects they point at.
                 GameMark::Clear();
                 g_destinations.clear();
                 g_sources.clear();
-                g_read.clear();
             }
         }
         g_wasStarted = started;
@@ -95,17 +77,11 @@ namespace {
         if (const ULONGLONG now = GetTickCount64(); started && now >= g_nextProbe) {
             g_nextProbe = now + kProbeIntervalMs;
             LogProbe(Probe::Run());
-            // A map's destinations wait until the player has read it.
-            std::vector<ProbeResult::Target> shown;
             g_destinations.clear();
             g_sources.clear();
-            for (const auto &t : g_last->targets) {
-                if (!t.source && !MapRead(t))
-                    continue;
-                shown.push_back(t);
+            for (const auto &t : g_last->targets)
                 (t.source ? g_sources : g_destinations).push_back(t.pos);
-            }
-            GameMark::Sync(shown);
+            GameMark::Sync(g_last->targets);
         }
         const auto *map = Game::GetMap();
         FloatingIcon::Update(MarkType::kDestination, g_destinations,

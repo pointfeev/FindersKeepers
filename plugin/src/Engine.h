@@ -3,7 +3,6 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
-#include <string_view>
 
 // The CryEngine pieces the plugin uses, declared from our own reverse engineering of WHGame.dll 1.5.6.
 namespace Engine {
@@ -37,7 +36,7 @@ namespace Engine {
     bool ProjectToScreen(const Vec3 &world, float &x, float &y, float &z);
 
     // A Lua value as the script system exchanges it (ScriptAnyValue, 0x18 bytes; ToAny 0x18071698C): the type at +0,
-    // the value at +8; numbers are floats.
+    // the value at +8; numbers are floats. A table value holds a reference to its table, released with the value.
     struct ScriptValue {
         enum Type : std::int32_t {
             Any,
@@ -57,20 +56,37 @@ namespace Engine {
             std::int64_t handle;
             float number;
             const char *string;
+            const void *table; // an IScriptTable
             std::uint8_t raw[0x10];
         };
 
         ScriptValue() : raw{} {}
+        ScriptValue(const ScriptValue &) = delete;
+        ScriptValue &operator=(const ScriptValue &) = delete;
+        ~ScriptValue();
     };
     static_assert(sizeof(ScriptValue) == 0x18, "ScriptAnyValue is 0x18 bytes");
 
-    // A Lua global by name; false when the script system is not up or the global does not exist.
-    bool GetGlobal(const char *name, ScriptValue &out);
-    // Runs a chunk of Lua; false when it fails to load or raises an error.
-    bool Execute(std::string_view code, const char *description);
+    // A script table (IScriptTable, CScriptTable 0x183A4A700); opaque.
+    struct ScriptTable;
+    // A member of a table, without its metatable chain; false when absent. A table member keeps a reference in `out`.
+    bool TableGet(const ScriptTable *table, const char *key, ScriptValue &out);
+    // Calls `self:method()` and returns its result; false when the method is missing or raises an error.
+    bool CallMethod(const ScriptTable *self, const char *method, ScriptValue &result);
 
     // The game framework (CCryAction); null before the engine creates it.
     void *Framework();
+
+    // An entity (IEntity, CEntity 0x184072C78); opaque.
+    struct Entity;
+    // The player's entity; null before the player exists.
+    const Entity *PlayerEntity();
+    // A level entity by its EntityId; null when no such entity exists.
+    const Entity *GetEntity(std::uint32_t id);
+    const char *EntityName(const Entity *entity);
+    Vec3 EntityPosition(const Entity *entity);
+    // The entity's script table (the Lua `self` of its script); null for entities without a script.
+    const ScriptTable *EntityScript(const Entity *entity);
     // The player's world position; false before the player exists.
     bool PlayerPosition(Vec3 &out);
 } // namespace Engine
