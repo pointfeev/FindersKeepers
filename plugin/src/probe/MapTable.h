@@ -26,6 +26,8 @@ namespace MapTable {
         const char *sourceLabel;        // the tooltip label there
         const char *quest;              // the quest the map belongs to, whose end retires it (all but its
                                         // afterQuest places); null for none
+        Game::ItemClassId reveals;      // the next note of a riddle chain, found where this one leads: once the
+                                        // player has or has read it, this one is done; all zero for none
     };
 
 #include "MapTableData.inc"

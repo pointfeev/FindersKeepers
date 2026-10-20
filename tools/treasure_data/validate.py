@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import math
 import re
+import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -75,10 +76,19 @@ def quest_names(root: Path) -> set[str]:
     return names
 
 
+def document_ids(root: Path) -> set[str]:
+    """The GUIDs of every document item (maps, notes, letters, books): riddle notes are documents but not maps."""
+    ids: set[str] = set()
+    for path in (root / "tables" / "Libs" / "Tables" / "item").glob("item*.xml"):
+        ids.update(doc.get("Id", "").lower() for doc in ET.parse(path).iter("Document"))
+    return ids
+
+
 def validate(root: Path, table_path: Path, tolerance: float) -> Report:
     report = Report()
     strings = load_strings(root)
     game_maps = load_map_items(root, strings)
+    documents = document_ids(root)
     checker = Checker(load_levels(root, strings), tolerance, report)
     rows = json.loads(table_path.read_text(encoding="utf-8"))
     quests = quest_names(root)
@@ -98,8 +108,10 @@ def validate(root: Path, table_path: Path, tolerance: float) -> Report:
         # A map the player examines rather than carries (a carving) has no item, only its trigger.
         if row.get("examined"):
             checker.check(f"{row['map']} examined trigger", row["examined"])
-        elif row["guid"] not in game_maps:
+        elif row["guid"] not in (documents if row["category"] == "riddle" else game_maps):
             report.errors.append(f"{row['map']}: map item {row['guid']} no longer exists in the game")
+        if row.get("reveals") and row["reveals"] not in documents:
+            report.errors.append(f"{row['map']}: the note it reveals, {row['reveals']}, no longer exists in the game")
         checker.check(f"{row['map']} destination", row)
         for place in row.get("extra_targets", []):
             checker.check(f"{row['map']} destination {place['entity_id']}", place)

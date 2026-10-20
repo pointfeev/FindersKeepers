@@ -33,8 +33,17 @@ namespace {
         return entity && std::string_view(Engine::EntityName(entity)) == place.name ? entity : nullptr;
     }
 
-    bool IsItem(const MapTable::Map &map) {
-        return std::ranges::any_of(map.item, [](const std::uint8_t byte) { return byte != 0; });
+    bool IsSet(const Game::ItemClassId &item) {
+        return std::ranges::any_of(item, [](const std::uint8_t byte) { return byte != 0; });
+    }
+
+    bool IsItem(const MapTable::Map &map) { return IsSet(map.item); }
+
+    // Whether the player has found the next note of a riddle chain (carries it or has read it), which lies where this
+    // one leads: this one is then done.
+    bool Revealed(const MapTable::Map &map, const Game::Inventory *player) {
+        return IsSet(map.reveals) &&
+               (Game::CountOfClass(player, map.reveals) > 0 || Game::ReadProgress(map.reveals) >= 1.f);
     }
 
     // Whether a destination has been dealt with: a hole dug (Hole.lua's nDepth is 1 once dug), a loose item taken
@@ -150,6 +159,8 @@ ProbeResult Probe::Run() {
         return result;
     result.playerReady = true;
     for (const MapTable::Map &map : MapTable::kMaps) {
+        if (Revealed(map, inventory))
+            continue;
         const bool questOver = QuestOver(map);
         const bool has = HasMap(map, inventory);
         if (Knows(map, has)) {

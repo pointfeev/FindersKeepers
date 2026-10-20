@@ -49,7 +49,8 @@ Game build: Steam 1.5.6 (`release_1_5-15693`). Per-map data (entity ids, positio
 
 **Vidlak bandit's map** (`poi_vyplavenyPoklad_map`)
 - Found: the Bukovina bandit leader, met in Lackey.
-- Leads to: the hollow tree (a tin plate and silver cup at its roots, ItemSlot41 28485), then the washed-up chest (15785; about 300 groschen and a golden crucifix). [Selphie](https://selphie1999gaming.com/game-guides/kcd2-kingdom-come-deliverance-2/kingdom-come-deliverance-2-vidlak-bandits-map-treasure/)
+- Leads to: the hollow tree (a tin plate and silver cup at its roots, ItemSlot42 28484 and ItemSlot41 28485), then the washed-up chest (15785; about 300 groschen and a golden crucifix). [Selphie](https://selphie1999gaming.com/game-guides/kcd2-kingdom-come-deliverance-2/kingdom-come-deliverance-2-vidlak-bandits-map-treasure/)
+- Only the chest is marked. In game (2026-10-20) the plate and cup had sunk into the stream bed and could not be picked up, so a mark on them would never clear; this may be why Gamer Guides says the treasure is "no longer here".
 
 **Map from chest by Sedletz** (`poi_mnichovaSchovka_map`)
 - Found: the chest at the foot of the monastery wall, which also holds the shed's key.
@@ -117,6 +118,19 @@ Their destinations are areas or triggers with no done state. Each retires when i
 - Found: Rosa hands both over in the "Předání plánků" module of Rosa's Book (`rozinaKniha`), as normal items.
 - Leads to: the fortress (85482) and its main tower (42424); Capon is on the top floor and is not marked on the map. The quest's chapel step is a yellow search area. [Game-Checklists](https://game-checklists.com/kcd2/guides/taking-french-leave-quest/)
 - No failure. The fortress returns in Dancing with the Devil, with its own markers.
+
+### Riddle notes
+
+Notes (Document Type 5), not maps, found by auditing every non-map document's text (2026-10-20). Each is marked like a map once read.
+
+**Strange little verse I-V** (`andelStrazny_riddles`, `_2`..`_5`), Kuttenberg
+- Verse I is in Goatskin's barrel (Master Schindel's Toys) and holds every verse's text. Each verse leads to a stash (preset `inventory_andelStraznyRiddle1`..`5`) holding the next: the fountain on Vintners' Street (81346), the north-wall scarecrow (103832), the stash the town-hall clock's shadow points at (92947), a nest under the Emperor Charles tavern roof (103896), and the last cache with Scholarship IV and Alchemy IV (103959). [wotpack](https://wotpack.ru/en/strannye-virshi-v-kingdom-come-deliverance-2-reshenie-vseh-zagadok/)
+- No quest marks them. A verse's stash counts as done once the player has or has read the next verse (a nest may keep no inventory).
+
+**Strange riddle** (`dlc2cernokneznik_letterCipher`), Legacy of the Forge activity `cernokneznik` (Warlock's Riddle)
+- Found in the alchemist's room (item slot 49291); leads to his stash (946897), which exists only while the activity's room is streamed. The objective "solve the riddle" has no quest marker. Retires with the activity.
+
+Other notes that point at places are quest-marked (Knight Konrad's diary, Bavor's travelogue, the Brada report, Hynek's letter) or lore only.
 
 ### Area maps
 

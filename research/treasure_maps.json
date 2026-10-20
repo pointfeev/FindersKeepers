@@ -1486,17 +1486,7 @@
       ],
       "entity_check": "ok"
     },
-    "entity_check": "ok",
-    "extra_targets": [
-      {
-        "role": "cup and plate at the hollow tree, the first stop",
-        "level": "trosecko",
-        "entity_name": "ItemSlot41",
-        "entity_id": "28485",
-        "entity_guid": "36216dba-7aa4-432f",
-        "pos": "1607.578,3075.083,15.74414"
-      }
-    ]
+    "entity_check": "ok"
   },
   {
     "map": "puvodNemoci_planOfBasement",
@@ -2181,6 +2171,162 @@
       "https://www.gamerguides.com/kingdom-come-deliverance-ii/guide/free-form-quests/trosky/apollonia-cave-wall-map-treasure-location-guide"
     ],
     "notes": "Probed in game 2026-10-19: IsPressEnabled true before, false after examining. Also false before the open world unlocks, so it reads as examined in that early stretch.",
+    "entity_check": "ok"
+  },
+  {
+    "map": "andelStrazny_riddles",
+    "guid": "d86a0245-efa2-4232-96bc-825b52a8f40c",
+    "en_name": "Strange little verse I",
+    "category": "riddle",
+    "destination_summary": "The verse about the two Marys on Vintners' Street ('In one pipe take a peek'): a hidden stash in the fountain, holding verse II.",
+    "container": "stash with preset inventory_andelStraznyRiddle1",
+    "level": "kutnohorsko",
+    "entity_name": "kasna_hiddenStash",
+    "entity_id": "81346",
+    "entity_guid": "24897399-6bcc-4537",
+    "pos": "2989.478,862.3473,63.42873",
+    "poi_name": null,
+    "alt_entities": [],
+    "how_matched": "The level entity with inventory preset inventory_andelStraznyRiddle1 (InventoryPreset__quests_andelStrazny.xml); each preset holds the next verse, the last two level IV skill books.",
+    "confidence": "verified",
+    "sources": ["https://wotpack.ru/en/strannye-virshi-v-kingdom-come-deliverance-2-reshenie-vseh-zagadok/"],
+    "notes": "A note, not a map item (Document Type 5). Its destination counts as done once the player has or has read the next verse, so a nest that keeps no inventory still clears.",
+    "source": {
+      "how": "riddle_chain",
+      "summary": "In Goatskin's barrel in the Kuttenberg underground (Master Schindel's Toys), which the Map of Kuttenberg underground already marks; its text holds every verse of the chain."
+    },
+    "entity_check": "ok",
+    "reveals": "91242efc-c004-438b-a083-9a2b1db9153e"
+  },
+  {
+    "map": "andelStrazny_riddles_2",
+    "guid": "91242efc-c004-438b-a083-9a2b1db9153e",
+    "en_name": "Strange little verse II",
+    "category": "riddle",
+    "destination_summary": "'Here on the north wall top / Sir Knight Pail von Bucket': the scarecrow on the north wall, a stash holding verse III.",
+    "container": "stash with preset inventory_andelStraznyRiddle2",
+    "level": "kutnohorsko",
+    "entity_name": "Stash245",
+    "entity_id": "103832",
+    "entity_guid": "4d5582de-5ba4-4064",
+    "pos": "3207.163,953.4286,57.9366",
+    "poi_name": null,
+    "alt_entities": [],
+    "how_matched": "The level entity with inventory preset inventory_andelStraznyRiddle2 (InventoryPreset__quests_andelStrazny.xml); each preset holds the next verse, the last two level IV skill books.",
+    "confidence": "verified",
+    "sources": ["https://wotpack.ru/en/strannye-virshi-v-kingdom-come-deliverance-2-reshenie-vseh-zagadok/"],
+    "notes": "A note, not a map item (Document Type 5). Its destination counts as done once the player has or has read the next verse, so a nest that keeps no inventory still clears.",
+    "source": {
+      "how": "riddle_chain",
+      "summary": "In the fountain stash that verse I leads to."
+    },
+    "entity_check": "ok",
+    "reveals": "e09796f9-0e02-49f4-baff-a01edd0f44e8"
+  },
+  {
+    "map": "andelStrazny_riddles_3",
+    "guid": "e09796f9-0e02-49f4-baff-a01edd0f44e8",
+    "en_name": "Strange little verse III",
+    "category": "riddle",
+    "destination_summary": "'Eden scratches at the sixth ... where the knowledge tree rises': the stash the town-hall clock's shadow points at, holding verse IV.",
+    "container": "stash with preset inventory_andelStraznyRiddle3",
+    "level": "kutnohorsko",
+    "entity_name": "Stash34",
+    "entity_id": "92947",
+    "entity_guid": "6b389366-9d82-4556",
+    "pos": "3201.785,639.6072,50.55492",
+    "poi_name": null,
+    "alt_entities": [],
+    "how_matched": "The level entity with inventory preset inventory_andelStraznyRiddle3 (InventoryPreset__quests_andelStrazny.xml); each preset holds the next verse, the last two level IV skill books.",
+    "confidence": "verified",
+    "sources": ["https://wotpack.ru/en/strannye-virshi-v-kingdom-come-deliverance-2-reshenie-vseh-zagadok/"],
+    "notes": "A note, not a map item (Document Type 5). Its destination counts as done once the player has or has read the next verse, so a nest that keeps no inventory still clears.",
+    "source": {
+      "how": "riddle_chain",
+      "summary": "In the north-wall stash that verse II leads to."
+    },
+    "entity_check": "ok",
+    "reveals": "b2844271-4457-4987-a69c-fc4df87166a8"
+  },
+  {
+    "map": "andelStrazny_riddles_4",
+    "guid": "b2844271-4457-4987-a69c-fc4df87166a8",
+    "en_name": "Strange little verse IV",
+    "category": "riddle",
+    "destination_summary": "'Let it at least a kingfisher's be': a nest under the roof of the Emperor Charles tavern, holding verse V.",
+    "container": "stash with preset inventory_andelStraznyRiddle4",
+    "level": "kutnohorsko",
+    "entity_name": "Nest1",
+    "entity_id": "103896",
+    "entity_guid": "7aa0c69f-823e-4c08",
+    "pos": "3091.687,863.2286,77.04855",
+    "poi_name": null,
+    "alt_entities": [],
+    "how_matched": "The level entity with inventory preset inventory_andelStraznyRiddle4 (InventoryPreset__quests_andelStrazny.xml); each preset holds the next verse, the last two level IV skill books.",
+    "confidence": "verified",
+    "sources": ["https://wotpack.ru/en/strannye-virshi-v-kingdom-come-deliverance-2-reshenie-vseh-zagadok/"],
+    "notes": "A note, not a map item (Document Type 5). Its destination counts as done once the player has or has read the next verse, so a nest that keeps no inventory still clears.",
+    "source": {
+      "how": "riddle_chain",
+      "summary": "In the stash that verse III leads to."
+    },
+    "entity_check": "ok",
+    "reveals": "ebadd3c9-462f-456a-a6b9-dd6ebc8607a8"
+  },
+  {
+    "map": "andelStrazny_riddles_5",
+    "guid": "ebadd3c9-462f-456a-a6b9-dd6ebc8607a8",
+    "en_name": "Strange little verse V",
+    "category": "riddle",
+    "destination_summary": "'In its throat to your aid a window will come': the stone dragon St. George faces, the chain's last cache, with Scholarship IV and Alchemy IV.",
+    "container": "stash with preset inventory_andelStraznyRiddle5",
+    "level": "kutnohorsko",
+    "entity_name": "Stash249",
+    "entity_id": "103959",
+    "entity_guid": "a6859ca6-3600-409f",
+    "pos": "3226.867,805.6481,52.40733",
+    "poi_name": null,
+    "alt_entities": [],
+    "how_matched": "The level entity with inventory preset inventory_andelStraznyRiddle5 (InventoryPreset__quests_andelStrazny.xml); each preset holds the next verse, the last two level IV skill books.",
+    "confidence": "verified",
+    "sources": ["https://wotpack.ru/en/strannye-virshi-v-kingdom-come-deliverance-2-reshenie-vseh-zagadok/"],
+    "notes": "A note, not a map item (Document Type 5). Its destination counts as done once the player has or has read the next verse, so a nest that keeps no inventory still clears.",
+    "source": {
+      "how": "riddle_chain",
+      "summary": "In the nest that verse IV leads to."
+    },
+    "entity_check": "ok"
+  },
+  {
+    "map": "dlc2cernokneznik_letterCipher",
+    "guid": "7f3b0cb0-5140-4a3e-b957-f23560382035",
+    "en_name": "Strange riddle",
+    "category": "riddle",
+    "quest": "cernokneznik",
+    "destination_summary": "'Were I Peter, I'd behold the holy towers ... to the place of petitioners, where my Saviour guards His treasure': the lost alchemist's stash (Legacy of the Forge activity 'cernokneznik', Warlock's Riddle).",
+    "container": "chest, streamed only while the activity's 'mess' profile is",
+    "level": "kutnohorsko",
+    "entity_name": "stash[Chest/chest49_16992f6e-2537-44b1-82b6-d2ed08d048f6]",
+    "entity_id": "946897",
+    "entity_guid": "bbc18e33-3aff-0e18",
+    "pos": "2783.269,1097.83,95.59929",
+    "poi_name": null,
+    "alt_entities": [],
+    "how_matched": "SmartObjectHolder 'cernokneznik' (49290) binds asset['alchymist_stash'] to this chest; the objective 'vyres_hadanku' (solve the riddle) has no Marker, so the quest does not show it.",
+    "confidence": "verified",
+    "sources": ["https://www.powerpyx.com/kingdom-come-deliverance-2-legacy-of-the-forge-dlc-trophy-guide-roadmap/"],
+    "notes": "A quest note (Document Type 5), read together with the book 'Planets and their Metals' (seven planets, Peter = the rock = the church).",
+    "source": {
+      "how": "world_pickup",
+      "summary": "In item slot asset['hadanka'] in the alchemist's room, filled by the activity.",
+      "level": "kutnohorsko",
+      "entity_name": "cernokneznik_hadanka",
+      "entity_id": "49291",
+      "entity_guid": "0c9cb0ce-6857-4a76",
+      "pos": "2733.989,1135.145,99.75826",
+      "confidence": "verified",
+      "entity_check": "ok"
+    },
     "entity_check": "ok"
   }
 ]
