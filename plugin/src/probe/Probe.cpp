@@ -107,16 +107,16 @@ namespace {
                !PressEnabled(map, trigger);
     }
 
-    // Whether the player has read a map item (its reading progress reaches 1, when the inventory's "new" marker goes);
-    // a carving counts as read once examined.
-    bool Read(const MapTable::Map &map) {
+    // Whether the player knows where a map leads: a map item once read (its reading progress, which the game keeps per
+    // item class, reaches 1, when the inventory's "new" marker goes), whether or not it is still carried; a carving
+    // once examined. Logs each map item read, and each one that stops counting as read.
+    bool Knows(const MapTable::Map &map, const bool has) {
         if (!IsItem(map))
-            return true;
+            return has;
         const bool read = Game::ReadProgress(map.item) >= 1.f;
-        if (const auto it = g_read.find(map.name); it == g_read.end() || it->second != read) {
-            g_read[map.name] = read;
-            Log::Write("read: {} is {}", map.name, read ? "read" : "not read yet; its destinations wait");
-        }
+        if (const auto it = g_read.find(map.name); it == g_read.end() ? read : it->second != read)
+            Log::Write("read: {} is {}", map.name, read ? "read" : "no longer read");
+        g_read[map.name] = read;
         return read;
     }
 
@@ -151,14 +151,13 @@ ProbeResult Probe::Run() {
     result.playerReady = true;
     for (const MapTable::Map &map : MapTable::kMaps) {
         const bool questOver = QuestOver(map);
-        if (HasMap(map, inventory)) {
-            if (!Read(map))
-                continue;
+        const bool has = HasMap(map, inventory);
+        if (Knows(map, has)) {
             for (const MapTable::Place &place : map.targets)
                 if (place.afterQuest == questOver)
                     if (const Engine::Entity *entity = Find(place); entity && !Done(place, entity))
                         Add(result, map, entity, map.label, false);
-        } else if (!questOver && map.source.entity) {
+        } else if (!has && !questOver && map.source.entity) {
             if (const Engine::Entity *entity = Find(map.source); entity && HoldsMap(map, entity))
                 Add(result, map, entity, map.sourceLabel, true);
         }

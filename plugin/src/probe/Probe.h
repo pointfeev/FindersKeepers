@@ -7,8 +7,8 @@
 
 // What should be marked right now, worked out from the game's own state for every map in MapTable.
 struct ProbeResult {
-    // Where a map the player has (and has read) leads, or where a map the player does not have yet is found; in the
-    // loaded level and not dealt with yet.
+    // Where a map the player has read (carried or not) leads, or where a map the player does not have yet is found; in
+    // the loaded level and not dealt with yet.
     struct Target {
         const char *map;    // the map's id in the table
         const char *label;  // the map tooltip's localization label
