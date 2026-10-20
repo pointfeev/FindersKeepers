@@ -47,10 +47,10 @@ namespace {
         }
     }
 
-    // The map item's name label when `marker` is one of our PoiMarkers; null otherwise.
+    // The mark's tooltip label when `marker` is one of our PoiMarkers; null otherwise.
     const char *OurLabel(const Flash::Var *marker) {
         if (const auto icon = Member(marker, "m_IconName");
-            !icon || icon->type != Flash::Value::String || std::string_view(icon->string) != MarkType::kName)
+            !icon || icon->type != Flash::Value::String || !MarkType::Find(std::string_view(icon->string)))
             return nullptr;
         const auto id = MarkerId(marker);
         return id ? GameMark::LabelFor(*id) : nullptr;
@@ -100,5 +100,5 @@ void MapTooltip::Patch(const Game::Map *map) {
         Log::Write("map tooltip: could not replace _root.OnShowTooltip");
         return;
     }
-    Log::Write("map tooltip: '{}' markers name their map", MarkType::kName);
+    Log::Write("map tooltip: our markers name their map");
 }

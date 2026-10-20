@@ -29,11 +29,21 @@ local function hasMap(m)
 	return trigger ~= nil and not trigger.interactionTrigger:IsPressEnabled()
 end
 
--- One place a map leads to, if it is in the loaded level and not dealt with yet. Entity ids repeat across levels, so
--- the name confirms the match.
-local function place(m, t)
+-- Whether the object a map is found on still holds it: an inventory that has been filled and lacks the map no longer
+-- does (taken and sold, say). An inventory that is empty may simply not be filled yet, and objects without one (an
+-- item slot, a carving's trigger) have no say; both count as holding it while the player does not have the map.
+local function holdsMap(m, entity)
+	if m.item and entity.inventory and entity.inventory:GetCount() > 0 then
+		return entity.inventory:GetCountOfClass(m.item) > 0
+	end
+	return true
+end
+
+-- The marked object at `t` if it is in the loaded level and `open` says it still matters. Entity ids repeat across
+-- levels, so the name confirms the match.
+local function mark(m, t, label, source, open)
 	local entity = System.GetEntity(t.entity)
-	if not entity or entity:GetName() ~= t.name or done(entity) then
+	if not entity or entity:GetName() ~= t.name or not open(entity) then
 		return nil
 	end
 	local wuid = XGenAIModule.GetMyWUID(entity)
@@ -41,19 +51,27 @@ local function place(m, t)
 		return nil
 	end
 	local pos = entity:GetWorldPos()
-	return { map = m.map, label = m.label, wuid = wuid, x = pos.x, y = pos.y, z = pos.z }
+	return { map = m.map, label = label, source = source, wuid = wuid, x = pos.x, y = pos.y, z = pos.z }
 end
 
--- Adds every open place of a map the player has to `targets`.
+-- Adds to `targets` every place a map the player has leads to and is not dealt with yet, or else where the map
+-- itself is found.
 local function addTargets(m, targets)
-	if not hasMap(m) then
-		return
-	end
-	for _, t in ipairs(m.targets) do
-		local found = place(m, t)
+	local function add(found)
 		if found then
 			targets[#targets + 1] = found
 		end
+	end
+	if hasMap(m) then
+		for _, t in ipairs(m.targets) do
+			add(mark(m, t, m.label, false, function(entity)
+				return not done(entity)
+			end))
+		end
+	elseif m.source then
+		add(mark(m, m.source, m.sourceLabel, true, function(entity)
+			return holdsMap(m, entity)
+		end))
 	end
 end
 
@@ -66,6 +84,7 @@ local function publish(p)
 	for n, t in ipairs(p.targets) do
 		_G["TreasureFinderProbe_map_" .. n] = t.map
 		_G["TreasureFinderProbe_label_" .. n] = t.label
+		_G["TreasureFinderProbe_source_" .. n] = t.source
 		_G["TreasureFinderProbe_wuid_" .. n] = t.wuid
 		_G["TreasureFinderProbe_x_" .. n] = t.x
 		_G["TreasureFinderProbe_y_" .. n] = t.y

@@ -14,11 +14,13 @@ struct ProbeResult {
         NotRun,        // the call returned but TreasureFinderProbe_ran is not true
         Ran,
     };
-    // Where a carried map leads, in the loaded level and not dealt with yet.
+    // Where a map the player has leads, or where a map the player does not have yet is found; in the loaded level
+    // and not dealt with yet.
     struct Target {
         std::string map;    // the map item's name
-        std::string label;  // its UIName localization label, for the map tooltip
-        std::uint64_t wuid; // the destination's WUID (XGenAIModule.GetMyWUID)
+        std::string label;  // the map tooltip's localization label
+        bool source;        // the map's own location rather than where it leads
+        std::uint64_t wuid; // the marked object's WUID (XGenAIModule.GetMyWUID)
         Engine::Vec3 pos;
 
         bool operator==(const Target &) const = default;

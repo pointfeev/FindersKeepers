@@ -23,7 +23,7 @@ namespace {
             const auto args = params.Args();
             if (!args.empty() && args[0]) {
                 if (const Flash::Value name = args[0]->ToValue();
-                    name.type == Flash::Value::String && std::string_view(name.string) == MarkType::kName) {
+                    name.type == Flash::Value::String && MarkType::Find(std::string_view(name.string))) {
                     result->Set(Flash::Value(kImportanceHigh));
                     return;
                 }
@@ -41,8 +41,7 @@ namespace {
     void Patch(const Game::Map *map) {
         Flash::Player *player = Game::MapPlayer(map);
         if (!player || !player->IsAvailable(kMEnum)) {
-            Log::Write("map importance: the map movie is not loaded yet; '{}' markers keep normal importance",
-                       MarkType::kName);
+            Log::Write("map importance: the map movie is not loaded yet; our markers keep normal importance");
             return;
         }
         if (player->IsAvailable(kOriginalPath))
@@ -58,7 +57,7 @@ namespace {
             Log::Write("map importance: could not replace MEnum.GetPoiImportance");
             return;
         }
-        Log::Write("map importance: '{}' markers are high importance", MarkType::kName);
+        Log::Write("map importance: our markers are high importance");
     }
 
     // The map screen's step that sends the POI markers and legend items to the map movie (RVA 0xA1AE28), run each

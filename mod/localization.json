@@ -16,5 +16,23 @@
     "Turkish": "Hazine",
     "Ukrainian": "Скарб",
     "Vietnamese": "Kho báu"
+  },
+  "ui_maplegend_TreasureFinderMap": {
+    "English": "Treasure map",
+    "Chineses": "藏宝图",
+    "Chineset": "藏寶圖",
+    "Czech": "Mapa pokladu",
+    "French": "Carte au trésor",
+    "German": "Schatzkarte",
+    "Italian": "Mappa del tesoro",
+    "Japanese": "宝の地図",
+    "Korean": "보물 지도",
+    "Polish": "Mapa skarbu",
+    "Portuguese": "Mapa do tesouro",
+    "Russian": "Карта сокровищ",
+    "Spanish": "Mapa del tesoro",
+    "Turkish": "Hazine haritası",
+    "Ukrainian": "Карта скарбів",
+    "Vietnamese": "Bản đồ kho báu"
   }
 }

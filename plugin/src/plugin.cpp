@@ -21,8 +21,9 @@ namespace {
     ULONGLONG g_nextProbe = 0;
     // Empty until the first probe after start-up or a save load, so that one is always logged.
     std::optional<ProbeResult> g_last;
-    // The last probe's targets, for the floating icon every frame.
-    std::vector<Engine::Vec3> g_positions;
+    // The last probe's target positions, for the floating icons every frame: destinations, then map locations.
+    std::vector<Engine::Vec3> g_destinations;
+    std::vector<Engine::Vec3> g_sources;
     bool g_announced = false;
     bool g_wasStarted = false;
 
@@ -38,8 +39,8 @@ namespace {
         Log::Write("probe: player={} targets={}{}{}", r.playerReady, r.targets.size(),
                    r.errors.empty() ? "" : " errors: ", r.errors);
         for (const auto &t : r.targets)
-            Log::Write("probe: {} leads to WUID {:016x} at ({:.1f}, {:.1f}, {:.1f})", t.map, t.wuid, t.pos.x, t.pos.y,
-                       t.pos.z);
+            Log::Write("probe: {} {} WUID {:016x} at ({:.1f}, {:.1f}, {:.1f})", t.map,
+                       t.source ? "lies at" : "leads to", t.wuid, t.pos.x, t.pos.y, t.pos.z);
     }
 
     void Tick() {
@@ -60,7 +61,8 @@ namespace {
             } else {
                 // Loading is starting: marks go before the objects they point at.
                 GameMark::Clear();
-                g_positions.clear();
+                g_destinations.clear();
+                g_sources.clear();
             }
         }
         g_wasStarted = started;
@@ -68,13 +70,16 @@ namespace {
         if (const ULONGLONG now = GetTickCount64(); started && now >= g_nextProbe) {
             g_nextProbe = now + kProbeIntervalMs;
             LogProbe(Probe::Run());
-            g_positions.clear();
+            g_destinations.clear();
+            g_sources.clear();
             for (const auto &t : g_last->targets)
-                g_positions.push_back(t.pos);
+                (t.source ? g_sources : g_destinations).push_back(t.pos);
             GameMark::Sync(g_last->targets);
         }
         const auto *map = Game::GetMap();
-        FloatingIcon::Update(g_positions, map && Game::IsTypeVisible(map, MarkType::kId));
+        FloatingIcon::Update(MarkType::kDestination, g_destinations,
+                             map && Game::IsTypeVisible(map, MarkType::kDestination.id));
+        FloatingIcon::Update(MarkType::kSource, g_sources, map && Game::IsTypeVisible(map, MarkType::kSource.id));
     }
 
     // CCryAction::PostUpdate (vtable slot 11, 0x180669C88): (framework, haveFocus, updateFlags), once per frame. KCSE

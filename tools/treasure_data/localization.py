@@ -2,8 +2,8 @@
 
 The table maps each string id to its text per game language. Each pak holds one text_ui_treasurefinder.xml in the
 game's format: a <Row> per string with the id, the English original and the translation. Each marked map in the
-map table also gets its tooltip string, "<type>: <map name>" in that language's own format, the map name taken
-from the install's own localization.
+map table also gets its tooltip strings, "<type>: <map name>" in that language's own format, on its destinations
+and on its own location, the map name taken from the install's own localization.
 """
 
 from __future__ import annotations
@@ -15,12 +15,12 @@ from pathlib import Path
 from xml.sax.saxutils import escape
 
 from .game import read_member
-from .maptable import marked_rows, tooltip_label
+from .maptable import map_source, marked_rows, tooltip_label
 
 TABLE_NAME = "text_ui_treasurefinder.xml"
 ITEM_TABLES = "Libs/Tables/item/item"
-# The mark type's name in our own table: the tooltip's "<type>".
-TYPE_STRING = "ui_maplegend_TreasureFinder"
+# Our mark types' names in our own table, the tooltip's "<type>": on a map's destinations and on its own location.
+TYPE_STRINGS = {False: "ui_maplegend_TreasureFinder", True: "ui_maplegend_TreasureFinderMap"}
 
 
 def read_ui_names(game_dir: Path) -> dict[str, str]:
@@ -52,24 +52,31 @@ def read_game_strings(game_dir: Path, language: str) -> dict[str, str]:
 def map_tooltips(
     table: dict[str, dict[str, str]], map_table: Path, formats_path: Path, game_dir: Path
 ) -> dict[str, dict[str, str]]:
-    """Each marked map's tooltip string id -> its text per language."""
+    """Each marked map's tooltip string ids (its destinations, and its own location where it has one) -> text per
+    language."""
     formats: dict[str, str] = json.loads(formats_path.read_text(encoding="utf-8"))
     ui_names = read_ui_names(game_dir)
-    name_labels = {}
+    # string id -> (whether it is a map location's, the map's name label)
+    entries: dict[str, tuple[bool, str]] = {}
     for row in marked_rows(map_table):
         label = row.get("name_label") or ui_names.get((row["guid"] or "").lower())
         if not label:
             raise SystemExit(f"{row['map']}: no name label (an item UIName or the row's name_label)")
-        name_labels[tooltip_label(row)] = label.lstrip("@").lower()
-    tooltips: dict[str, dict[str, str]] = {string_id: {} for string_id in name_labels}
+        name_label = label.lstrip("@").lower()
+        entries[tooltip_label(row)] = (False, name_label)
+        if map_source(row) is not None:
+            entries[tooltip_label(row, source=True)] = (True, name_label)
+    tooltips: dict[str, dict[str, str]] = {string_id: {} for string_id in entries}
     for language, pattern in formats.items():
         strings = read_game_strings(game_dir, language)
-        kind = table[TYPE_STRING].get(language) or table[TYPE_STRING]["English"]
-        for string_id, name_label in name_labels.items():
+        for string_id, (source, name_label) in entries.items():
             name = strings.get(name_label)
             if name is None:
                 raise SystemExit(f"{string_id}: {name_label} is not in the game's {language} strings")
-            tooltips[string_id][language] = pattern.format(type=kind, name=name.strip())
+            kinds = table[TYPE_STRINGS[source]]
+            tooltips[string_id][language] = pattern.format(
+                type=kinds.get(language) or kinds["English"], name=name.strip()
+            )
     return tooltips
 
 

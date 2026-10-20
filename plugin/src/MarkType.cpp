@@ -1,5 +1,7 @@
 #include "MarkType.h"
 
+#include <algorithm>
+#include <array>
 #include <string_view>
 
 #include "Game.h"
@@ -45,31 +47,37 @@ namespace {
     using TopGroupFn = bool(__fastcall *)(int);
     using MarkerFn = void *(__fastcall *)(void *, const Game::EntityMark *);
 
-    // Naming: cmp ecx, kId; je ours; <inc ecx; cmp ecx, imm8>; jmp [function + 5]; ours: mov rax, kName; ret
+    // Naming: the original's `inc ecx; cmp ecx, imm8`, whose immediate (the type count) is read rather than assumed.
+    constexpr std::uint8_t kNamePrefix[] = {0xFF, 0xC1, 0x83, 0xF9};
     constexpr std::size_t kNameEntrySize = 5;
-    constexpr std::size_t kNameStubSize = 3 + 2 + kNameEntrySize + Hooks::kAbsoluteJumpSize + 10 + 1;
+    NameFn g_name;
+
+    const char *__fastcall Name(const uint32_t id) {
+        const MarkType::Type *type = MarkType::Find(id);
+        return type ? type->name : g_name(id);
+    }
 
     bool PatchName() {
         const auto function = Hooks::Find("naming function", kNameRungs);
         if (!function)
             return false;
-        if (const char *current = reinterpret_cast<NameFn>(function)(MarkType::kId); std::string_view(current) != "?") {
-            Log::Write("mark type: id {} is already named '{}' by the game; not patched", MarkType::kId, current);
+        if (!Hooks::StartsWith(function, kNamePrefix)) {
+            Log::Write("mark type: naming function does not start as expected; not patched");
             return false;
         }
-        auto *stub = Hooks::AllocateStub("naming function", kNameStubSize);
-        if (!stub)
+        for (const MarkType::Type &type : MarkType::kTypes) {
+            if (const char *current = reinterpret_cast<NameFn>(function)(type.id); std::string_view(current) != "?") {
+                Log::Write("mark type: id {} is already named '{}' by the game; not patched", type.id, current);
+                return false;
+            }
+        }
+        std::array<std::uint8_t, kNameEntrySize> entry{};
+        std::ranges::copy_n(reinterpret_cast<const std::uint8_t *>(function), entry.size(), entry.begin());
+        g_name = reinterpret_cast<NameFn>(Hooks::Detour("naming function", function, entry, &Name));
+        if (!g_name)
             return false;
-        Hooks::StubWriter(stub)
-            .Bytes({0x83, 0xF9, static_cast<std::uint8_t>(MarkType::kId)}) // cmp ecx, imm8
-            .Bytes({0x74, kNameEntrySize + Hooks::kAbsoluteJumpSize})      // je over the next two
-            .Bytes(std::span(reinterpret_cast<const std::uint8_t *>(function), kNameEntrySize))
-            .AbsoluteJump(function + kNameEntrySize)
-            .Bytes({0x48, 0xB8}) // mov rax, imm64
-            .Value(reinterpret_cast<std::uint64_t>(MarkType::kName))
-            .Bytes({0xC3}); // ret
-        Hooks::Branch(function, reinterpret_cast<std::uintptr_t>(stub));
-        Log::Write("mark type: id {} is now '{}'", MarkType::kId, reinterpret_cast<NameFn>(function)(MarkType::kId));
+        for (const MarkType::Type &type : MarkType::kTypes)
+            Log::Write("mark type: id {} is now '{}'", type.id, reinterpret_cast<NameFn>(function)(type.id));
         return true;
     }
 
@@ -78,7 +86,10 @@ namespace {
     MapperFn g_mapper;
 
     int __fastcall MapName(const char *name) {
-        return _stricmp(name, MarkType::kName) == 0 ? static_cast<int>(MarkType::kId) : g_mapper(name);
+        for (const MarkType::Type &type : MarkType::kTypes)
+            if (_stricmp(name, type.name) == 0)
+                return static_cast<int>(type.id);
+        return g_mapper(name);
     }
 
     void PatchMapper() {
@@ -91,14 +102,18 @@ namespace {
             Log::Write("mark type: name mapper's first name is not 'Invalid'; not patched");
             return;
         }
-        if (const int before = reinterpret_cast<MapperFn>(function)(MarkType::kName); before != -1) {
-            Log::Write("mark type: name mapper already maps '{}' to {}; not patched", MarkType::kName, before);
-            return;
+        for (const MarkType::Type &type : MarkType::kTypes) {
+            if (const int before = reinterpret_cast<MapperFn>(function)(type.name); before != -1) {
+                Log::Write("mark type: name mapper already maps '{}' to {}; not patched", type.name, before);
+                return;
+            }
         }
         g_mapper = reinterpret_cast<MapperFn>(Hooks::Detour("name mapper", function, kMapperEntry, &MapName));
-        if (g_mapper)
-            Log::Write("mark type: name mapper maps '{}' to {}", MarkType::kName,
-                       reinterpret_cast<MapperFn>(function)(MarkType::kName));
+        if (!g_mapper)
+            return;
+        for (const MarkType::Type &type : MarkType::kTypes)
+            Log::Write("mark type: name mapper maps '{}' to {}", type.name,
+                       reinterpret_cast<MapperFn>(function)(type.name));
     }
 
     // Top group: the original's `cmp ecx, 0x5E; jg rel8`, rebuilt with the jump as an absolute one.
@@ -107,7 +122,9 @@ namespace {
     constexpr std::size_t kTopGroupStubSize = 3 + 2 + Hooks::kAbsoluteJumpSize + Hooks::kAbsoluteJumpSize;
     TopGroupFn g_topGroup;
 
-    bool __fastcall IsTopGroup(const int type) { return type == static_cast<int>(MarkType::kId) || g_topGroup(type); }
+    bool __fastcall IsTopGroup(const int type) {
+        return MarkType::Find(static_cast<uint32_t>(type)) || g_topGroup(type);
+    }
 
     void PatchTopGroup() {
         const auto function = Hooks::Find("legend top-group check", kTopGroupRungs);
@@ -128,8 +145,9 @@ namespace {
             .AbsoluteJump(function + kTopGroupEntrySize);
         g_topGroup = reinterpret_cast<TopGroupFn>(stub);
         Hooks::Branch(function, reinterpret_cast<std::uintptr_t>(&IsTopGroup));
-        Log::Write("mark type: legend lists '{}' in the top group: {}", MarkType::kName,
-                   reinterpret_cast<TopGroupFn>(function)(static_cast<int>(MarkType::kId)));
+        for (const MarkType::Type &type : MarkType::kTypes)
+            Log::Write("mark type: legend lists '{}' in the top group: {}", type.name,
+                       reinterpret_cast<TopGroupFn>(function)(static_cast<int>(type.id)));
     }
 
     // Marker: the original's `mov [rsp+0x18], rbx`.
@@ -142,7 +160,7 @@ namespace {
     // 1000), lowest on top; 0 puts ours above every other POI.
     void *__fastcall ConstructMarker(void *marker, const Game::EntityMark *mark) {
         void *result = g_marker(marker, mark);
-        if (mark->type == MarkType::kId)
+        if (MarkType::Find(mark->type))
             *reinterpret_cast<std::int32_t *>(static_cast<std::uint8_t *>(marker) + kMarkerPriorityOffset) = 0;
         return result;
     }
@@ -154,12 +172,11 @@ namespace {
         g_marker = reinterpret_cast<MarkerFn>(
             Hooks::Detour("POI marker constructor", function, kMarkerEntry, &ConstructMarker));
         if (g_marker)
-            Log::Write("mark type: '{}' map markers stack above other POIs", MarkType::kName);
+            Log::Write("mark type: our map markers stack above other POIs");
     }
 } // namespace
 
 bool MarkType::Install() {
-    static_assert(kId < 0x80, "the stub compares kId as a signed 8-bit immediate");
     if (!PatchName())
         return false;
     // Without these the type still shows on the map and compass, but the legend lists it under POIs, its Track

@@ -76,6 +76,7 @@ ProbeResult Probe::Run() {
         }
         r.targets.push_back({.map = map.string,
                              .label = label.string,
+                             .source = GetBool(Field("source", n)),
                              .wuid = static_cast<std::uint64_t>(wuid.handle),
                              .pos = Engine::Vec3(x, y, z)});
     }
