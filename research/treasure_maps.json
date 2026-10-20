@@ -491,7 +491,17 @@
       "entity_check": "ok",
       "entity_guid": "4fe8eb63-c0d0-08c1"
     },
-    "entity_check": "ok"
+    "entity_check": "ok",
+    "extra_targets": [
+      {
+        "role": "shrine at the cross on the rock, looted before the bag (inventory_poi_zapomenutyKriz1)",
+        "level": "trosecko",
+        "entity_name": "Stash27",
+        "entity_id": "11898",
+        "entity_guid": "91793419-859e-4550",
+        "pos": "1656.022,2315.164,38.08333"
+      }
+    ]
   },
   {
     "map": "map_bruncvik_04",
@@ -610,7 +620,25 @@
       "entity_check": "ok",
       "entity_guid": "5aef0f5d-1ef4-43ee"
     },
-    "entity_check": "ok"
+    "entity_check": "ok",
+    "extra_targets": [
+      {
+        "role": "second empty dig spot at the mine",
+        "level": "kutnohorsko",
+        "entity_name": "graveHole[special/graveHole7_7976514d-404c-4fa9-b109-bcf8aaeb934c]",
+        "entity_id": "952783",
+        "entity_guid": "ab8eb8d1-3b17-054d",
+        "pos": "3784.03,1151.609,54.05568"
+      },
+      {
+        "role": "third empty dig spot at the mine",
+        "level": "kutnohorsko",
+        "entity_name": "graveHole[special/graveHole9_b799338c-1adc-4a9d-8907-e59e72716ab4]",
+        "entity_id": "952784",
+        "entity_guid": "6561da10-6187-0079",
+        "pos": "3789.935,1151.602,54.22691"
+      }
+    ]
   },
   {
     "map": "map_u49_mapakpokladu_bandit",
@@ -675,7 +703,25 @@
       "notes": "Entity: (leader, soul char_VUDCE_LAPKU_U49_MAPA_K_POKLADU)",
       "entity_guid": "823df317-3f45-4d00"
     },
-    "entity_check": "ok"
+    "entity_check": "ok",
+    "extra_targets": [
+      {
+        "role": "second empty dig spot at the mine",
+        "level": "kutnohorsko",
+        "entity_name": "graveHole[special/graveHole7_7976514d-404c-4fa9-b109-bcf8aaeb934c]",
+        "entity_id": "952783",
+        "entity_guid": "ab8eb8d1-3b17-054d",
+        "pos": "3784.03,1151.609,54.05568"
+      },
+      {
+        "role": "third empty dig spot at the mine",
+        "level": "kutnohorsko",
+        "entity_name": "graveHole[special/graveHole9_b799338c-1adc-4a9d-8907-e59e72716ab4]",
+        "entity_id": "952784",
+        "entity_guid": "6561da10-6187-0079",
+        "pos": "3789.935,1151.602,54.22691"
+      }
+    ]
   },
   {
     "map": "nakaza_dirtyPageFromCrypt",
@@ -1047,10 +1093,10 @@
     "destination_summary": "Hunting grounds around Slatejov. The guide follows it SE from the unfinished cottage along the rock formation to a wolf hunting ground (wolf pack), where a skeleton lies with a hazel longbow and arrows.",
     "container": "none (area); bonus loot is a bow + arrows in world ItemSlots",
     "level": "trosecko",
-    "entity_name": "tsla_animalSpawn_huntingSpotPOI_4 (wolf hunting spot POI)",
-    "entity_id": null,
-    "entity_guid": null,
-    "pos": "2937.481,1804.712,87.86604",
+    "entity_name": "ItemSlot115",
+    "entity_id": "31712",
+    "entity_guid": "4ca999c8-c91d-4363",
+    "pos": "2927.774,1809.111,85.76345",
     "poi_name": "tsla_animalSpawn_huntingSpotPOI_4",
     "alt_entities": [
       {
@@ -1086,7 +1132,7 @@
     "sources": [
       "https://wotpack.ru/pl/karta-slateyovskih-ohotnichih-ugodiy-v-kingdom-come-deliverance-2-gde-nayti-sokrovische/"
     ],
-    "notes": "Only one guide describes it (Polish, partly machine-written). I did not look at the map images, so I can't confirm whether the sketch also marks spots 1-3. Treat all four tsla spots as candidates, with spot 4 as the primary.",
+    "notes": "Only one guide describes it (Polish, partly machine-written). I did not look at the map images, so I can't confirm whether the sketch also marks spots 1-3. Treat all four tsla spots as candidates, with spot 4 as the primary. 2026-10-19: three guides agree the payoff is the skeleton with the hazel longbow in a hole near the wolf hunting spot (spot 4), so the destination is that bow slot (ItemSlot115 31712; ItemSlots 31711, 31713 and 31714 sit beside it).",
     "source": {
       "how": "chest",
       "summary": "Locked chest (difficulty 0.6) under an awning at the unfinished cottage near Slatejov (POI nedostavenaChalupa_poi). Its key poi_nedostavenaChalupa_key is in a clay jug nearby (Stash15 id 31611 at 2826.494,1947.285). Chest: map + 43 g + 31 improved hunting arrows + 2 bowyer kits.",
@@ -1101,7 +1147,7 @@
       ],
       "entity_check": "ok"
     },
-    "entity_check": "no_id"
+    "entity_check": "ok"
   },
   {
     "map": "poi_podseminstiDrevorubci_map",
@@ -1425,7 +1471,17 @@
       ],
       "entity_check": "ok"
     },
-    "entity_check": "ok"
+    "entity_check": "ok",
+    "extra_targets": [
+      {
+        "role": "cup and plate at the hollow tree, the first stop",
+        "level": "trosecko",
+        "entity_name": "ItemSlot41",
+        "entity_id": "28485",
+        "entity_guid": "36216dba-7aa4-432f",
+        "pos": "1607.578,3075.083,15.74414"
+      }
+    ]
   },
   {
     "map": "puvodNemoci_planOfBasement",
@@ -1656,7 +1712,17 @@
       ],
       "entity_check": "no_id"
     },
-    "entity_check": "ok"
+    "entity_check": "ok",
+    "extra_targets": [
+      {
+        "role": "underground sack in the same cave (inventory_ttro_undergroundSack), likely the key sack guides mention",
+        "level": "trosecko",
+        "entity_name": "Stash4[Stash/sack_generic13_9d187ba4-da8a-4577-85c6-93f476713a7e]",
+        "entity_id": "44523",
+        "entity_guid": "72257b34-95b4-021f",
+        "pos": "2627.159,2674.127,136.1915"
+      }
+    ]
   },
   {
     "map": "treasureHunter_map2",
@@ -1699,7 +1765,17 @@
       ],
       "entity_check": "no_id"
     },
-    "entity_check": "ok"
+    "entity_check": "ok",
+    "extra_targets": [
+      {
+        "role": "grave on top of the Devil's Finger (inventory_certuvPrstStash)",
+        "level": "trosecko",
+        "entity_name": "Stash19",
+        "entity_id": "33640",
+        "entity_guid": "62f82ebb-cb4d-41b1",
+        "pos": "897.5383,2247.094,76.67227"
+      }
+    ]
   },
   {
     "map": "treasureHunter_map3",
@@ -2053,6 +2129,48 @@
       ],
       "entity_check": "no_id"
     },
+    "entity_check": "ok"
+  },
+  {
+    "map": "tunelVeSkalach_carving",
+    "guid": null,
+    "en_name": "Map carved in the cave wall (Tunnel in the cliffs)",
+    "category": "treasure",
+    "destination_summary": "The 'Hidden treasure' in the rocks north of Trosky Castle: a chest and a sack.",
+    "container": "chest and sack",
+    "level": "trosecko",
+    "entity_name": "stash[Chest/chest17_8db65f88-4a4d-4d28-808c-1f6e9c322834]",
+    "entity_id": "16919",
+    "entity_guid": "20eefed5-5585-0781",
+    "pos": "2446.858,3031.178,94.92254",
+    "poi_name": "ukrytyPoklad_poi (Hidden treasure) 2450.172,3032.561",
+    "extra_targets": [
+      {
+        "role": "sack beside the chest",
+        "level": "trosecko",
+        "entity_name": "Stash5",
+        "entity_id": "16775",
+        "entity_guid": "1cf55fad-925f-4c2e",
+        "pos": "2444.603,3030.857,94.96452"
+      }
+    ],
+    "alt_entities": [],
+    "examined": {
+      "how": "interaction",
+      "summary": "Not an item: a map carved into the east cave wall of the Tunnel in the cliffs, examined with E (one-shot quest trigger, enabled when the open world unlocks). Its interactionTrigger:IsPressEnabled() turns false once examined.",
+      "level": "trosecko",
+      "entity_name": "tunelVeSkalach_map",
+      "entity_id": "20483",
+      "entity_guid": "3cf9a472-13f8-45aa",
+      "pos": "2823.362,2184.632,117.9397"
+    },
+    "name_label": "ui_maplegend_tunnelInApolena",
+    "how_matched": "Quest poi_trosecko/tunelVeSkalach.xml: its poi_handler watches POI type 5d0b700b, the type of ukrytyPoklad_poi; the chest and sack sit at that POI. Guides: the carving leads to the Hidden treasure north of Trosky.",
+    "confidence": "verified",
+    "sources": [
+      "https://www.gamerguides.com/kingdom-come-deliverance-ii/guide/free-form-quests/trosky/apollonia-cave-wall-map-treasure-location-guide"
+    ],
+    "notes": "Probed in game 2026-10-19: IsPressEnabled true before, false after examining. Also false before the open world unlocks, so it reads as examined in that early stretch.",
     "entity_check": "ok"
   }
 ]

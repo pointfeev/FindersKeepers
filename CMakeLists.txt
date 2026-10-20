@@ -47,13 +47,18 @@ add_custom_command(
 # One Localization/<Language>_xml.pak per game language, built from the string table; the stamp stands in for the
 # set of paks, whose languages come from the table.
 set(MOD_STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/mod/localization.json")
+# Per language, how a map tooltip combines the mark type's name and the map's name (from the install's strings).
+set(MOD_TOOLTIP_FORMATS "${CMAKE_CURRENT_SOURCE_DIR}/mod/tooltip_formats.json")
 set(MOD_LOCALIZATION_STAMP "${CMAKE_BINARY_DIR}/localization.stamp")
 add_custom_command(
     OUTPUT "${MOD_LOCALIZATION_STAMP}"
-    COMMAND "${UV_EXECUTABLE}" run --project "${CMAKE_CURRENT_SOURCE_DIR}" treasure-data localize
-            "${MOD_STRINGS}" "${MOD_STAGE}/Localization"
+    COMMAND "${UV_EXECUTABLE}" run --project "${CMAKE_CURRENT_SOURCE_DIR}" treasure-data --game "${KCD2_DIR}" localize
+            "${MOD_STRINGS}" "${MOD_STAGE}/Localization" --map-table "${MAP_TABLE}"
+            --tooltip-formats "${MOD_TOOLTIP_FORMATS}"
     COMMAND "${CMAKE_COMMAND}" -E touch "${MOD_LOCALIZATION_STAMP}"
-    DEPENDS "${MOD_STRINGS}"
+    DEPENDS "${MOD_STRINGS}" "${MOD_TOOLTIP_FORMATS}" "${MAP_TABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tools/treasure_data/localization.py"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tools/treasure_data/maptable.py"
     COMMENT "Building localization paks"
     VERBATIM)
 

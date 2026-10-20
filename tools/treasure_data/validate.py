@@ -76,9 +76,14 @@ def validate(root: Path, table_path: Path, tolerance: float) -> Report:
         if guid not in table_guids:
             report.errors.append(f"new map item not in the table: {item['name']} ({item['en_name']}, {guid})")
     for row in rows:
-        if row["guid"] not in game_maps:
+        # A map the player examines rather than carries (a carving) has no item, only its trigger.
+        if row.get("examined"):
+            checker.check(f"{row['map']} examined trigger", row["examined"])
+        elif row["guid"] not in game_maps:
             report.errors.append(f"{row['map']}: map item {row['guid']} no longer exists in the game")
         checker.check(f"{row['map']} destination", row)
+        for place in row.get("extra_targets", []):
+            checker.check(f"{row['map']} destination {place['entity_id']}", place)
         if row.get("source"):
             checker.check(f"{row['map']} source", row["source"])
     return report

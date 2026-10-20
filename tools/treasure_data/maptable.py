@@ -3,16 +3,11 @@
 from __future__ import annotations
 
 import json
-import xml.etree.ElementTree as ET
-import zipfile
 from pathlib import Path
-
-from .game import read_member
 
 PAK_PATH = "Scripts/Mods/treasurefinder_maps.lua"
 # Maps that lead somewhere; "not_a_location_map" items do not.
 MARKED_CATEGORIES = {"treasure", "quest", "area"}
-ITEM_TABLES = "Libs/Tables/item/item"
 
 
 def lua_string(text: str) -> str:
@@ -21,38 +16,41 @@ def lua_string(text: str) -> str:
     return '"' + text.replace("\\", "\\\\").replace('"', '\\"') + '"'
 
 
-def read_ui_names(game_dir: Path) -> dict[str, str]:
-    """Item GUID -> its UIName localization label, from the install's item tables."""
-    labels = {}
-    with zipfile.ZipFile(game_dir / "Data" / "Tables.pak") as pak:
-        for info in pak.infolist():
-            if info.filename.startswith(ITEM_TABLES) and info.filename.endswith(".xml"):
-                for doc in ET.fromstring(read_member(pak, info)).iter("Document"):
-                    if doc.get("Id") and doc.get("UIName"):
-                        labels[doc.get("Id").lower()] = doc.get("UIName")
-    return labels
+def marked_rows(table_path: Path) -> list[dict]:
+    """The rows the mod marks: maps that lead somewhere, resolved to at least one level entity."""
+    rows = json.loads(table_path.read_text(encoding="utf-8"))
+    return [
+        row
+        for row in rows
+        if row["category"] in MARKED_CATEGORIES and row["confidence"] != "unresolved" and row["entity_id"]
+    ]
 
 
-def build(table_path: Path, game_dir: Path) -> bytes:
-    """One entry per map whose destination is a known level entity: the map item's class and name label, the
-    destination's level, entity id and name (ids repeat across levels and names within one, so the probe checks
-    both)."""
-    maps = json.loads(table_path.read_text(encoding="utf-8"))
-    labels = read_ui_names(game_dir)
-    rows = []
-    for item in maps:
-        if item["category"] not in MARKED_CATEGORIES or item["confidence"] == "unresolved" or not item["entity_id"]:
-            continue
-        label = labels.get(item["guid"].lower())
-        if not label:
-            raise SystemExit(f"{item['map']}: no UIName for item {item['guid']} in this install's item tables")
-        rows.append(
-            f"\t{{ map = {lua_string(item['map'])}, item = {lua_string(item['guid'])}, label = {lua_string(label)}, "
-            f"level = {lua_string(item['level'])}, entity = {int(item['entity_id'])}, "
-            f"name = {lua_string(item['entity_name'])} }},"
+def tooltip_label(row: dict) -> str:
+    """The localization label of a map's tooltip text, built by localization.build."""
+    return f"ui_treasurefinder_map_{row['map']}"
+
+
+def build(table_path: Path) -> bytes:
+    """One entry per map: how the player gets it (an item class carried, or a trigger examined), its tooltip label,
+    and every place it leads to, each a level entity id and name (ids repeat across levels and names within one, so
+    the probe checks both)."""
+    entries = []
+    for row in marked_rows(table_path):
+        if row.get("examined"):
+            source = f"seen = {lua_string(row['examined']['entity_name'])}"
+        else:
+            source = f"item = {lua_string(row['guid'])}"
+        places = [row, *row.get("extra_targets", [])]
+        targets = ", ".join(
+            f"{{ entity = {int(place['entity_id'])}, name = {lua_string(place['entity_name'])} }}" for place in places
+        )
+        entries.append(
+            f"\t{{ map = {lua_string(row['map'])}, {source}, label = {lua_string(tooltip_label(row))}, "
+            f"level = {lua_string(row['level'])},\n\t\ttargets = {{ {targets} }} }},"
         )
     lua = (
         f"-- Generated from {table_path.name} by treasure-data; do not edit.\n"
-        "TreasureFinder.Maps = {\n" + "\n".join(rows) + "\n}\n"
+        "TreasureFinder.Maps = {\n" + "\n".join(entries) + "\n}\n"
     )
     return lua.encode("utf-8")

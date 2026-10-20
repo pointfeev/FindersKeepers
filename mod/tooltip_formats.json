@@ -1,0 +1,18 @@
+{
+  "Chineses": "{type}：{name}",
+  "Chineset": "{type}：{name}",
+  "Czech": "{type}: {name}",
+  "English": "{type}: {name}",
+  "French": "{type} : {name}",
+  "German": "{type}: {name}",
+  "Italian": "{type}: {name}",
+  "Japanese": "{type}：{name}",
+  "Korean": "{type}: {name}",
+  "Polish": "{type}: {name}",
+  "Portuguese": "{type}: {name}",
+  "Russian": "{type}: {name}",
+  "Spanish": "{type}: {name}",
+  "Turkish": "{type}: {name}",
+  "Ukrainian": "{type}: {name}",
+  "Vietnamese": "{type}: {name}"
+}

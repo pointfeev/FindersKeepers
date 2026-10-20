@@ -51,18 +51,23 @@ def main() -> int:
     localize_cmd = commands.add_parser("localize", help="build Localization/<Language>_xml.pak from a string table")
     localize_cmd.add_argument("table", type=Path, help="JSON: string id -> {language: text}")
     localize_cmd.add_argument("out_dir", type=Path, help="folder for the <Language>_xml.pak files")
+    localize_cmd.add_argument("--map-table", type=Path, required=True, help="the curated map table, for map tooltips")
+    localize_cmd.add_argument(
+        "--tooltip-formats", type=Path, required=True, help='JSON: language -> tooltip format ("{type}: {name}")'
+    )
 
     args = parser.parse_args()
     if args.command == "pack":
-        game_dir = find_game_dir(args.game)
-        extra = read_game_files(game_dir, args.game_files) if args.game_files else {}
+        extra = read_game_files(find_game_dir(args.game), args.game_files) if args.game_files else {}
         if args.map_table:
-            extra[MAP_TABLE_PAK_PATH] = build_map_table(args.map_table, game_dir)
+            extra[MAP_TABLE_PAK_PATH] = build_map_table(args.map_table)
         count = pack(args.source, args.out, extra)
         print(f"packed {count} files into {args.out}")
         return 0
     if args.command == "localize":
-        paks = build_localization(args.table, args.out_dir)
+        paks = build_localization(
+            args.table, args.out_dir, args.map_table, args.tooltip_formats, find_game_dir(args.game)
+        )
         print(f"wrote {len(paks)} localization paks into {args.out_dir}")
         return 0
 
