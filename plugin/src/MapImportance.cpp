@@ -6,13 +6,14 @@
 #include "Game.h"
 #include "Hooks.h"
 #include "Log.h"
+#include "MapTooltip.h"
 #include "MarkType.h"
 
 namespace {
-    constexpr const char kMEnum[] = "_global.MEnum";
+    constexpr char kMEnum[] = "_global.MEnum";
     // The game's own GetPoiImportance, kept on MEnum under this name; its presence also marks the movie as patched.
-    constexpr const char kOriginal[] = "treasureFinderGetPoiImportance";
-    constexpr const char kOriginalPath[] = "_global.MEnum.treasureFinderGetPoiImportance";
+    constexpr char kOriginal[] = "treasureFinderGetPoiImportance";
+    constexpr char kOriginalPath[] = "_global.MEnum.treasureFinderGetPoiImportance";
     // MEnum.POI_IMPORTANCE_HIGH in ApseMap.gfx.
     constexpr int kImportanceHigh = 2;
 
@@ -21,16 +22,15 @@ namespace {
         void Call(const Params &params, Result *result) override {
             const auto args = params.Args();
             if (!args.empty() && args[0]) {
-                const Flash::Value name = args[0]->ToValue();
-                if (name.type == Flash::Value::String && std::string_view(name.string) == MarkType::kName) {
+                if (const Flash::Value name = args[0]->ToValue();
+                    name.type == Flash::Value::String && std::string_view(name.string) == MarkType::kName) {
                     result->Set(Flash::Value(kImportanceHigh));
                     return;
                 }
             }
-            Flash::VarPtr menu;
             Flash::Value importance;
-            if (params.player && params.player->GetVariable(kMEnum, menu.put()) && menu &&
-                menu->Invoke(kOriginal, args, &importance))
+            if (Flash::VarPtr menu; params.player && params.player->GetVariable(kMEnum, menu.put()) && menu &&
+                                    menu->Invoke(kOriginal, args, &importance))
                 result->Set(importance);
         }
     };
@@ -38,7 +38,7 @@ namespace {
     GetPoiImportance g_function;
 
     // Replaces MEnum.GetPoiImportance in the loaded map movie unless it is already ours.
-    void Patch(Game::Map *map) {
+    void Patch(const Game::Map *map) {
         Flash::Player *player = Game::MapPlayer(map);
         if (!player || !player->IsAvailable(kMEnum)) {
             Log::Write("map importance: the map movie is not loaded yet; '{}' markers keep normal importance",
@@ -75,15 +75,15 @@ namespace {
     using SendFn = void(__fastcall *)(Game::Map *);
     SendFn g_send;
 
-    // Patches before the markers are sent, so they are created with our importance.
+    // Patches before the markers are sent, so they are created with our importance and tooltip.
     void __fastcall SendMapContent(Game::Map *map) {
         Patch(map);
+        MapTooltip::Patch(map);
         g_send(map);
     }
 } // namespace
 
 void MapImportance::Install() {
-    const auto function = Hooks::Find("map content sender", kSendRungs);
-    if (function)
+    if (const auto function = Hooks::Find("map content sender", kSendRungs))
         g_send = reinterpret_cast<SendFn>(Hooks::Detour("map content sender", function, kSendEntry, &SendMapContent));
 }

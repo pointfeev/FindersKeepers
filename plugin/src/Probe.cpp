@@ -6,9 +6,9 @@
 #include "Engine.h"
 
 namespace {
-    constexpr const char kRunProbe[] = "TreasureFinder.Probe()";
+    constexpr char kRunProbe[] = "TreasureFinder.Probe()";
     // TreasureFinder.Probe() publishes each result as a top-level global with this prefix.
-    constexpr const char kPrefix[] = "TreasureFinderProbe_";
+    constexpr char kPrefix[] = "TreasureFinderProbe_";
 
     using Engine::ScriptValue;
 
@@ -19,12 +19,12 @@ namespace {
         return Engine::GetGlobal(std::format("{}{}", kPrefix, field).c_str(), out);
     }
 
-    bool GetBool(std::string_view field) {
+    bool GetBool(const std::string_view field) {
         ScriptValue v;
         return Get(field, v) && v.type == ScriptValue::Boolean && v.boolean;
     }
 
-    bool GetNumber(std::string_view field, float &out) {
+    bool GetNumber(const std::string_view field, float &out) {
         ScriptValue v;
         if (!Get(field, v) || v.type != ScriptValue::Number)
             return false;
@@ -33,7 +33,7 @@ namespace {
     }
 } // namespace
 
-const char *Probe::StatusName(ProbeResult::Status status) {
+const char *Probe::StatusName(const ProbeResult::Status status) {
     switch (status) {
     case ProbeResult::Status::ExecuteFailed:
         return "Lua call failed";
@@ -49,8 +49,8 @@ const char *Probe::StatusName(ProbeResult::Status status) {
 
 ProbeResult Probe::Run() {
     ProbeResult r;
-    ScriptValue loaded;
-    if (!Engine::GetGlobal("TreasureFinderLoaded", loaded) || loaded.type != ScriptValue::Boolean || !loaded.boolean)
+    if (ScriptValue loaded;
+        !Engine::GetGlobal("TreasureFinderLoaded", loaded) || loaded.type != ScriptValue::Boolean || !loaded.boolean)
         return r;
     if (!Engine::Execute(kRunProbe, "TreasureFinder probe")) {
         r.status = ProbeResult::Status::ExecuteFailed;
@@ -65,18 +65,21 @@ ProbeResult Probe::Run() {
     float count = 0.f;
     GetNumber("count", count);
     for (int n = 1; n <= static_cast<int>(count); ++n) {
-        ScriptValue map, wuid;
+        ScriptValue map, label, wuid;
         float x = 0.f, y = 0.f, z = 0.f;
         if (!Get(Field("map", n), map) || map.type != ScriptValue::String || !map.string ||
+            !Get(Field("label", n), label) || label.type != ScriptValue::String || !label.string ||
             !Get(Field("wuid", n), wuid) || wuid.type != ScriptValue::Handle || !GetNumber(Field("x", n), x) ||
             !GetNumber(Field("y", n), y) || !GetNumber(Field("z", n), z)) {
             r.errors += std::format("{}target {} not readable", r.errors.empty() ? "" : "; ", n);
             continue;
         }
-        r.targets.push_back({map.string, static_cast<std::uint64_t>(wuid.handle), Engine::Vec3(x, y, z)});
+        r.targets.push_back({.map = map.string,
+                             .label = label.string,
+                             .wuid = static_cast<std::uint64_t>(wuid.handle),
+                             .pos = Engine::Vec3(x, y, z)});
     }
-    ScriptValue errors;
-    if (Get("errors", errors) && errors.type == ScriptValue::String && errors.string)
+    if (ScriptValue errors; Get("errors", errors) && errors.type == ScriptValue::String && errors.string)
         r.errors += std::format("{}{}", r.errors.empty() ? "" : "; ", errors.string);
     return r;
 }

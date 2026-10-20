@@ -54,9 +54,10 @@ def main() -> int:
 
     args = parser.parse_args()
     if args.command == "pack":
-        extra = read_game_files(find_game_dir(args.game), args.game_files) if args.game_files else {}
+        game_dir = find_game_dir(args.game)
+        extra = read_game_files(game_dir, args.game_files) if args.game_files else {}
         if args.map_table:
-            extra[MAP_TABLE_PAK_PATH] = build_map_table(args.map_table)
+            extra[MAP_TABLE_PAK_PATH] = build_map_table(args.map_table, game_dir)
         count = pack(args.source, args.out, extra)
         print(f"packed {count} files into {args.out}")
         return 0

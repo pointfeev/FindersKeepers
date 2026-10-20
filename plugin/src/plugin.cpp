@@ -65,19 +65,15 @@ namespace {
         }
         g_wasStarted = started;
 
-        const ULONGLONG now = GetTickCount64();
-        if (started && now >= g_nextProbe) {
+        if (const ULONGLONG now = GetTickCount64(); started && now >= g_nextProbe) {
             g_nextProbe = now + kProbeIntervalMs;
             LogProbe(Probe::Run());
-            std::vector<std::uint64_t> wuids;
             g_positions.clear();
-            for (const auto &t : g_last->targets) {
-                wuids.push_back(t.wuid);
+            for (const auto &t : g_last->targets)
                 g_positions.push_back(t.pos);
-            }
-            GameMark::Sync(wuids);
+            GameMark::Sync(g_last->targets);
         }
-        auto *map = Game::GetMap();
+        const auto *map = Game::GetMap();
         FloatingIcon::Update(g_positions, map && Game::IsTypeVisible(map, MarkType::kId));
     }
 
@@ -87,7 +83,7 @@ namespace {
     using FrameFn = void(__fastcall *)(void *, bool, unsigned);
     FrameFn g_frame;
 
-    void __fastcall FrameUpdate(void *framework, bool haveFocus, unsigned flags) {
+    void __fastcall FrameUpdate(void *framework, const bool haveFocus, const unsigned flags) {
         g_frame(framework, haveFocus, flags);
         Tick();
     }
@@ -124,7 +120,13 @@ struct KcsePluginVersion {
     std::uint32_t versionIndependence; // 1: finds game code by signature
 };
 
-__declspec(dllexport) KcsePluginVersion KCSEPlugin_Version = {1, 1, "TreasureFinder", "pointfeev", {}, 0, 1};
+__declspec(dllexport) KcsePluginVersion KCSEPlugin_Version = {.dataVersion = 1,
+                                                              .pluginVersion = 1,
+                                                              .name = "TreasureFinder",
+                                                              .author = "pointfeev",
+                                                              .compatibleGameVersions = {},
+                                                              .kcseVersionRequired = 0,
+                                                              .versionIndependence = 1};
 
 __declspec(dllexport) bool KCSEPlugin_Load(const void *) { return Install(); }
 }

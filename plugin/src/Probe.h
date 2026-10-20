@@ -17,6 +17,7 @@ struct ProbeResult {
     // Where a carried map leads, in the loaded level and not dealt with yet.
     struct Target {
         std::string map;    // the map item's name
+        std::string label;  // its UIName localization label, for the map tooltip
         std::uint64_t wuid; // the destination's WUID (XGenAIModule.GetMyWUID)
         Engine::Vec3 pos;
 

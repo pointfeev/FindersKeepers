@@ -34,7 +34,7 @@ local function target(m)
 		return nil
 	end
 	local pos = entity:GetWorldPos()
-	return { map = m.map, wuid = wuid, x = pos.x, y = pos.y, z = pos.z }
+	return { map = m.map, label = m.label, wuid = wuid, x = pos.x, y = pos.y, z = pos.z }
 end
 
 local function publish(p)
@@ -45,6 +45,7 @@ local function publish(p)
 	local names = {}
 	for n, t in ipairs(p.targets) do
 		_G["TreasureFinderProbe_map_" .. n] = t.map
+		_G["TreasureFinderProbe_label_" .. n] = t.label
 		_G["TreasureFinderProbe_wuid_" .. n] = t.wuid
 		_G["TreasureFinderProbe_x_" .. n] = t.x
 		_G["TreasureFinderProbe_y_" .. n] = t.y
