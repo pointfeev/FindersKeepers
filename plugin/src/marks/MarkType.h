@@ -19,9 +19,9 @@ namespace MarkType {
         const char *name;
     };
     // Where the treasure maps the player has lead.
-    inline constexpr Type kDestination{60, "TreasureFinder"};
+    inline constexpr Type kDestination{.id = 60, .name = "TreasureFinder"};
     // Where treasure maps the player does not have yet are found.
-    inline constexpr Type kSource{61, "TreasureFinderMap"};
+    inline constexpr Type kSource{.id = 61, .name = "TreasureFinderMap"};
     inline constexpr std::array kTypes{kDestination, kSource};
 
     constexpr const Type *Find(const std::uint32_t id) {
