@@ -1,10 +1,10 @@
-#include "Game.h"
+#include "game/Game.h"
 
 #include <new>
 
-#include "Engine.h"
-#include "Hooks.h"
 #include "Log.h"
+#include "game/Engine.h"
+#include "game/Hooks.h"
 
 namespace {
     // Most functions are found through two call sites that use several of them in a row: the dog marker

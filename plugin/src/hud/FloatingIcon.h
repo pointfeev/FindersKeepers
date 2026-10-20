@@ -2,8 +2,8 @@
 
 #include <span>
 
-#include "Engine.h"
-#include "MarkType.h"
+#include "game/Engine.h"
+#include "marks/MarkType.h"
 
 // One icon per mark type drawn on screen over its nearest target, like a quest marker: the type's own map icon, shown
 // within a set distance and fading in as the player approaches.

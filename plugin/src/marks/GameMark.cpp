@@ -1,13 +1,13 @@
-#include "GameMark.h"
+#include "marks/GameMark.h"
 
 #include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "Game.h"
 #include "Log.h"
-#include "MarkType.h"
+#include "game/Game.h"
+#include "marks/MarkType.h"
 
 namespace {
     // The param the game's own "show map marker" quest node passes.

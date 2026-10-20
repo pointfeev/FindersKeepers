@@ -1,4 +1,4 @@
-#include "MapTooltip.h"
+#include "marks/MapTooltip.h"
 
 #include <charconv>
 #include <cstdint>
@@ -6,10 +6,10 @@
 #include <string_view>
 #include <vector>
 
-#include "Flash.h"
-#include "GameMark.h"
 #include "Log.h"
-#include "MarkType.h"
+#include "game/Flash.h"
+#include "marks/GameMark.h"
+#include "marks/MarkType.h"
 
 namespace {
     constexpr char kRoot[] = "_root";

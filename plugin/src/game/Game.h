@@ -4,8 +4,8 @@
 #include <cstdint>
 #include <memory>
 
-#include "Engine.h"
-#include "Flash.h"
+#include "game/Engine.h"
+#include "game/Flash.h"
 
 // Warhorse's game objects the plugin uses, declared from WHGame.dll 1.5.6.
 namespace Game {

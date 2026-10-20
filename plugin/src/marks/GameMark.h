@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <span>
 
-#include "Probe.h"
+#include "probe/Probe.h"
 
 // Markers on the compass and the world map, through the game's own entity marks (the mechanism quests use to point at
 // an object: C_UIMap::GetOrCreateEntityMark + RegisterEntityMark), of our own mark types (MarkType: destinations and

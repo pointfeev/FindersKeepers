@@ -4,15 +4,15 @@
 #include <optional>
 #include <vector>
 
-#include "Engine.h"
-#include "FloatingIcon.h"
-#include "Game.h"
-#include "GameMark.h"
-#include "Hooks.h"
 #include "Log.h"
-#include "MapImportance.h"
-#include "MarkType.h"
-#include "Probe.h"
+#include "game/Engine.h"
+#include "game/Game.h"
+#include "game/Hooks.h"
+#include "hud/FloatingIcon.h"
+#include "marks/GameMark.h"
+#include "marks/MapImportance.h"
+#include "marks/MarkType.h"
+#include "probe/Probe.h"
 
 // A KCSE plugin (see the exports at the end) that brings its own game access: it runs on the game framework's
 // per-frame update.

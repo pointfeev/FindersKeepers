@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <vector>
 
-#include "Engine.h"
+#include "game/Engine.h"
 
 // What should be marked right now, worked out from the game's own state for every map in MapTable.
 struct ProbeResult {

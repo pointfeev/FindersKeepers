@@ -1,13 +1,13 @@
-#include "MapImportance.h"
+#include "marks/MapImportance.h"
 
 #include <string_view>
 
-#include "Flash.h"
-#include "Game.h"
-#include "Hooks.h"
 #include "Log.h"
-#include "MapTooltip.h"
-#include "MarkType.h"
+#include "game/Flash.h"
+#include "game/Game.h"
+#include "game/Hooks.h"
+#include "marks/MapTooltip.h"
+#include "marks/MarkType.h"
 
 namespace {
     constexpr char kMEnum[] = "_global.MEnum";

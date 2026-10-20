@@ -1,12 +1,12 @@
-#include "MarkType.h"
+#include "marks/MarkType.h"
 
 #include <algorithm>
 #include <array>
 #include <string_view>
 
-#include "Game.h"
-#include "Hooks.h"
 #include "Log.h"
+#include "game/Game.h"
+#include "game/Hooks.h"
 
 namespace {
     // Signatures, each rung checked for exactly one match with pat.py against WHGame.dll 1.5.6, most specific first.

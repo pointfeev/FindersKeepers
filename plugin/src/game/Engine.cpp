@@ -1,7 +1,7 @@
-#include "Engine.h"
+#include "game/Engine.h"
 
-#include "Hooks.h"
 #include "Log.h"
+#include "game/Hooks.h"
 
 namespace {
     // gEnv (SSystemGlobalEnvironment, 0x18492D800 in 1.5.6), found through the framework's per-frame update

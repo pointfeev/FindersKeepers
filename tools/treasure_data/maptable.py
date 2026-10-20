@@ -58,8 +58,8 @@ def tooltip_label(row: dict, source: bool = False) -> str:
 
 
 def build(table_path: Path) -> str:
-    """One MapTable::Map per map (plugin/src/MapTable.h): how the player gets it (an item class carried, or a trigger
-    examined), every place it leads to, where it is found, and the tooltip labels of both."""
+    """One MapTable::Map per map (plugin/src/probe/MapTable.h): how the player gets it (an item class carried, or a
+    trigger examined), every place it leads to, where it is found, and the tooltip labels of both."""
     targets, maps = [], []
     for n, row in enumerate(marked_rows(table_path)):
         places = ", ".join(cpp_place(place) for place in [row, *row.get("extra_targets", [])])

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Game.h"
+#include "game/Game.h"
 
 // Names the treasure map on our map markers' hover tooltip ("Treasure: <map>") instead of the type's name alone. The
 // map movie (ApseMap.gfx) shows a marker's tooltip through _root.OnShowTooltip(uiName, marker), which hands uiName, a

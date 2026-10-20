@@ -1,4 +1,4 @@
-#include "FloatingIcon.h"
+#include "hud/FloatingIcon.h"
 
 #include <algorithm>
 #include <array>
@@ -6,10 +6,10 @@
 #include <span>
 #include <string>
 
-#include "Engine.h"
-#include "Flash.h"
-#include "Game.h"
 #include "Log.h"
+#include "game/Engine.h"
+#include "game/Flash.h"
+#include "game/Game.h"
 
 using Engine::Vec3;
 using Flash::Value;

@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <span>
 
-#include "Game.h"
+#include "game/Game.h"
 
 // The maps the mod marks, generated at build time from research/treasure_maps.json (tools/treasure_data/maptable.py)
 // into MapTableData.inc.

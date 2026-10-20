@@ -1,13 +1,13 @@
-#include "Probe.h"
+#include "probe/Probe.h"
 
 #include <algorithm>
 #include <map>
 #include <string_view>
 #include <vector>
 
-#include "Game.h"
 #include "Log.h"
-#include "MapTable.h"
+#include "game/Game.h"
+#include "probe/MapTable.h"
 
 using Engine::ScriptValue;
 

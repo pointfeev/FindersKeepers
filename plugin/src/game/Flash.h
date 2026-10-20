@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <span>
 
-#include "Engine.h"
+#include "game/Engine.h"
 
 // The game's Scaleform wrappers (CFlashPlayer, CFlashVariableObject), declared from WHGame.dll 1.5.6.
 namespace Flash {
