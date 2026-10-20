@@ -1,5 +1,6 @@
 #include "Probe.h"
 
+#include <format>
 #include <string>
 
 #include "Engine.h"
@@ -11,17 +12,19 @@ namespace {
 
     using Engine::ScriptValue;
 
-    bool Get(const char *field, ScriptValue &out) {
-        const std::string name = std::string(kPrefix) + field;
-        return Engine::GetGlobal(name.c_str(), out);
+    // Per target n, the fields are TreasureFinderProbe_<field>_<n>.
+    std::string Field(std::string_view field, int n) { return std::format("{}_{}", field, n); }
+
+    bool Get(std::string_view field, ScriptValue &out) {
+        return Engine::GetGlobal(std::format("{}{}", kPrefix, field).c_str(), out);
     }
 
-    bool GetBool(const char *field) {
+    bool GetBool(std::string_view field) {
         ScriptValue v;
         return Get(field, v) && v.type == ScriptValue::Boolean && v.boolean;
     }
 
-    bool GetNumber(const char *field, float &out) {
+    bool GetNumber(std::string_view field, float &out) {
         ScriptValue v;
         if (!Get(field, v) || v.type != ScriptValue::Number)
             return false;
@@ -59,26 +62,21 @@ ProbeResult Probe::Run() {
     }
     r.status = ProbeResult::Status::Ran;
     r.playerReady = GetBool("playerReady");
-    float n = 0.f;
-    if (GetNumber("mapCount", n))
-        r.mapCount = static_cast<int>(n);
-    r.foundById = GetBool("foundById");
-    r.foundByName = GetBool("foundByName");
-    r.sameEntity = GetBool("sameEntity");
-    float x = 0.f, y = 0.f, z = 0.f;
-    r.hasPos = GetNumber("x", x) && GetNumber("y", y) && GetNumber("z", z);
-    if (r.hasPos)
-        r.pos = Engine::Vec3(x, y, z);
-    if (GetNumber("itemCount", n))
-        r.itemCount = static_cast<int>(n);
+    float count = 0.f;
+    GetNumber("count", count);
+    for (int n = 1; n <= static_cast<int>(count); ++n) {
+        ScriptValue map, wuid;
+        float x = 0.f, y = 0.f, z = 0.f;
+        if (!Get(Field("map", n), map) || map.type != ScriptValue::String || !map.string ||
+            !Get(Field("wuid", n), wuid) || wuid.type != ScriptValue::Handle || !GetNumber(Field("x", n), x) ||
+            !GetNumber(Field("y", n), y) || !GetNumber(Field("z", n), z)) {
+            r.errors += std::format("{}target {} not readable", r.errors.empty() ? "" : "; ", n);
+            continue;
+        }
+        r.targets.push_back({map.string, static_cast<std::uint64_t>(wuid.handle), Engine::Vec3(x, y, z)});
+    }
     ScriptValue errors;
     if (Get("errors", errors) && errors.type == ScriptValue::String && errors.string)
-        r.errors = errors.string;
-    ScriptValue wuid;
-    if (Get("wuid", wuid)) {
-        r.wuidType = static_cast<int>(wuid.type);
-        if (wuid.type == ScriptValue::Handle)
-            r.wuid = static_cast<uint64_t>(wuid.handle);
-    }
+        r.errors += std::format("{}{}", r.errors.empty() ? "" : "; ", errors.string);
     return r;
 }

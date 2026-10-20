@@ -45,7 +45,7 @@ namespace {
     }
 } // namespace
 
-void FloatingIcon::Update(const Vec3 &world, bool tracked) {
+void FloatingIcon::Update(std::span<const Vec3> treasures, bool tracked) {
     Vec3 playerPos;
     auto *fp = Game::HudPlayer();
     if (!Engine::PlayerPosition(playerPos) || !fp || !EnsureClip(fp))
@@ -53,8 +53,14 @@ void FloatingIcon::Update(const Vec3 &world, bool tracked) {
     VarPtr clip;
     if (!fp->GetVariable(kClip, clip.put()) || !clip)
         return;
+    if (treasures.empty()) {
+        clip->SetVisible(false);
+        return;
+    }
 
-    const Vec3 anchor(world.x, world.y, world.z + kHeightAbove);
+    const auto anchorOf = [](const Vec3 &treasure) { return Vec3(treasure.x, treasure.y, treasure.z + kHeightAbove); };
+    const Vec3 anchor =
+        anchorOf(std::ranges::min(treasures, {}, [&](const Vec3 &t) { return (anchorOf(t) - playerPos).Length(); }));
     const float distance = (anchor - playerPos).Length();
 
     float sx = 0.f, sy = 0.f, sz = 0.f;

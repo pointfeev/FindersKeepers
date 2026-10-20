@@ -1,46 +1,61 @@
 -- Loaded by the game as the mod's init script (scripts/mods/<modid>.lua). The TreasureFinder plugin calls
--- TreasureFinder.Probe() and reads the results back from plain globals (TreasureFinderProbe_<field>): reading a
--- global needs no table references on the C++ side.
+-- TreasureFinder.Probe() and reads the results back from plain globals (TreasureFinderProbe_<field>, per target
+-- TreasureFinderProbe_<field>_<n>): reading a global needs no table references on the C++ side.
 TreasureFinder = TreasureFinder or {}
 TreasureFinderLoaded = true
 
--- Test target: the Vidlak bandit's map (poi_vyplavenyPoklad_map) and the washed-up chest it leads to.
-local MAP_CLASS = "84286824-882c-48a0-b261-e5ccea6929f6"
-local CHEST_ID = 15785
-local CHEST_NAME = "stash[Chest/chest29_11fe2aef-9a55-48b3-8ec5-e33b9e1d1197]"
+-- TreasureFinder.Maps, generated into the pak from research/treasure_maps.json.
+Script.ReloadScript("Scripts/Mods/treasurefinder_maps.lua")
 
-local FIELDS = {
-	"ran",
-	"playerReady",
-	"mapCount",
-	"foundById",
-	"foundByName",
-	"sameEntity",
-	"x",
-	"y",
-	"z",
-	"itemCount",
-	"wuid",
-	"errors",
-}
+-- Whether a destination has been dealt with: a hole dug (Hole.lua: nDepth is 1 once dug) or a container emptied.
+-- Destinations with neither (areas, triggers) stay marked while the map is carried.
+local function done(entity)
+	if entity.nDepth ~= nil then
+		return entity.nDepth >= 1
+	end
+	if entity.inventory then
+		return entity.inventory:GetCount() == 0
+	end
+	return false
+end
+
+-- The destination of one map if it is carried and its destination is in the loaded level and not dealt with yet.
+-- Entity ids repeat across levels, so the name confirms the match.
+local function target(m)
+	if player.inventory:GetCountOfClass(m.item) == 0 then
+		return nil
+	end
+	local entity = System.GetEntity(m.entity)
+	if not entity or entity:GetName() ~= m.name or done(entity) then
+		return nil
+	end
+	local wuid = XGenAIModule.GetMyWUID(entity)
+	if not wuid then
+		return nil
+	end
+	local pos = entity:GetWorldPos()
+	return { map = m.map, wuid = wuid, x = pos.x, y = pos.y, z = pos.z }
+end
 
 local function publish(p)
-	for _, field in ipairs(FIELDS) do
-		_G["TreasureFinderProbe_" .. field] = p[field]
+	TreasureFinderProbe_ran = true
+	TreasureFinderProbe_playerReady = p.playerReady
+	TreasureFinderProbe_count = #p.targets
+	TreasureFinderProbe_errors = p.errors
+	local names = {}
+	for n, t in ipairs(p.targets) do
+		_G["TreasureFinderProbe_map_" .. n] = t.map
+		_G["TreasureFinderProbe_wuid_" .. n] = t.wuid
+		_G["TreasureFinderProbe_x_" .. n] = t.x
+		_G["TreasureFinderProbe_y_" .. n] = t.y
+		_G["TreasureFinderProbe_z_" .. n] = t.z
+		names[n] = t.map
 	end
 	-- Logged from Lua as well, so the log shows the probe running even if the plugin cannot read the results.
 	local summary = "player="
 		.. tostring(p.playerReady)
-		.. " mapCount="
-		.. tostring(p.mapCount)
-		.. " byId="
-		.. tostring(p.foundById)
-		.. " byName="
-		.. tostring(p.foundByName)
-		.. " items="
-		.. tostring(p.itemCount)
-		.. " wuid="
-		.. tostring(p.wuid)
+		.. " targets="
+		.. table.concat(names, ",")
 		.. " errors="
 		.. tostring(p.errors)
 	if summary ~= TreasureFinder.lastSummary then
@@ -49,51 +64,19 @@ local function publish(p)
 	end
 end
 
--- Runs one game call; a failure is recorded in p.errors instead of aborting the probe, so every step reports.
-local function try(p, label, fn, ...)
-	local ok, result = pcall(fn, ...)
-	if ok then
-		return result
-	end
-	p.errors = (p.errors and (p.errors .. "; ") or "") .. label .. ": " .. tostring(result)
-	return nil
-end
-
-local function probe(p)
-	if not player or not player.inventory then
-		return
-	end
-	p.playerReady = true
-	p.mapCount = try(p, "GetCountOfClass", function()
-		return player.inventory:GetCountOfClass(MAP_CLASS)
-	end)
-
-	-- Level-file entity ids may or may not survive as runtime ids, so both lookups are reported.
-	local byId = try(p, "GetEntity", System.GetEntity, CHEST_ID)
-	local byName = try(p, "GetEntityByName", System.GetEntityByName, CHEST_NAME)
-	p.foundById = byId ~= nil
-	p.foundByName = byName ~= nil
-	p.sameEntity = byId ~= nil and byName ~= nil and byId.id == byName.id
-
-	local chest = byName or byId
-	if not chest then
-		return
-	end
-	local pos = chest:GetWorldPos()
-	p.x, p.y, p.z = pos.x, pos.y, pos.z
-	if chest.inventory then
-		p.itemCount = try(p, "GetCount", function()
-			return chest.inventory:GetCount()
-		end)
-	end
-	p.wuid = try(p, "GetMyWUID", XGenAIModule.GetMyWUID, chest)
-end
-
 function TreasureFinder.Probe()
-	local p = { ran = true, playerReady = false }
-	local ok, err = pcall(probe, p)
-	if not ok then
-		p.errors = (p.errors and (p.errors .. "; ") or "") .. "probe: " .. tostring(err)
+	local p = { playerReady = false, targets = {} }
+	if player and player.inventory then
+		p.playerReady = true
+		-- One failing map is recorded in p.errors and does not stop the others.
+		for _, m in ipairs(TreasureFinder.Maps) do
+			local ok, result = pcall(target, m)
+			if not ok then
+				p.errors = (p.errors and (p.errors .. "; ") or "") .. m.map .. ": " .. tostring(result)
+			elseif result then
+				p.targets[#p.targets + 1] = result
+			end
+		end
 	end
 	publish(p)
 end

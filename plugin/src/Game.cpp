@@ -2,6 +2,7 @@
 
 #include <new>
 
+#include "Engine.h"
 #include "Hooks.h"
 #include "Log.h"
 
@@ -54,6 +55,27 @@ namespace {
          .ripDisp = 37,
          .ripLength = 41},
     };
+    // The quest "show map marker" node's teardown (0x180A19B80): XGenAI's object manager, unwatching the marked
+    // object, then RemoveEntityMark. Its setup (0x180C4DADC) watches the object the same way.
+    constexpr const char kMarkerTeardown[] =
+        "E8 ?? ?? ?? ?? 48 8B 90 60 01 00 00 48 8B 8A A8 00 00 00 48 8B 01 FF 90 F0 00 00 00 48 8B 0B "
+        "4C 8D 87 88 00 00 00 48 8B 51 10 48 8B C8 48 83 C2 08 E8 ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 8B 88 E8 00 00 00 "
+        "E8 ?? ?? ?? ?? 48 8B D3 48 8D 4C 24 20 4C 8D 80 08 15 00 00 E8 ?? ?? ?? ?? 48 8B D0 49 8B C8 E8";
+    // C_UIMap::RemoveEntityMark (0x180A182F0): (map, shared_ptr by value), which releases its argument.
+    constexpr Hooks::Rung kRemoveMarkRungs[] = {
+        {.pattern = kMarkerTeardown, .ripDisp = 98, .ripLength = 102},
+    };
+    // The object manager's watch (0x180C9B198) and unwatch (0x180A198C0): (manager, const WUID *, listener).
+    constexpr Hooks::Rung kWatchRungs[] = {
+        {.pattern =
+             "E8 ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 8B 88 60 01 00 00 48 8B 89 A8 00 00 00 48 8B 01 FF 90 F0 00 00 00 "
+             "48 8B 0E 4C 8D 83 88 00 00 00 48 8B 51 10 48 8B C8 48 83 C2 08 E8",
+         .ripDisp = 55,
+         .ripLength = 59},
+    };
+    constexpr Hooks::Rung kUnwatchRungs[] = {
+        {.pattern = kMarkerTeardown, .ripDisp = 50, .ripLength = 54},
+    };
     // The linkable object for a WUID (0x18047C1AC): looks the WUID up in the AI object manager and returns its link
     // node, ignoring rcx.
     constexpr Hooks::Rung kFindRungs[] = {
@@ -72,6 +94,10 @@ namespace {
     constexpr std::size_t kFramework = 0x00;
     constexpr std::size_t kGameplayStarted = 0xB8 + 0x10;
     constexpr std::size_t kGuiModule = 0xE8;
+    // S_GameContext +0x160 is XGenAI, whose +0xA8 hands out the object manager from its slot 30.
+    constexpr std::size_t kXGenAi = 0x160;
+    constexpr std::size_t kXGenAiObjects = 0xA8;
+    constexpr std::size_t kObjectManagerSlot = 30;
     constexpr std::size_t kMapInApse = 0x1508;
     // A screen (C_UIFlashBase) keeps its bound element at +0x48 (its call into Flash, 0x180566BCC); the element
     // (CFlashUIElement) its player at +0x58 (its setup, 0x18088EF1C).
@@ -87,6 +113,7 @@ namespace {
     using CreateMarkFn = void *(__fastcall *)(Game::Map *, std::shared_ptr<Game::EntityMark> *, std::uint32_t, void *,
                                               std::uint32_t);
     using RegisterMarkFn = void(__fastcall *)(Game::Map *, std::shared_ptr<Game::EntityMark> *);
+    using WatchFn = void(__fastcall *)(void *manager, const std::uint64_t *, Game::ObjectListener *);
     using FindFn = void *(__fastcall *)(void *, const std::uint64_t *);
 
     ContextFn g_context;
@@ -94,6 +121,9 @@ namespace {
     ScreenFn g_compass;
     CreateMarkFn g_createMark;
     RegisterMarkFn g_registerMark;
+    RegisterMarkFn g_removeMark;
+    WatchFn g_watch;
+    WatchFn g_unwatch;
     FindFn g_find;
 
     template <typename T> T At(const void *base, std::size_t offset) {
@@ -103,6 +133,17 @@ namespace {
     void *GuiModule() {
         const std::uint8_t *context = g_context ? g_context() : nullptr;
         return context ? At<void *>(context, kGuiModule) : nullptr;
+    }
+
+    void *ObjectManager() {
+        const std::uint8_t *context = g_context();
+        return Engine::VCall<void *>(At<void *>(At<void *>(context, kXGenAi), kXGenAiObjects), kObjectManagerSlot);
+    }
+
+    // Calls a game function that takes a shared_ptr by value: the caller builds the copy, the callee releases it.
+    void PassMark(RegisterMarkFn function, Game::Map *map, const std::shared_ptr<Game::EntityMark> &mark) {
+        alignas(std::shared_ptr<Game::EntityMark>) unsigned char argument[sizeof(std::shared_ptr<Game::EntityMark>)];
+        function(map, new (argument) std::shared_ptr<Game::EntityMark>(mark));
     }
 
     Flash::Player *ScreenPlayer(const void *screen) {
@@ -117,8 +158,12 @@ bool Game::Install() {
     g_compass = reinterpret_cast<ScreenFn>(Hooks::Find("compass screen", kCompassRungs));
     g_createMark = reinterpret_cast<CreateMarkFn>(Hooks::Find("GetOrCreateEntityMark", kCreateMarkRungs));
     g_registerMark = reinterpret_cast<RegisterMarkFn>(Hooks::Find("RegisterEntityMark", kRegisterMarkRungs));
+    g_removeMark = reinterpret_cast<RegisterMarkFn>(Hooks::Find("RemoveEntityMark", kRemoveMarkRungs));
+    g_watch = reinterpret_cast<WatchFn>(Hooks::Find("object watch", kWatchRungs));
+    g_unwatch = reinterpret_cast<WatchFn>(Hooks::Find("object unwatch", kUnwatchRungs));
     g_find = reinterpret_cast<FindFn>(Hooks::Find("linkable lookup", kFindRungs));
-    return g_context && g_apse && g_compass && g_createMark && g_registerMark && g_find;
+    return g_context && g_apse && g_compass && g_createMark && g_registerMark && g_removeMark && g_watch && g_unwatch &&
+           g_find;
 }
 
 bool Game::GameplayStarted() {
@@ -151,12 +196,19 @@ bool Game::IsTypeVisible(Map *map, std::uint32_t type) {
 std::shared_ptr<Game::EntityMark> Game::AddEntityMark(Map *map, std::uint32_t type, void *object, std::uint32_t param) {
     std::shared_ptr<EntityMark> mark;
     g_createMark(map, &mark, type, object, param);
-    if (!mark)
-        return mark;
-    // RegisterEntityMark takes its shared_ptr by value: the caller builds the copy, the callee releases it.
-    alignas(std::shared_ptr<EntityMark>) unsigned char argument[sizeof(std::shared_ptr<EntityMark>)];
-    g_registerMark(map, new (argument) std::shared_ptr<EntityMark>(mark));
+    if (mark)
+        PassMark(g_registerMark, map, mark);
     return mark;
 }
 
+void Game::RemoveEntityMark(Map *map, const std::shared_ptr<EntityMark> &mark) { PassMark(g_removeMark, map, mark); }
+
 void *Game::FindLinkable(std::uint64_t wuid) { return g_find(nullptr, &wuid); }
+
+void Game::WatchObject(const std::uint64_t *wuid, ObjectListener *listener) {
+    g_watch(ObjectManager(), wuid, listener);
+}
+
+void Game::UnwatchObject(const std::uint64_t *wuid, ObjectListener *listener) {
+    g_unwatch(ObjectManager(), wuid, listener);
+}

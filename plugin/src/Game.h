@@ -33,7 +33,26 @@ namespace Game {
     // Finds or creates the mark of `type` on `object` and registers it, which shows it while its type is visible.
     // Null when the game returns none.
     std::shared_ptr<EntityMark> AddEntityMark(Map *map, std::uint32_t type, void *object, std::uint32_t param);
+    // Undoes one AddEntityMark: the last one removes the mark and its compass marker. Does not touch the marked
+    // object, so it is safe once the object is gone.
+    void RemoveEntityMark(Map *map, const std::shared_ptr<EntityMark> &mark);
 
     // The linkable object (an AI object's link node) for a WUID, which marks track; null when unknown.
     void *FindLinkable(std::uint64_t wuid);
+
+    // The AI object manager's listener (I_ObjectManagerBaseListener): its vtable is this one function, called on the
+    // main thread with kObjectRemoved when the watched object is destroyed (a load, a level unload, the object going
+    // away). A listener may unwatch itself from the call.
+    class ObjectListener {
+      public:
+        virtual void OnObjectEvent(int event) = 0;
+
+      protected:
+        ~ObjectListener() = default;
+    };
+    constexpr int kObjectRemoved = 1;
+    // Starts and stops telling `listener` about the object with `wuid`; the WUID must outlive the watch. Unwatch only
+    // what is watched: the game does not check.
+    void WatchObject(const std::uint64_t *wuid, ObjectListener *listener);
+    void UnwatchObject(const std::uint64_t *wuid, ObjectListener *listener);
 } // namespace Game

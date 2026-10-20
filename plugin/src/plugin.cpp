@@ -1,6 +1,7 @@
 #include <windows.h>
 
 #include <optional>
+#include <vector>
 
 #include "Engine.h"
 #include "FloatingIcon.h"
@@ -11,7 +12,6 @@
 #include "MapImportance.h"
 #include "MarkType.h"
 #include "Probe.h"
-#include "TestTarget.h"
 
 // A KCSE plugin (see the exports at the end) that brings its own game access: it runs on the game framework's
 // per-frame update.
@@ -21,10 +21,12 @@ namespace {
     ULONGLONG g_nextProbe = 0;
     // Empty until the first probe after start-up or a save load, so that one is always logged.
     std::optional<ProbeResult> g_last;
+    // The last probe's targets, for the floating icon every frame.
+    std::vector<Engine::Vec3> g_positions;
     bool g_announced = false;
     bool g_wasStarted = false;
 
-    // Logs the probe when its result changes, so looting the chest shows up as one line.
+    // Logs the probe when its result changes, so picking up a map or digging up its treasure shows up in the log.
     void LogProbe(const ProbeResult &r) {
         if (g_last && *g_last == r)
             return;
@@ -33,41 +35,50 @@ namespace {
             Log::Write("probe: {}", Probe::StatusName(r.status));
             return;
         }
-        Log::Write(
-            "probe: player={} mapCount={} stashById={} stashByName={} same={} pos={}({:.1f}, {:.1f}, {:.1f}) items={} "
-            "wuid={:016x} (type {}){}{}",
-            r.playerReady, r.mapCount, r.foundById, r.foundByName, r.sameEntity, r.hasPos ? "" : "none ", r.pos.x,
-            r.pos.y, r.pos.z, r.itemCount, r.wuid, r.wuidType, r.errors.empty() ? "" : " errors: ", r.errors.c_str());
+        Log::Write("probe: player={} targets={}{}{}", r.playerReady, r.targets.size(),
+                   r.errors.empty() ? "" : " errors: ", r.errors);
+        for (const auto &t : r.targets)
+            Log::Write("probe: {} leads to WUID {:016x} at ({:.1f}, {:.1f}, {:.1f})", t.map, t.wuid, t.pos.x, t.pos.y,
+                       t.pos.z);
     }
 
     void Tick() {
         if (!g_announced) {
-            Log::Write("running; test target is the Vidlak bandit's chest");
+            Log::Write("running");
             g_announced = true;
             // On the game's main thread rather than KCSE's start-up thread, so code the game is running is not
             // patched under it.
             if (MarkType::Install())
                 MapImportance::Install();
         }
-        // A save finished loading or a new game started: probe afresh.
         const bool started = Game::GameplayStarted();
-        if (started && !g_wasStarted) {
-            g_last.reset();
-            g_nextProbe = 0;
+        if (started != g_wasStarted) {
+            if (started) {
+                // A save finished loading or a new game started: probe afresh.
+                g_last.reset();
+                g_nextProbe = 0;
+            } else {
+                // Loading is starting: marks go before the objects they point at.
+                GameMark::Clear();
+                g_positions.clear();
+            }
         }
         g_wasStarted = started;
 
         const ULONGLONG now = GetTickCount64();
-        if (now >= g_nextProbe) {
+        if (started && now >= g_nextProbe) {
             g_nextProbe = now + kProbeIntervalMs;
             LogProbe(Probe::Run());
+            std::vector<std::uint64_t> wuids;
+            g_positions.clear();
+            for (const auto &t : g_last->targets) {
+                wuids.push_back(t.wuid);
+                g_positions.push_back(t.pos);
+            }
+            GameMark::Sync(wuids);
         }
-        const bool live = g_last && g_last->hasPos;
-        const Engine::Vec3 &chest = live ? g_last->pos : TestTarget::kChestPos;
         auto *map = Game::GetMap();
-        FloatingIcon::Update(chest, map && Game::IsTypeVisible(map, MarkType::kId));
-        if (g_last)
-            GameMark::Update(g_last->wuid);
+        FloatingIcon::Update(g_positions, map && Game::IsTypeVisible(map, MarkType::kId));
     }
 
     // CCryAction::PostUpdate (vtable slot 11, 0x180669C88): (framework, haveFocus, updateFlags), once per frame. KCSE

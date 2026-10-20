@@ -10,6 +10,8 @@ from .extract import extract
 from .game import build_id, find_game_dir
 from .index import build_index
 from .localization import build as build_localization
+from .maptable import PAK_PATH as MAP_TABLE_PAK_PATH
+from .maptable import build as build_map_table
 from .pack import pack, read_game_files
 from .validate import validate
 
@@ -44,6 +46,7 @@ def main() -> int:
     pack_cmd.add_argument(
         "--game-files", type=Path, help='JSON: pak path -> "<game pak>:<member>", copied from the install'
     )
+    pack_cmd.add_argument("--map-table", type=Path, help=f"the curated map table, generated into {MAP_TABLE_PAK_PATH}")
 
     localize_cmd = commands.add_parser("localize", help="build Localization/<Language>_xml.pak from a string table")
     localize_cmd.add_argument("table", type=Path, help="JSON: string id -> {language: text}")
@@ -51,7 +54,9 @@ def main() -> int:
 
     args = parser.parse_args()
     if args.command == "pack":
-        extra = read_game_files(find_game_dir(args.game), args.game_files) if args.game_files else None
+        extra = read_game_files(find_game_dir(args.game), args.game_files) if args.game_files else {}
+        if args.map_table:
+            extra[MAP_TABLE_PAK_PATH] = build_map_table(args.map_table)
         count = pack(args.source, args.out, extra)
         print(f"packed {count} files into {args.out}")
         return 0

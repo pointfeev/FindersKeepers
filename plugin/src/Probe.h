@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <string>
+#include <vector>
 
 #include "Engine.h"
 
@@ -13,19 +14,19 @@ struct ProbeResult {
         NotRun,        // the call returned but TreasureFinderProbe_ran is not true
         Ran,
     };
+    // Where a carried map leads, in the loaded level and not dealt with yet.
+    struct Target {
+        std::string map;    // the map item's name
+        std::uint64_t wuid; // the destination's WUID (XGenAIModule.GetMyWUID)
+        Engine::Vec3 pos;
+
+        bool operator==(const Target &) const = default;
+    };
 
     Status status = Status::NoGlobal;
     bool playerReady = false;
-    int mapCount = -1;
-    bool foundById = false;
-    bool foundByName = false;
-    bool sameEntity = false;
-    bool hasPos = false;
-    Engine::Vec3 pos;
-    int itemCount = -1;
-    uint64_t wuid = 0;  // the chest's WUID (XGenAIModule.GetMyWUID), 0 when unknown
-    int wuidType = -1;  // Lua value type the WUID arrived as; only a handle is read
-    std::string errors; // game calls that raised a Lua error, "call: message; ..."
+    std::vector<Target> targets;
+    std::string errors; // maps whose check raised a Lua error, "map: message; ..."
 
     bool operator==(const ProbeResult &) const = default;
 };
