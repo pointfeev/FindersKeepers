@@ -378,7 +378,7 @@ std::optional<bool> Game::SlotHoldsItem(const std::uint32_t entityId) {
 }
 
 Game::QuestProgress Game::GetQuestProgress(const char *name) {
-    void *manager = At<void *>(At<void *>(g_context(), kQuestModule), kQuestManager);
+    const auto manager = At<void *>(At<void *>(g_context(), kQuestModule), kQuestManager);
     void *quest = nullptr;
     g_findQuest(manager, &quest, &name);
     if (!quest)
@@ -402,7 +402,7 @@ std::vector<Game::QuestMarker> Game::QuestMarkers() {
         const auto wuid = At<std::uint64_t>(target, kTargetWuid);
         if (const void *area = g_isArea(nullptr, wuid) ? g_findArea(nullptr, wuid) : nullptr) {
             float buffer[6];
-            const float *bounds = Engine::VCall<const float *>(area, kAreaBoundsSlot, buffer);
+            auto bounds = Engine::VCall<const float *>(area, kAreaBoundsSlot, buffer);
             markers.push_back({.min = {bounds[0], bounds[1], bounds[2]}, .max = {bounds[3], bounds[4], bounds[5]}});
         } else {
             const Engine::Vec3 pos = *Engine::VCall<const Engine::Vec3 *>(target, kTargetPositionSlot);
