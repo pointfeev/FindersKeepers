@@ -83,10 +83,10 @@ add_custom_target(mod ALL
     SOURCES "${MOD_MANIFEST}" "${MOD_STRINGS}" "${MOD_GAME_FILES}" ${MOD_DATA_FILES}
     VERBATIM)
 
-# The mod folder is replaced whole, so files no longer part of the mod go too.
+# The mod folder is replaced whole, so files no longer part of the mod go too; the player's settings file stays.
 add_custom_target(deploy
-    COMMAND "${CMAKE_COMMAND}" -E rm -rf "${KCD2_DIR}/Mods/${MOD_ID}"
-    COMMAND "${CMAKE_COMMAND}" -E copy_directory "${MOD_STAGE}" "${KCD2_DIR}/Mods/${MOD_ID}"
+    COMMAND "${CMAKE_COMMAND}" "-DSTAGE=${MOD_STAGE}" "-DTARGET=${KCD2_DIR}/Mods/${MOD_ID}"
+            "-DKEEP=KCSE/Plugins/TreasureFinder.ini" -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/deploy.cmake"
     DEPENDS mod
     COMMENT "Copying the mod into ${KCD2_DIR}/Mods/${MOD_ID}"
     VERBATIM)

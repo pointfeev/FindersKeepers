@@ -28,31 +28,42 @@ Treasure and what leads to it: treasure maps, the carved map in the Tunnel in th
 
 **Not possible under the state rule**: an unread map that leaves the inventory. Finding it again would mean remembering when it left, or searching every inventory and dropped item.
 
-## Options (planned, not built)
+## Options
 
-INI or MCM is undecided: it depends on how KCD2's MCM works and whether requiring it is acceptable. The map legend's Track toggle per mark type already works and is saved; options would sit under it.
+Settings live in `Mods/treasurefinder/KCSE/Plugins/TreasureFinder.ini` (`plugin/src/options`), the convention other KCSE plugins use. The mod does not ship it: the plugin writes it with the defaults when missing, re-reads it when it changes on disk, and adds keys a new version brings. The deploy step keeps it. The map legend's Track toggle per mark type still applies on top.
 
-| Option                                         | Default | Today                                 |
-|------------------------------------------------|---------|---------------------------------------|
-| World map markers                              | on      | always                                |
-| Compass markers                                | on      | always (separate toggle needs RE)     |
-| In-world icons                                 | on      | always                                |
-| Map locations                                  | off     | always on                             |
-| Require carrying the map                       | off     | never required                        |
-| Require having read the map                    | on      | always                                |
-| Keep finished destinations                     | off     | always removed                        |
-| Per category (treasure, quest, area, riddle)   | on      | all                                   |
-| Hide ours under a tracked quest marker         | on      | always                                |
-| Retire quest maps when their quest ends        | on      | always                                |
-| In-world icon shown within (m)                 | 40      | `kShowDistance`, FloatingIcon.cpp     |
-| In-world icon fully opaque within (m)          | 25      | `kFullDistance`, FloatingIcon.cpp     |
-| In-world icon size at 1080p (px)               | 48      | `kSizeAt1080`, FloatingIcon.cpp       |
-| In-world icon height above the target (m)      | 1.2     | `kHeightAbove`, FloatingIcon.cpp      |
-| Quest marker covers ours within (m)            | 15      | `kQuestMarkerReach`, Probe.cpp        |
+[Mod Configuration Menu](https://www.nexusmods.com/kingdomcomedeliverance2/mods/3363) (MCM), when installed, shows the same settings in the pause menu. It stores nothing: the plugin hears its "build settings" and "value changed" messages through KCSE's messaging interface and writes the INI. Without MCM the messages never come and the INI alone holds the settings. MCM's limits: it needs the Address Library (1.5.6 only, not Game Pass), so it breaks on game updates until republished, and it has no controller support. Its headers are GPL-3.0, so the plugin declares the few interfaces it calls itself.
+
+| Section   | Key                     | Default | Range   |
+|-----------|-------------------------|---------|---------|
+| Display      | `MapMarkers`            | on      |         |
+| Display      | `FloatingIcons`         | on      |         |
+| Marks        | `Destinations`          | on      |         |
+| Marks        | `MapLocations`          | on      |         |
+| Maps         | `TreasureMaps`, `QuestMaps`, `RiddleNotes` (each covers both marks) | on | |
+| Rules        | `RequireRead`           | on      |         |
+| Rules        | `RequireCarried`        | off     |         |
+| Rules        | `KeepFinished`          | off     |         |
+| Rules        | `RetireQuestMaps`       | on      |         |
+| Rules        | `HideUnderQuestMarkers` | on      |         |
+| Distances | `IconShowDistance`      | 40 m    | 10-150  |
+| Distances | `IconFullDistance`      | 25 m    | 0-150   |
+| Distances | `IconSize`              | 48 px   | 16-128  |
+| Distances | `IconHeight`            | 1.2 m   | 0-3     |
+| Distances | `QuestMarkerReach`      | 15 m    | 0-50    |
+
+Map and compass markers come from one game entity mark (`RegisterEntityMark` builds the compass marker), so they share one switch; separating them needs RE. The compass range is the game's. Labels are English only; MCM can show localised `@` keys if they are added to the localisation table.
 
 **Icons.** Treasure uses the game's debt-notes chest icon and map locations the map book; both read well enough for now. Custom icons are feasible without new tools (our own BC7 encoder writing into a game icon's DDS header, with undiscovered and shadow variants generated), and mock-ups exist (a wax seal with an X and one with a folded map was the favourite). Revisit only if more mark types are added and need a matching set.
 
-Map and compass markers come from one game entity mark (`RegisterEntityMark` builds the compass marker), so toggling them apart needs RE. The compass range is the game's.
+**Track toggle.** Settings act first (what is created at all) and the map legend's Track toggle second (whether a type shows), so a mark needs both. With map markers off the legend lists none of our types, so the in-world icons then ignore Track.
+
+## Extending
+
+- **A mark of an existing kind** (another map or note): a row in `treasure_maps.json`; the build generates, validates and localises it.
+- **A category:** the generator's category list, `MapTable::Category`, a settings entry (the INI and MCM follow) and a case in the probe's category check.
+- **A mark type** (own icon and legend entry): an entry in `MarkType::kTypes` (naming, importance and tooltips already loop over it), its icons in `game_files.json` and its legend string. Three places still assume exactly two types: `ProbeResult::Target` has `bool source`, `GameMark` picks the type from it, and `plugin.cpp` keeps two position lists and two icon calls. Before the next type: give `Target` a `const MarkType::Type *` and loop over `kTypes` there; small, and then a type is data.
+- **A non-map source** (stashes, keys): the probe only walks the map table. Before the first one, split it into providers that each return targets (the map table becomes one). Not before: one provider does not need the split.
 
 ## Open questions (need play)
 

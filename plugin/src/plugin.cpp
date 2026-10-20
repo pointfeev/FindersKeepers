@@ -12,6 +12,8 @@
 #include "marks/GameMark.h"
 #include "marks/MapImportance.h"
 #include "marks/MarkType.h"
+#include "options/Mcm.h"
+#include "options/Options.h"
 #include "probe/Probe.h"
 
 // A KCSE plugin (see the exports at the end) that brings its own game access: it runs on the game framework's
@@ -26,6 +28,7 @@ namespace {
     // The last probe's target positions, for the floating icons every frame: destinations, then map locations.
     std::vector<Engine::Vec3> g_destinations;
     std::vector<Engine::Vec3> g_sources;
+    std::uint32_t g_optionsVersion = 0;
     bool g_announced = false;
     bool g_wasStarted = false;
 
@@ -76,17 +79,29 @@ namespace {
 
         if (const ULONGLONG now = GetTickCount64(); started && now >= g_nextProbe) {
             g_nextProbe = now + kProbeIntervalMs;
+            Options::Refresh();
             LogProbe(Probe::Run());
             g_destinations.clear();
             g_sources.clear();
             for (const auto &t : g_last->targets)
                 (t.source ? g_sources : g_destinations).push_back(t.pos);
-            GameMark::Sync(g_last->targets);
+            GameMark::Sync(Options::Get().mapMarkers ? std::span(g_last->targets)
+                                                     : std::span<const ProbeResult::Target>());
         }
+        // A setting changed (the menu or the file): probe again at once.
+        if (Options::Version() != g_optionsVersion) {
+            g_optionsVersion = Options::Version();
+            g_nextProbe = 0;
+        }
+        // Icons follow the map legend's Track toggle for their type, except while map markers are off: the legend then
+        // lists none of our types, so a type untracked earlier could not be tracked again.
         const auto *map = Game::GetMap();
-        FloatingIcon::Update(MarkType::kDestination, g_destinations,
-                             map && Game::IsTypeVisible(map, MarkType::kDestination.id));
-        FloatingIcon::Update(MarkType::kSource, g_sources, map && Game::IsTypeVisible(map, MarkType::kSource.id));
+        const Options::Values &options = Options::Get();
+        const auto shown = [&](const MarkType::Type &type) {
+            return options.floatingIcons && (!options.mapMarkers || (map && Game::IsTypeVisible(map, type.id)));
+        };
+        FloatingIcon::Update(MarkType::kDestination, g_destinations, shown(MarkType::kDestination));
+        FloatingIcon::Update(MarkType::kSource, g_sources, shown(MarkType::kSource));
     }
 
     // CCryAction::PostUpdate (vtable slot 11, 0x180669C88): (framework, haveFocus, updateFlags), once per frame. KCSE
@@ -100,12 +115,15 @@ namespace {
         Tick();
     }
 
-    // Finds what the plugin needs and hooks the frame update, which installs the rest on the first frame.
-    bool Install() {
+    // Finds what the plugin needs, reads the settings and offers them to MCM (once the game log exists, so their lines
+    // reach it), and hooks the frame update, which installs the rest on the first frame.
+    bool Install(const void *kcse) {
         if (!Engine::Install() || !Game::Install()) {
             Log::Write("not started: game code not found (an unsupported game version?)");
             return false;
         }
+        Options::Install();
+        Mcm::Install(kcse);
         void *framework = Engine::Framework();
         if (!framework) {
             Log::Write("not started: the game framework does not exist yet");
@@ -118,8 +136,8 @@ namespace {
 } // namespace
 
 // KCSE loads DLLs from Mods/<mod>/KCSE/Plugins that export these two symbols: the plugin's description, then the
-// load call, made on KCSE's start-up thread once WHGame.dll is loaded and the game framework exists. The plugin uses
-// nothing else from KCSE.
+// load call, made on KCSE's start-up thread once WHGame.dll is loaded and the game framework exists, with KCSE's
+// interface. The plugin uses only its messaging, to hear from MCM.
 extern "C" {
 // KCSE's PluginVersionData (version 1).
 struct KcsePluginVersion {
@@ -140,5 +158,5 @@ __declspec(dllexport) KcsePluginVersion KCSEPlugin_Version = {.dataVersion = 1,
                                                               .kcseVersionRequired = 0,
                                                               .versionIndependence = 1};
 
-__declspec(dllexport) bool KCSEPlugin_Load(const void *) { return Install(); }
+__declspec(dllexport) bool KCSEPlugin_Load(const void *kcse) { return Install(kcse); }
 }

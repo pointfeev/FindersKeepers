@@ -15,6 +15,9 @@ namespace MapTable {
         bool afterQuest = false; // a destination marked only once the map's quest has ended, instead of until then
     };
 
+    // The table's categories, each switched by its own option.
+    enum class Category { Treasure, Quest, Riddle };
+
     struct Map {
         const char *name;               // the map's id in the table: its item's name, or the carving's
         Game::ItemClassId item;         // the map item's class; all zero for a map that is not an item
@@ -28,6 +31,7 @@ namespace MapTable {
                                         // afterQuest places); null for none
         Game::ItemClassId reveals;      // the next note of a riddle chain, found where this one leads: once the
                                         // player has or has read it, this one is done; all zero for none
+        Category category;
     };
 
 #include "MapTableData.inc"

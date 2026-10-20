@@ -1104,7 +1104,7 @@
     "map": "poi_nedostavenaChalupa_huntingSpotsMap",
     "guid": "f91c4738-fec3-4b1d-b70e-08d792119931",
     "en_name": "Map of game near Slatego ",
-    "category": "area",
+    "category": "treasure",
     "destination_summary": "Hunting grounds around Slatejov. The guide follows it SE from the unfinished cottage along the rock formation to a wolf hunting ground (wolf pack), where a skeleton lies with a hazel longbow and arrows.",
     "container": "none (area); bonus loot is a bow + arrows in world ItemSlots",
     "level": "trosecko",

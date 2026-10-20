@@ -9,13 +9,12 @@
 
 #include "Log.h"
 #include "game/Game.h"
+#include "options/Options.h"
 #include "probe/MapTable.h"
 
 using Engine::ScriptValue;
 
 namespace {
-    // How close to a quest marker a destination counts as already marked by the quest, in metres.
-    constexpr float kQuestMarkerReach = 15.f;
     constexpr const char *kProgressNames[] = {"not started", "active", "done", "failed"};
 
     // Per map item, whether it was read when last checked, so a map being read shows up as one log line.
@@ -81,12 +80,25 @@ namespace {
 
     // Whether a quest marker on the map already points at a position: it lies within reach of the marker's point or
     // inside (or within reach of) its search area, on the ground plane.
-    bool Covered(const Engine::Vec3 &pos, const std::span<const Game::QuestMarker> markers) {
+    bool Covered(const Engine::Vec3 &pos, const std::span<const Game::QuestMarker> markers, const float reach) {
         return std::ranges::any_of(markers, [&](const Game::QuestMarker &marker) {
             const float dx = std::max({marker.min.x - pos.x, 0.f, pos.x - marker.max.x});
             const float dy = std::max({marker.min.y - pos.y, 0.f, pos.y - marker.max.y});
-            return dx * dx + dy * dy <= kQuestMarkerReach * kQuestMarkerReach;
+            return dx * dx + dy * dy <= reach * reach;
         });
+    }
+
+    // Whether the options mark this kind of map.
+    bool Shown(const MapTable::Category category, const Options::Values &options) {
+        switch (category) {
+        case MapTable::Category::Treasure:
+            return options.treasureMaps;
+        case MapTable::Category::Quest:
+            return options.questMaps;
+        case MapTable::Category::Riddle:
+            return options.riddleNotes;
+        }
+        return true;
     }
 
     // Whether a carving's one-shot quest trigger still takes a press: it stops once the carving has been examined
@@ -158,17 +170,26 @@ ProbeResult Probe::Run() {
     if (!inventory)
         return result;
     result.playerReady = true;
+    const Options::Values &options = Options::Get();
     for (const MapTable::Map &map : MapTable::kMaps) {
-        if (Revealed(map, inventory))
+        if (!Shown(map.category, options) || Revealed(map, inventory))
             continue;
         const bool questOver = QuestOver(map);
+        const bool retired = questOver && options.retireQuestMaps;
         const bool has = HasMap(map, inventory);
-        if (Knows(map, has)) {
+        // Known: read (or, when reading is not required, carried too), and carried when that is required.
+        bool known = Knows(map, has) || (!options.requireRead && has);
+        if (options.requireCarried)
+            known = known && has;
+        if (known) {
+            if (!options.destinations)
+                continue;
             for (const MapTable::Place &place : map.targets)
-                if (place.afterQuest == questOver)
-                    if (const Engine::Entity *entity = Find(place); entity && !Done(place, entity))
+                if (place.afterQuest ? questOver : !retired)
+                    if (const Engine::Entity *entity = Find(place);
+                        entity && (options.keepFinished || !Done(place, entity)))
                         Add(result, map, entity, map.label, false);
-        } else if (!has && !questOver && map.source.entity) {
+        } else if (options.mapLocations && !has && !retired && map.source.entity) {
             if (const Engine::Entity *entity = Find(map.source); entity && HoldsMap(map, entity))
                 Add(result, map, entity, map.sourceLabel, true);
         }
@@ -176,10 +197,10 @@ ProbeResult Probe::Run() {
 
     // A destination a quest marker already points at is left to the quest while that marker shows.
     std::vector<std::uint64_t> covered;
-    if (std::ranges::any_of(result.targets, [](const auto &t) { return !t.source; })) {
+    if (options.hideUnderQuestMarkers && std::ranges::any_of(result.targets, [](const auto &t) { return !t.source; })) {
         const std::vector<Game::QuestMarker> markers = Game::QuestMarkers();
         std::erase_if(result.targets, [&](const ProbeResult::Target &t) {
-            if (t.source || !Covered(t.pos, markers))
+            if (t.source || !Covered(t.pos, markers, options.questMarkerReach))
                 return false;
             covered.push_back(t.wuid);
             if (!std::ranges::contains(g_covered, t.wuid))

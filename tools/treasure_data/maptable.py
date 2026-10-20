@@ -6,8 +6,8 @@ import json
 import uuid
 from pathlib import Path
 
-# Maps that lead somewhere; "not_a_location_map" items do not.
-MARKED_CATEGORIES = {"treasure", "quest", "area", "riddle"}
+# Maps that lead to something to find. Area maps (hunting grounds) and "not_a_location_map" items do not.
+MARKED_CATEGORIES = {"treasure", "quest", "riddle"}
 # Sources marked as the map's own location: an object that holds the map until the player takes it. Quest rewards
 # are left out (the quest leads there), and so are sources with no fixed object (random encounters, quest souls).
 SOURCE_KINDS = {"chest", "body", "npc_loot", "npc_sale", "world_pickup"}
@@ -82,7 +82,8 @@ def build(table_path: Path) -> str:
             f"     .source = {cpp_place(source)},\n"
             f"     .sourceLabel = {cpp_string(tooltip_label(row, source=True)) if source else 'nullptr'},\n"
             f"     .quest = {cpp_optional_string(row.get('quest'))},\n"
-            f"     .reveals = {cpp_item_class(row['reveals']) if row.get('reveals') else '{}'}}},"
+            f"     .reveals = {cpp_item_class(row['reveals']) if row.get('reveals') else '{}'},\n"
+            f"     .category = Category::{row['category'].capitalize()}}},"
         )
     return (
         f"// Generated from {table_path.name} by treasure-data; do not edit.\n"

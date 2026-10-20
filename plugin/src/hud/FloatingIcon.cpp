@@ -10,20 +10,13 @@
 #include "game/Engine.h"
 #include "game/Flash.h"
 #include "game/Game.h"
+#include "options/Options.h"
 
 using Engine::Vec3;
 using Flash::Value;
 using Flash::VarPtr;
 
 namespace {
-    // Metres from the target: hidden beyond kShowDistance, fading in until fully opaque at kFullDistance.
-    constexpr float kShowDistance = 40.f;
-    constexpr float kFullDistance = 25.f;
-    // Metres above the target's origin (its base) where the icon is anchored.
-    constexpr float kHeightAbove = 1.2f;
-    // Icon size in pixels on a 1080-line screen; scaled with the screen height.
-    constexpr float kSizeAt1080 = 48.f;
-
     // Per type, in MarkType::kTypes order: whether its icons' first showing has been logged, and how many clips it has
     // made (clips are kept and reused; the ones not needed in a frame are hidden).
     std::array<bool, MarkType::kTypes.size()> g_loggedShown{};
@@ -61,17 +54,25 @@ namespace {
         return true;
     }
 
+    // Where the icon is anchored: the options' height above the target's origin (its base).
+    Vec3 Anchor(const Vec3 &target) { return {target.x, target.y, target.z + Options::Get().iconHeight}; }
+
     // Places a clip over a target and returns true, or returns false when the target is out of range or off screen.
+    // Icons are hidden beyond the options' range and fade in until fully opaque at their fade distance; their size is
+    // given for a 1080-line screen and scaled with the screen height.
     bool Place(const VarPtr &clip, const Vec3 &target, const Vec3 &playerPos, const float width, const float height,
                float &distance) {
-        const Vec3 anchor(target.x, target.y, target.z + kHeightAbove);
+        const Options::Values &options = Options::Get();
+        const Vec3 anchor = Anchor(target);
         distance = (anchor - playerPos).Length();
         float sx = 0.f, sy = 0.f, sz = 0.f;
         // ProjectToScreen reports percent of the viewport; sz > 1 is behind the camera.
-        if (distance > kShowDistance || !Engine::ProjectToScreen(anchor, sx, sy, sz) || sz > 1.f)
+        if (distance > options.iconShowDistance || !Engine::ProjectToScreen(anchor, sx, sy, sz) || sz > 1.f)
             return false;
-        const float fade = std::clamp((kShowDistance - distance) / (kShowDistance - kFullDistance), 0.f, 1.f);
-        const float size = kSizeAt1080 * height / 1080.f;
+        const float fadeSpan = options.iconShowDistance - options.iconFullDistance;
+        const float fade =
+            fadeSpan > 0.f ? std::clamp((options.iconShowDistance - distance) / fadeSpan, 0.f, 1.f) : 1.f;
+        const float size = options.iconSize * height / 1080.f;
         clip->SetMember("_x", Value(sx * 0.01f * width));
         clip->SetMember("_y", Value(sy * 0.01f * height));
         clip->SetMember("_alpha", Value(fade * 100.f));
@@ -87,7 +88,7 @@ namespace {
     }
 } // namespace
 
-void FloatingIcon::Update(const MarkType::Type &type, std::span<const Vec3> targets, const bool tracked) {
+void FloatingIcon::Update(const MarkType::Type &type, const std::span<const Vec3> targets, const bool tracked) {
     Vec3 playerPos;
     const auto *fp = Game::HudPlayer();
     if (!Engine::PlayerPosition(playerPos) || !fp)
@@ -100,7 +101,7 @@ void FloatingIcon::Update(const MarkType::Type &type, std::span<const Vec3> targ
     if (tracked && height > 0.f) {
         for (const Vec3 &target : targets) {
             // Most targets are far away: skip them before touching Flash.
-            if ((Vec3(target.x, target.y, target.z + kHeightAbove) - playerPos).Length() > kShowDistance)
+            if ((Anchor(target) - playerPos).Length() > Options::Get().iconShowDistance)
                 continue;
             VarPtr clip;
             if (!GetClip(fp, type, shown, clip))
