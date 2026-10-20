@@ -20,11 +20,11 @@ namespace {
     std::size_t g_used = 0;
 
     bool CreatePatchMemory() {
-        auto base = reinterpret_cast<std::uintptr_t>(GetModuleHandleA("WHGame.dll"));
+        const auto base = reinterpret_cast<std::uintptr_t>(GetModuleHandleA("WHGame.dll"));
         SYSTEM_INFO info;
         GetSystemInfo(&info);
         const std::uintptr_t step = info.dwAllocationGranularity;
-        const std::uintptr_t reach = std::uintptr_t{0x7FFF0000};
+        constexpr std::uintptr_t reach = std::uintptr_t{0x7FFF0000};
         const std::uintptr_t lowest = base > reach ? base - reach : step;
         for (std::uintptr_t address = (base - step) & ~(step - 1); address >= lowest; address -= step) {
             void *memory = VirtualAlloc(reinterpret_cast<void *>(address), kPatchMemory, MEM_COMMIT | MEM_RESERVE,
@@ -38,7 +38,7 @@ namespace {
     }
 
     // `size` bytes of patch memory, keeping room for the relay of the branch that will lead to them.
-    std::uint8_t *Reserve(const char *what, std::size_t size) {
+    std::uint8_t *Reserve(const char *what, const std::size_t size) {
         if (!g_memory && !CreatePatchMemory()) {
             Log::Write("hooks: could not allocate patch memory near WHGame.dll; {} not patched", what);
             return nullptr;
@@ -54,7 +54,7 @@ namespace {
 
     constexpr int kAnyByte = -1;
 
-    std::vector<int> ParsePattern(std::string_view text) {
+    std::vector<int> ParsePattern(const std::string_view text) {
         std::vector<int> bytes;
         for (std::size_t i = 0; i < text.size();) {
             if (text[i] == ' ') {
@@ -80,7 +80,7 @@ namespace {
             if (!(section->Characteristics & IMAGE_SCN_MEM_EXECUTE))
                 continue;
             std::span<const std::uint8_t> rest(module + section->VirtualAddress, section->Misc.VirtualSize);
-            const auto matchesByte = [](std::uint8_t byte, int expected) {
+            const auto matchesByte = [](const std::uint8_t byte, const int expected) {
                 return expected == kAnyByte || byte == expected;
             };
             for (auto hit = std::ranges::search(rest, pattern, matchesByte); !hit.empty();
@@ -92,7 +92,7 @@ namespace {
         return matches;
     }
 
-    void Write(std::uintptr_t address, std::span<const std::uint8_t> bytes) {
+    void Write(const std::uintptr_t address, std::span<const std::uint8_t> bytes) {
         auto *target = reinterpret_cast<std::uint8_t *>(address);
         DWORD old = 0;
         VirtualProtect(target, bytes.size(), PAGE_EXECUTE_READWRITE, &old);
@@ -102,7 +102,7 @@ namespace {
     }
 } // namespace
 
-std::uintptr_t Hooks::Find(const char *what, std::span<const Rung> rungs) {
+std::uintptr_t Hooks::Find(const char *what, const std::span<const Rung> rungs) {
     auto *module = reinterpret_cast<std::uint8_t *>(GetModuleHandleA("WHGame.dll"));
     if (!module) {
         Log::Write("hooks: WHGame.dll is not loaded; {} not found", what);
@@ -124,11 +124,11 @@ std::uintptr_t Hooks::Find(const char *what, std::span<const Rung> rungs) {
     return 0;
 }
 
-bool Hooks::StartsWith(std::uintptr_t function, std::span<const std::uint8_t> bytes) {
+bool Hooks::StartsWith(const std::uintptr_t function, std::span<const std::uint8_t> bytes) {
     return std::ranges::equal(bytes, std::span(reinterpret_cast<const std::uint8_t *>(function), bytes.size()));
 }
 
-std::uintptr_t Hooks::Detour(const char *what, std::uintptr_t function, std::span<const std::uint8_t> entry,
+std::uintptr_t Hooks::Detour(const char *what, const std::uintptr_t function, const std::span<const std::uint8_t> entry,
                              const void *hook) {
     if (!StartsWith(function, entry)) {
         Log::Write("hooks: {} does not start as expected; not patched", what);
@@ -142,7 +142,7 @@ std::uintptr_t Hooks::Detour(const char *what, std::uintptr_t function, std::spa
     return reinterpret_cast<std::uintptr_t>(original);
 }
 
-void *Hooks::ReplaceVirtual(void *object, std::size_t slot, void *function) {
+void *Hooks::ReplaceVirtual(void *object, const std::size_t slot, void *function) {
     void **entry = *static_cast<void ***>(object) + slot;
     DWORD old = 0;
     VirtualProtect(entry, sizeof *entry, PAGE_READWRITE, &old);
@@ -151,9 +151,9 @@ void *Hooks::ReplaceVirtual(void *object, std::size_t slot, void *function) {
     return previous;
 }
 
-std::uint8_t *Hooks::AllocateStub(const char *what, std::size_t size) { return Reserve(what, size); }
+std::uint8_t *Hooks::AllocateStub(const char *what, const std::size_t size) { return Reserve(what, size); }
 
-void Hooks::Branch(std::uintptr_t function, std::uintptr_t target) {
+void Hooks::Branch(const std::uintptr_t function, const std::uintptr_t target) {
     // Reserve always leaves room for this relay.
     std::uint8_t *relay = g_memory + g_used;
     g_used += kRelaySize;

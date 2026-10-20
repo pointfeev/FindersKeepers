@@ -4,12 +4,12 @@ A Kingdom Come: Deliverance II mod that marks where the treasure maps you carry 
 
 ## Layout
 
-| Path | What |
-| --- | --- |
-| `plugin/src/` | The plugin (C++23) |
-| `mod/` | Manifest, strings, `.pak` data, and `game_files.json` (game textures copied into the `.pak` at build time) |
-| `research/` | How maps tie to their destinations; the 38-map table |
-| `tools/treasure_data/` | Game data tooling (Python) |
+| Path                   | What                                                                                                       |
+|------------------------|------------------------------------------------------------------------------------------------------------|
+| `plugin/src/`          | The plugin (C++23)                                                                                         |
+| `mod/`                 | Manifest, strings, `.pak` data, and `game_files.json` (game textures copied into the `.pak` at build time) |
+| `research/`            | How maps tie to their destinations; the 38-map table                                                       |
+| `tools/treasure_data/` | Game data tooling (Python)                                                                                 |
 
 ## Requirements
 

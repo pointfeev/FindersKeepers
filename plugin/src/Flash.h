@@ -56,9 +56,9 @@ namespace Flash {
         };
 
         Value() : d(0.0) {}
-        Value(int v) : type(Int), i(v) {}
-        Value(float v) : type(Float), f(v) {}
-        Value(const char *v) : type(String), string(v) {}
+        explicit Value(int v) : type(Int), i(v) {}
+        explicit Value(float v) : type(Float), f(v) {}
+        explicit Value(const char *v) : type(String), string(v) {}
     };
     static_assert(sizeof(Value) == 16, "SFlashVarValue is 16 bytes");
 
@@ -80,16 +80,16 @@ namespace Flash {
         bool SetMember(const char *name, const Var *value) {
             return Engine::VCall<bool>(this, Slot::kSetMemberVar, name, value);
         }
-        bool Invoke(const char *method, std::span<const Value> args, Value *result = nullptr) {
+        bool Invoke(const char *method, const std::span<const Value> args, Value *result = nullptr) {
             return Engine::VCall<bool>(this, Slot::kInvokeValues, method, args.data(),
                                        static_cast<unsigned>(args.size()), result);
         }
-        bool Invoke(const char *method, std::span<const Var *const> args, Value *result = nullptr) {
+        bool Invoke(const char *method, const std::span<const Var *const> args, Value *result = nullptr) {
             return Engine::VCall<bool>(this, Slot::kInvokeVars, method, args.data(), static_cast<unsigned>(args.size()),
                                        result);
         }
-        bool SetVisible(bool visible) { return Engine::VCall<bool>(this, Slot::kSetVisible, visible); }
-        bool CreateEmptyMovieClip(Var *&out, const char *name, int depth = -1) {
+        bool SetVisible(const bool visible) { return Engine::VCall<bool>(this, Slot::kSetVisible, visible); }
+        bool CreateEmptyMovieClip(Var *&out, const char *name, const int depth = -1) {
             return Engine::VCall<bool>(this, Slot::kCreateEmptyMovieClip, &out, name, depth);
         }
     };

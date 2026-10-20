@@ -50,7 +50,9 @@ namespace {
     const std::uint8_t *g_env = nullptr;
     void *const *g_framework = nullptr;
 
-    void *Member(std::size_t offset) { return g_env ? *reinterpret_cast<void *const *>(g_env + offset) : nullptr; }
+    void *Member(const std::size_t offset) {
+        return g_env ? *reinterpret_cast<void *const *>(g_env + offset) : nullptr;
+    }
 } // namespace
 
 bool Engine::Install() {
@@ -60,32 +62,32 @@ bool Engine::Install() {
 }
 
 void Engine::LogAlways(const char *text) {
-    if (void *log = Member(kLog))
+    if (const void *log = Member(kLog))
         VCall<void>(log, kLogAlways, "%s", text);
 }
 
 int Engine::ScreenWidth() {
-    void *renderer = Member(kRenderer);
+    const void *renderer = Member(kRenderer);
     return renderer ? VCall<int>(renderer, kGetWidth) : 0;
 }
 
 int Engine::ScreenHeight() {
-    void *renderer = Member(kRenderer);
+    const void *renderer = Member(kRenderer);
     return renderer ? VCall<int>(renderer, kGetHeight) : 0;
 }
 
 bool Engine::ProjectToScreen(const Vec3 &world, float &x, float &y, float &z) {
-    void *renderer = Member(kRenderer);
+    const void *renderer = Member(kRenderer);
     return renderer && VCall<bool>(renderer, kProjectToScreen, world.x, world.y, world.z, &x, &y, &z);
 }
 
 bool Engine::GetGlobal(const char *name, ScriptValue &out) {
-    void *scripts = Member(kScriptSystem);
+    const void *scripts = Member(kScriptSystem);
     return scripts && VCall<bool>(scripts, kGetGlobalAny, name, &out);
 }
 
-bool Engine::Execute(std::string_view code, const char *description) {
-    void *scripts = Member(kScriptSystem);
+bool Engine::Execute(const std::string_view code, const char *description) {
+    const void *scripts = Member(kScriptSystem);
     return scripts &&
            VCall<bool>(scripts, kExecuteBuffer, code.data(), code.size(), description, static_cast<void *>(nullptr));
 }
@@ -93,8 +95,8 @@ bool Engine::Execute(std::string_view code, const char *description) {
 void *Engine::Framework() { return g_framework ? *g_framework : nullptr; }
 
 bool Engine::PlayerPosition(Vec3 &out) {
-    void *framework = Framework();
-    void *entity = framework ? VCall<void *>(framework, kClientEntity) : nullptr;
+    const void *framework = Framework();
+    const void *entity = framework ? VCall<void *>(framework, kClientEntity) : nullptr;
     if (!entity)
         return false;
     VCall<void>(entity, kWorldPos, &out);

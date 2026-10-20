@@ -10,11 +10,11 @@ namespace {
     // Most functions are found through two call sites that use several of them in a row: the dog marker
     // (0x180393678: game context, map screen, then GetOrCreateEntityMark with type 9 and RegisterEntityMark) and
     // the quest "show map marker" node (0x180C4DADC). The patterns also pin the map screen's offset, 0x1508.
-    constexpr const char kDogMarker[] =
+    constexpr char kDogMarker[] =
         "8B DA 48 8B F9 3B 51 20 0F 84 ?? ?? ?? ?? 89 51 20 E8 ?? ?? ?? ?? 48 8B 88 E8 00 00 00 E8 ?? ?? ?? ?? "
         "48 8D B0 08 15 00 00 85 DB 74 ?? 83 FB 01 75 ?? 48 8D 5F 28 48 8B CB E8 ?? ?? ?? ?? 84 C0 75 ?? "
         "48 8B CF E8 ?? ?? ?? ?? 4C 8B C8 C7 44 24 20 02 00 00 00 41 B8 09 00 00 00 48 8D 54 24 30 48 8B CE E8";
-    constexpr const char kShowMapMarker[] =
+    constexpr char kShowMapMarker[] =
         "48 8B D9 48 81 C1 90 00 00 00 E8 ?? ?? ?? ?? 48 8B F8 48 85 C0 0F 84 ?? ?? ?? ?? E8 ?? ?? ?? ?? "
         "48 8B 88 E8 00 00 00 E8 ?? ?? ?? ?? 48 8D 8B D0 00 00 00 48 8D B3 10 01 00 00 48 8D A8 08 15 00 00";
 
@@ -57,7 +57,7 @@ namespace {
     };
     // The quest "show map marker" node's teardown (0x180A19B80): XGenAI's object manager, unwatching the marked
     // object, then RemoveEntityMark. Its setup (0x180C4DADC) watches the object the same way.
-    constexpr const char kMarkerTeardown[] =
+    constexpr char kMarkerTeardown[] =
         "E8 ?? ?? ?? ?? 48 8B 90 60 01 00 00 48 8B 8A A8 00 00 00 48 8B 01 FF 90 F0 00 00 00 48 8B 0B "
         "4C 8D 87 88 00 00 00 48 8B 51 10 48 8B C8 48 83 C2 08 E8 ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 8B 88 E8 00 00 00 "
         "E8 ?? ?? ?? ?? 48 8B D3 48 8D 4C 24 20 4C 8D 80 08 15 00 00 E8 ?? ?? ?? ?? 48 8B D0 49 8B C8 E8";
@@ -126,7 +126,7 @@ namespace {
     WatchFn g_unwatch;
     FindFn g_find;
 
-    template <typename T> T At(const void *base, std::size_t offset) {
+    template <typename T> T At(const void *base, const std::size_t offset) {
         return *reinterpret_cast<const T *>(static_cast<const std::uint8_t *>(base) + offset);
     }
 
@@ -141,9 +141,9 @@ namespace {
     }
 
     // Calls a game function that takes a shared_ptr by value: the caller builds the copy, the callee releases it.
-    void PassMark(RegisterMarkFn function, Game::Map *map, const std::shared_ptr<Game::EntityMark> &mark) {
+    void PassMark(const RegisterMarkFn function, Game::Map *map, const std::shared_ptr<Game::EntityMark> &mark) {
         alignas(std::shared_ptr<Game::EntityMark>) unsigned char argument[sizeof(std::shared_ptr<Game::EntityMark>)];
-        function(map, new (argument) std::shared_ptr<Game::EntityMark>(mark));
+        function(map, new (argument) std::shared_ptr(mark));
     }
 
     Flash::Player *ScreenPlayer(const void *screen) {
@@ -183,17 +183,18 @@ Game::Map *Game::GetMap() {
     return apse ? reinterpret_cast<Map *>(apse + kMapInApse) : nullptr;
 }
 
-Flash::Player *Game::MapPlayer(Map *map) {
+Flash::Player *Game::MapPlayer(const Map *map) {
     return ScreenPlayer(reinterpret_cast<const std::uint8_t *>(map) + kMapContent);
 }
 
-bool Game::IsTypeVisible(Map *map, std::uint32_t type) {
+bool Game::IsTypeVisible(const Map *map, const std::uint32_t type) {
     // Mark types map to filter ids one to one, apart from the DLC groups (folded by 0x180A1B1C4), which we do not
     // use.
     return type < kFilterCount && At<bool>(map, kFilterFlags + type);
 }
 
-std::shared_ptr<Game::EntityMark> Game::AddEntityMark(Map *map, std::uint32_t type, void *object, std::uint32_t param) {
+std::shared_ptr<Game::EntityMark> Game::AddEntityMark(Map *map, const std::uint32_t type, void *object,
+                                                      const std::uint32_t param) {
     std::shared_ptr<EntityMark> mark;
     g_createMark(map, &mark, type, object, param);
     if (mark)
@@ -203,7 +204,7 @@ std::shared_ptr<Game::EntityMark> Game::AddEntityMark(Map *map, std::uint32_t ty
 
 void Game::RemoveEntityMark(Map *map, const std::shared_ptr<EntityMark> &mark) { PassMark(g_removeMark, map, mark); }
 
-void *Game::FindLinkable(std::uint64_t wuid) { return g_find(nullptr, &wuid); }
+void *Game::FindLinkable(const std::uint64_t wuid) { return g_find(nullptr, &wuid); }
 
 void Game::WatchObject(const std::uint64_t *wuid, ObjectListener *listener) {
     g_watch(ObjectManager(), wuid, listener);

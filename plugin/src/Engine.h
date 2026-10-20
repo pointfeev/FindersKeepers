@@ -11,14 +11,14 @@ namespace Engine {
     // this build's, checked in Ghidra.
     template <typename R, typename... A> R VCall(const void *self, std::size_t slot, A... args) {
         using Fn = R(__fastcall *)(const void *, A...);
-        return (*reinterpret_cast<Fn *const *>(self))[slot](self, args...);
+        return (*static_cast<Fn *const *>(self))[slot](self, args...);
     }
 
     struct Vec3 {
         float x = 0.f, y = 0.f, z = 0.f;
 
         Vec3() = default;
-        Vec3(float x, float y, float z) : x(x), y(y), z(z) {}
+        Vec3(const float x, const float y, const float z) : x(x), y(y), z(z) {}
         Vec3 operator-(const Vec3 &o) const { return {x - o.x, y - o.y, z - o.z}; }
         bool operator==(const Vec3 &) const = default;
         float Length() const { return std::sqrt(x * x + y * y + z * z); }

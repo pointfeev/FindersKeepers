@@ -53,8 +53,7 @@ namespace {
         const auto function = Hooks::Find("naming function", kNameRungs);
         if (!function)
             return false;
-        const char *current = reinterpret_cast<NameFn>(function)(MarkType::kId);
-        if (std::string_view(current) != "?") {
+        if (const char *current = reinterpret_cast<NameFn>(function)(MarkType::kId); std::string_view(current) != "?") {
             Log::Write("mark type: id {} is already named '{}' by the game; not patched", MarkType::kId, current);
             return false;
         }
@@ -87,13 +86,12 @@ namespace {
         if (!function)
             return;
         // Its first string is "Invalid" (lea rdx, [rip + disp32] at +6), a check on top of the pattern.
-        const auto disp = *reinterpret_cast<const std::int32_t *>(function + 9);
-        if (std::string_view(reinterpret_cast<const char *>(function + 13 + disp)) != "Invalid") {
+        if (const auto disp = *reinterpret_cast<const std::int32_t *>(function + 9);
+            std::string_view(reinterpret_cast<const char *>(function + 13 + disp)) != "Invalid") {
             Log::Write("mark type: name mapper's first name is not 'Invalid'; not patched");
             return;
         }
-        const int before = reinterpret_cast<MapperFn>(function)(MarkType::kName);
-        if (before != -1) {
+        if (const int before = reinterpret_cast<MapperFn>(function)(MarkType::kName); before != -1) {
             Log::Write("mark type: name mapper already maps '{}' to {}; not patched", MarkType::kName, before);
             return;
         }
@@ -109,7 +107,7 @@ namespace {
     constexpr std::size_t kTopGroupStubSize = 3 + 2 + Hooks::kAbsoluteJumpSize + Hooks::kAbsoluteJumpSize;
     TopGroupFn g_topGroup;
 
-    bool __fastcall IsTopGroup(int type) { return type == static_cast<int>(MarkType::kId) || g_topGroup(type); }
+    bool __fastcall IsTopGroup(const int type) { return type == static_cast<int>(MarkType::kId) || g_topGroup(type); }
 
     void PatchTopGroup() {
         const auto function = Hooks::Find("legend top-group check", kTopGroupRungs);

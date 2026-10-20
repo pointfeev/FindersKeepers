@@ -20,9 +20,9 @@ namespace Game {
     struct Map;
     Map *GetMap();
     // Its "ApseMap" Flash movie; null while it is not loaded.
-    Flash::Player *MapPlayer(Map *map);
+    Flash::Player *MapPlayer(const Map *map);
     // Whether marks of a type show (the legend's Track toggle): m_poiFilterVisible, by filter id.
-    bool IsTypeVisible(Map *map, std::uint32_t type);
+    bool IsTypeVisible(const Map *map, std::uint32_t type);
 
     // A map/compass mark on an object (S_EntityMapMark), shared between the map and its creator; only the fields
     // the plugin reads.

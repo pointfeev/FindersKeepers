@@ -12,7 +12,7 @@ namespace MarkType {
     // An E_MarkType value the game leaves unnamed (one of the gaps in 0..0x60; ids above 0x60 fail the map's POI
     // filter check).
     constexpr uint32_t kId = 60;
-    constexpr const char kName[] = "TreasureFinder";
+    constexpr char kName[] = "TreasureFinder";
 
     // Finds the four functions by signature and redirects each through a stub that answers for kId/kName and runs
     // the original for everything else. Returns false, changing nothing, when the naming function is not found or

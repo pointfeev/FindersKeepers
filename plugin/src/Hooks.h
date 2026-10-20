@@ -58,14 +58,14 @@ namespace Hooks {
             at_ = std::ranges::copy(bytes, at_).out;
             return *this;
         }
-        StubWriter &Bytes(std::initializer_list<std::uint8_t> bytes) {
+        StubWriter &Bytes(const std::initializer_list<std::uint8_t> bytes) {
             return Bytes(std::span(bytes.begin(), bytes.size()));
         }
         // A value's bytes, little-endian as the CPU reads them.
         template <typename T> StubWriter &Value(T value) {
             return Bytes(std::bit_cast<std::array<std::uint8_t, sizeof(T)>>(value));
         }
-        StubWriter &AbsoluteJump(std::uintptr_t target) { return Bytes({0xFF, 0x25, 0, 0, 0, 0}).Value(target); }
+        StubWriter &AbsoluteJump(const std::uintptr_t target) { return Bytes({0xFF, 0x25, 0, 0, 0, 0}).Value(target); }
 
       private:
         std::uint8_t *at_;

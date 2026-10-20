@@ -13,8 +13,8 @@ using Flash::Value;
 using Flash::VarPtr;
 
 namespace {
-    constexpr const char kClip[] = "_root.treasureFinderFloat";
-    constexpr const char kIconUrl[] = "img://Libs/UI/Textures/Icons/Items/map_book_icon.dds";
+    constexpr char kClip[] = "_root.treasureFinderFloat";
+    constexpr char kIconUrl[] = "img://Libs/UI/Textures/Icons/Items/map_book_icon.dds";
     // Metres from the treasure: hidden beyond kShowDistance, fading in until fully opaque at kFullDistance.
     constexpr float kShowDistance = 40.f;
     constexpr float kFullDistance = 25.f;
@@ -27,13 +27,13 @@ namespace {
 
     // A clip directly under the hud movie's _root, whose coordinates are screen pixels; its image child is offset
     // by half its size so the clip's position is the icon's centre.
-    bool EnsureClip(Flash::Player *fp) {
+    bool EnsureClip(const Flash::Player *fp) {
         if (fp->IsAvailable(kClip))
             return true;
-        VarPtr root, clip, img;
-        if (!fp->GetVariable("_root", root.put()) || !root ||
-            !root->CreateEmptyMovieClip(clip.put(), "treasureFinderFloat") || !clip ||
-            !clip->CreateEmptyMovieClip(img.put(), "img") || !img) {
+        VarPtr clip, img;
+        if (VarPtr root; !fp->GetVariable("_root", root.put()) || !root ||
+                         !root->CreateEmptyMovieClip(clip.put(), "treasureFinderFloat") || !clip ||
+                         !clip->CreateEmptyMovieClip(img.put(), "img") || !img) {
             Log::Write("float: could not create the HUD clip");
             return false;
         }
@@ -45,9 +45,9 @@ namespace {
     }
 } // namespace
 
-void FloatingIcon::Update(std::span<const Vec3> treasures, bool tracked) {
+void FloatingIcon::Update(std::span<const Vec3> treasures, const bool tracked) {
     Vec3 playerPos;
-    auto *fp = Game::HudPlayer();
+    const auto *fp = Game::HudPlayer();
     if (!Engine::PlayerPosition(playerPos) || !fp || !EnsureClip(fp))
         return;
     VarPtr clip;
@@ -81,8 +81,7 @@ void FloatingIcon::Update(std::span<const Vec3> treasures, bool tracked) {
     clip->SetMember("_y", Value(y));
     clip->SetMember("_alpha", Value(fade * 100.f));
     clip->SetVisible(true);
-    VarPtr img;
-    if (clip->GetMember("img", img.put()) && img) {
+    if (VarPtr img; clip->GetMember("img", img.put()) && img) {
         // The image takes its texture size when loadMovie completes, so its size is applied every frame.
         img->SetMember("_width", Value(size));
         img->SetMember("_height", Value(size));
