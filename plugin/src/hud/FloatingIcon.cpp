@@ -24,22 +24,31 @@ namespace {
     // Icon size in pixels on a 1080-line screen; scaled with the screen height.
     constexpr float kSizeAt1080 = 48.f;
 
-    // Per type, in MarkType::kTypes order: whether its icon's first showing has been logged.
+    // Per type, in MarkType::kTypes order: whether its icons' first showing has been logged, and how many clips it has
+    // made (clips are kept and reused; the ones not needed in a frame are hidden).
     std::array<bool, MarkType::kTypes.size()> g_loggedShown{};
+    std::array<std::size_t, MarkType::kTypes.size()> g_clipCount{};
 
-    std::string ClipName(const MarkType::Type &type) { return std::format("treasureFinderFloat_{}", type.name); }
+    std::size_t TypeIndex(const MarkType::Type &type) {
+        return static_cast<std::size_t>(MarkType::Find(type.id) - MarkType::kTypes.data());
+    }
 
-    // A clip directly under the hud movie's _root, whose coordinates are screen pixels; its image child, the type's
-    // own map icon, is offset by half its size so the clip's position is the icon's centre.
-    bool EnsureClip(const Flash::Player *fp, const MarkType::Type &type) {
-        const std::string name = ClipName(type);
-        if (fp->IsAvailable(("_root." + name).c_str()))
-            return true;
-        VarPtr clip, img;
+    std::string ClipPath(const MarkType::Type &type, const std::size_t index) {
+        return std::format("_root.treasureFinderFloat_{}_{}", type.name, index);
+    }
+
+    // The type's index-th clip, directly under the hud movie's _root, whose coordinates are screen pixels; made on
+    // first use (and again after the HUD is rebuilt). Its image child, the type's own map icon, is offset by half its
+    // size so the clip's position is the icon's centre.
+    bool GetClip(const Flash::Player *fp, const MarkType::Type &type, const std::size_t index, VarPtr &clip) {
+        const std::string path = ClipPath(type, index);
+        if (fp->IsAvailable(path.c_str()))
+            return fp->GetVariable(path.c_str(), clip.put()) && clip;
+        VarPtr img;
         if (VarPtr root; !fp->GetVariable("_root", root.put()) || !root ||
-                         !root->CreateEmptyMovieClip(clip.put(), name.c_str()) || !clip ||
+                         !root->CreateEmptyMovieClip(clip.put(), path.substr(sizeof("_root.") - 1).c_str()) || !clip ||
                          !clip->CreateEmptyMovieClip(img.put(), "img") || !img) {
-            Log::Write("float: could not create the HUD clip for '{}'", type.name);
+            Log::Write("float: could not create HUD clip {} for '{}'", index, type.name);
             return false;
         }
         const std::string icon = std::format("img://Libs/UI/Textures/Icons/Map/{}_icon.dds", type.name);
@@ -47,6 +56,33 @@ namespace {
         if (!img->Invoke("loadMovie", std::span(&url, 1)))
             Log::Write("float: loadMovie({}) failed", icon);
         clip->SetVisible(false);
+        std::size_t &count = g_clipCount[TypeIndex(type)];
+        count = std::max(count, index + 1);
+        return true;
+    }
+
+    // Places a clip over a target and returns true, or returns false when the target is out of range or off screen.
+    bool Place(const VarPtr &clip, const Vec3 &target, const Vec3 &playerPos, const float width, const float height,
+               float &distance) {
+        const Vec3 anchor(target.x, target.y, target.z + kHeightAbove);
+        distance = (anchor - playerPos).Length();
+        float sx = 0.f, sy = 0.f, sz = 0.f;
+        // ProjectToScreen reports percent of the viewport; sz > 1 is behind the camera.
+        if (distance > kShowDistance || !Engine::ProjectToScreen(anchor, sx, sy, sz) || sz > 1.f)
+            return false;
+        const float fade = std::clamp((kShowDistance - distance) / (kShowDistance - kFullDistance), 0.f, 1.f);
+        const float size = kSizeAt1080 * height / 1080.f;
+        clip->SetMember("_x", Value(sx * 0.01f * width));
+        clip->SetMember("_y", Value(sy * 0.01f * height));
+        clip->SetMember("_alpha", Value(fade * 100.f));
+        clip->SetVisible(true);
+        if (VarPtr img; clip->GetMember("img", img.put()) && img) {
+            // The image takes its texture size when loadMovie completes, so its size is applied every frame.
+            img->SetMember("_width", Value(size));
+            img->SetMember("_height", Value(size));
+            img->SetMember("_x", Value(-size / 2.f));
+            img->SetMember("_y", Value(-size / 2.f));
+        }
         return true;
     }
 } // namespace
@@ -54,49 +90,35 @@ namespace {
 void FloatingIcon::Update(const MarkType::Type &type, std::span<const Vec3> targets, const bool tracked) {
     Vec3 playerPos;
     const auto *fp = Game::HudPlayer();
-    if (!Engine::PlayerPosition(playerPos) || !fp || !EnsureClip(fp, type))
+    if (!Engine::PlayerPosition(playerPos) || !fp)
         return;
-    VarPtr clip;
-    if (!fp->GetVariable(("_root." + ClipName(type)).c_str(), clip.put()) || !clip)
-        return;
-    if (targets.empty()) {
-        clip->SetVisible(false);
-        return;
-    }
-
-    const auto anchorOf = [](const Vec3 &target) { return Vec3(target.x, target.y, target.z + kHeightAbove); };
-    const Vec3 anchor =
-        anchorOf(std::ranges::min(targets, {}, [&](const Vec3 &t) { return (anchorOf(t) - playerPos).Length(); }));
-    const float distance = (anchor - playerPos).Length();
-
-    float sx = 0.f, sy = 0.f, sz = 0.f;
-    const bool onScreen = Engine::ProjectToScreen(anchor, sx, sy, sz);
     const float width = static_cast<float>(Engine::ScreenWidth());
     const float height = static_cast<float>(Engine::ScreenHeight());
-    // ProjectToScreen reports percent of the viewport; sz > 1 is behind the camera.
-    const float x = sx * 0.01f * width;
-    const float y = sy * 0.01f * height;
-    if (!tracked || distance > kShowDistance || !onScreen || sz > 1.f || height <= 0.f) {
-        clip->SetVisible(false);
-        return;
-    }
 
-    const float fade = std::clamp((kShowDistance - distance) / (kShowDistance - kFullDistance), 0.f, 1.f);
-    const float size = kSizeAt1080 * height / 1080.f;
-    clip->SetMember("_x", Value(x));
-    clip->SetMember("_y", Value(y));
-    clip->SetMember("_alpha", Value(fade * 100.f));
-    clip->SetVisible(true);
-    if (VarPtr img; clip->GetMember("img", img.put()) && img) {
-        // The image takes its texture size when loadMovie completes, so its size is applied every frame.
-        img->SetMember("_width", Value(size));
-        img->SetMember("_height", Value(size));
-        img->SetMember("_x", Value(-size / 2.f));
-        img->SetMember("_y", Value(-size / 2.f));
+    // Each target in range and on screen takes the next clip; a target that is not keeps its clip for the next one.
+    std::size_t shown = 0;
+    if (tracked && height > 0.f) {
+        for (const Vec3 &target : targets) {
+            // Most targets are far away: skip them before touching Flash.
+            if ((Vec3(target.x, target.y, target.z + kHeightAbove) - playerPos).Length() > kShowDistance)
+                continue;
+            VarPtr clip;
+            if (!GetClip(fp, type, shown, clip))
+                break;
+            if (float distance = 0.f; Place(clip, target, playerPos, width, height, distance)) {
+                if (bool &logged = g_loggedShown[TypeIndex(type)]; !logged) {
+                    Log::Write("float: '{}' shown over a target {:.1f} m away, on a {:.0f}x{:.0f} screen", type.name,
+                               distance, width, height);
+                    logged = true;
+                }
+                ++shown;
+            } else {
+                clip->SetVisible(false);
+            }
+        }
     }
-    if (bool &logged = g_loggedShown[MarkType::Find(type.id) - MarkType::kTypes.data()]; !logged) {
-        Log::Write("float: '{}' shown at screen ({:.0f}, {:.0f}) of {:.0f}x{:.0f}, {:.1f} m away", type.name, x, y,
-                   width, height, distance);
-        logged = true;
-    }
+    for (std::size_t i = shown; i < g_clipCount[TypeIndex(type)]; ++i)
+        if (VarPtr clip; fp->IsAvailable(ClipPath(type, i).c_str()) &&
+                         fp->GetVariable(ClipPath(type, i).c_str(), clip.put()) && clip)
+            clip->SetVisible(false);
 }
