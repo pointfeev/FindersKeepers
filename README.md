@@ -15,6 +15,8 @@ A Kingdom Come: Deliverance II mod that marks where treasure maps, quest maps an
 
 - Visual Studio 2022+ (Build Tools) with the C++ workload, CMake 4.0+, Ninja
 - [uv](https://docs.astral.sh/uv/)
+- LLVM's `clang-format` and `clang-tidy`, for the C++ checks
+- The [GitHub CLI](https://cli.github.com/) (`gh`, signed in), for the `publish` preset
 - The game with KCSE installed
 
 ## Build
@@ -42,3 +44,14 @@ uv run treasure-data validate   # check research/treasure_maps.json against the 
 ```
 
 `--game <folder>` or `KCD2_DIR` picks the install; files go to `%LOCALAPPDATA%\FindersKeepers\<build>`. After a game patch, run `validate` and re-research only the maps it flags.
+
+## Checks
+
+Ruff and pyright come with `uv sync`. clang-format and clang-tidy read `.clang-format` and `.clang-tidy`, and clang-tidy needs a configured preset for its compile database.
+
+```bash
+uv run ruff format && uv run ruff check    # Python formatting and lint
+uv run pyright                             # Python types
+clang-format -i $(git ls-files 'plugin/src/*.cpp' 'plugin/src/*.h')
+clang-tidy -p build/release $(git ls-files 'plugin/src/*.cpp')
+```
