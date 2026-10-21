@@ -4,7 +4,7 @@
     <name>Finders Keepers</name>
     <description>Marks where the treasure maps you have read lead, on the world map, the compass and in the world.</description>
     <author>pointfeev</author>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
     <modid>finderskeepers</modid>
     <modifies_level>false</modifies_level>
     <dependencies></dependencies>

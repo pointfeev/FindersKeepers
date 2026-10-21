@@ -1,0 +1,69 @@
+[size=5][b]Description[/b][/size]
+Marks where every treasure map leads, and where each map is found, on the world map, the compass and in the world. Covers all 28 treasure maps, the cave-wall carving in the Tunnel in the Cliffs, the 6 quest maps and the riddle notes (the Strange Little Verses, the Strange Riddle). Maps that lead to several spots get a mark on each, and a mark clears once its spot is dug, emptied or looted.
+
+[size=5][b]Features[/b][/size]
+[list]
+[*]A map's destinations show once you've read it, whether you still carry it or not. You can require carrying it instead, or show them before reading.
+[*]The chest, body or merchant holding a map you haven't found yet is marked too.
+[*]A mark steps aside while a tracked quest points at the same spot, and quest maps stop being marked once their quest ends.
+[*]Dug holes, emptied chests and taken items lose their marks.
+[*]Tooltips name the map, as in "Map destination: Map left by the deceased".
+[*]Marked spots within range get an icon in the world, with adjustable range, fade, size and height.
+[*]Treasure maps, quest maps and riddle notes can each be hidden.
+[*]Settings can be changed in game with [url=https://www.nexusmods.com/kingdomcomedeliverance2/mods/3363]Mod Configuration Menu[/url], or in a settings file. The map legend's Track toggle also hides each kind of mark.
+[/list]
+Almost all of this can be switched off or tuned; see Settings.
+
+[size=5][b]Requirements[/b][/size]
+[list]
+[*][url=https://store.steampowered.com/app/1771300/]Kingdom Come: Deliverance II[/url] 1.5.6 (Steam; GOG and Epic untested)
+[*][url=https://www.nexusmods.com/kingdomcomedeliverance2/mods/3332]KCSE[/url] and its [url=https://www.nexusmods.com/kingdomcomedeliverance2/mods/3381]Address Library[/url]: together, the loader the mod's plugin runs in
+[*]Optional: [url=https://www.nexusmods.com/kingdomcomedeliverance2/mods/3363]Mod Configuration Menu[/url], to change settings in game; without it, edit the INI (see Settings)
+[/list]
+[size=5][b]Installation[/b][/size]
+[list=1]
+[*]Install KCSE and its Address Library.
+[*]Install Finders Keepers with Vortex, or extract [font=Courier New]finderskeepers[/font] into the game's [font=Courier New]Mods[/font] folder.
+[*]If you installed by hand and keep a [font=Courier New]Mods/mod_order.txt[/font], add [font=Courier New]finderskeepers[/font] to it. Vortex adds it for you.
+[/list]
+[size=5][b]Settings[/b][/size]
+[font=Courier New]Mods/finderskeepers/KCSE/Plugins/FindersKeepers.ini[/font], created on first launch with every default in its comments. Edits apply while the game runs, and updates keep the file. The same settings show under Mod Configuration in the pause menu when MCM is installed.
+[list]
+[*][b]Display:[/b] map and compass markers, in-world icons
+[*][b]Marks:[/b] map destinations, map locations
+[*][b]Maps:[/b] treasure maps, quest maps, riddle notes
+[*][b]Rules:[/b] require reading, require carrying, keep finished spots, retire quest maps, defer to quest markers
+[*][b]Distances:[/b] icon range, fade, size and height; quest marker reach
+[/list]
+[size=5][b]Compatibility[/b][/size]
+[list]
+[*]Safe to add or remove mid-playthrough: it writes nothing to your save and keeps no record of its own. Every mark is read straight from the game's current state, so maps you already read show up at once.
+[*]Uses its own two marker types; replaces nothing.
+[*]Finds the game code it needs by pattern, so it often survives patches once KCSE and its Address Library support the new version. If a patch breaks it, [font=Courier New]kcd.log[/font] says so and the game runs without it.
+[/list]
+[size=5][b]Known limitations[/b][/size]
+[list]
+[*]Not every map has been played through yet. Destinations and map locations come from the game's own data, checked against guides, but some are only verified on paper. If a mark is in the wrong place, missing, or never clears, please report it on the [url=https://www.nexusmods.com/kingdomcomedeliverance2/mods/3863?tab=bugs]Bugs tab[/url] or as a [url=https://github.com/pointfeev/FindersKeepers/issues]GitHub issue[/url], with the map's name.
+[*]An unread map that leaves your inventory is not marked; the game keeps no record of where it went, and the mod keeps none of its own.
+[/list]
+[size=5][b]Maybe later[/b][/size]
+Other things the mod could mark, each as its own mark type with its own legend entry and settings. They are researched but not built, mostly to keep the map from drowning in marks. Tell me in the comments if you want any of these, or something else entirely.
+[list]
+[*][b]Hidden stashes:[/b] the game has 269 containers with hand-placed loot at 112 spots, such as Otter's Treasure (about 850 groschen in a pot on a cliff), the buried armour near Pschitoky and the Two Dead Trees jar. The Scholarship perk Explorer already reveals the sites, though not which container is worth opening, and most hold junk.
+[*][b]Dig sites:[/b] 70 graves and buried stashes; some hold nothing.
+[*][b]Books and sketches lying around:[/b] 34 skill books and 36 recipes and weapon sketches in fixed spots. Skill books could show only until read.
+[*][b]Keys:[/b] the game ties 91 keys to the 70 doors and 49 chests they open, so a key in your inventory could mark its lock. No clutter, since it only shows keys you carry.
+[*][b]Dice and badges:[/b] 8 dice badges and 11 dice in fixed spots.
+[/list]
+A worth filter would make the first two practical: mark a spot only while what is left in it is worth having, by its total value in groschen, or for anything valuable whatever its price (an unread skill book, a unique item, a badge).
+
+Considered and not planned: easter eggs (no loot, and nothing records seeing one), shrines and hunting spots (the game marks them), and bird nests (hundreds, with random loot that comes back).
+
+[size=5][b]Credits[/b][/size]
+[list]
+[*][url=https://github.com/pointfeev]pointfeev[/url]: the mod. Source (MIT): [url=https://github.com/pointfeev/FindersKeepers]github.com/pointfeev/FindersKeepers[/url].
+[*][url=https://warhorsestudios.com/]Warhorse Studios[/url]: the game, and the chest and map-book icons the marks reuse.
+[*][url=https://github.com/JerryYOJ]JerryYOJ[/url]: [url=https://github.com/JerryYOJ/KCSE-for-kcd2]KCSE[/url], which loads the mod's plugin, and [url=https://github.com/JerryYOJ/libKCD2/tree/master/Projects/MCM]Mod Configuration Menu[/url], whose in-game settings page the mod fills in.
+[*]Guides the map research was checked against, most of all [url=https://www.powerpyx.com/]PowerPyx[/url], the [url=https://kingdomcomedeliverance2.wiki.fextralife.com/]Fextralife wiki[/url], [url=https://www.gamerguides.com/]Gamer Guides[/url], [url=https://patchcrazy.co.uk/]Patch Crazy[/url], [url=https://game-checklists.com/]Game-Checklists[/url], [url=https://kcd2.org/]kcd2.org[/url] and [url=https://wotpack.ru/en/]wotpack[/url], plus [url=https://www.destructoid.com/]Destructoid[/url], [url=https://gamerant.com/]GameRant[/url] and [url=https://selphie1999gaming.com/]Selphie1999 Gaming[/url]. Every map's sources are listed in [url=https://github.com/pointfeev/FindersKeepers/tree/master/research]the research notes[/url].
+[*][url=https://github.com/NationalSecurityAgency/ghidra]Ghidra[/url]: finding the game code the plugin hooks.
+[/list]

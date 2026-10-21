@@ -90,3 +90,17 @@ add_custom_target(deploy
     DEPENDS mod
     COMMENT "Copying the mod into ${KCD2_DIR}/Mods/${MOD_ID}"
     VERBATIM)
+
+# The release zip: the mod folder at its root, so it extracts straight into the game's Mods folder. Named after the
+# manifest's version, which is read at configure time, so editing the manifest reconfigures.
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${MOD_MANIFEST}")
+file(STRINGS "${MOD_MANIFEST}" MOD_VERSION_LINE REGEX "<version>")
+string(REGEX REPLACE ".*<version>(.*)</version>.*" "\\1" MOD_VERSION "${MOD_VERSION_LINE}")
+set(MOD_ZIP "${CMAKE_BINARY_DIR}/FindersKeepers-${MOD_VERSION}.zip")
+add_custom_target(package
+    COMMAND "${CMAKE_COMMAND}" -E rm -f "${MOD_ZIP}"
+    COMMAND "${CMAKE_COMMAND}" -E tar cf "${MOD_ZIP}" --format=zip "${MOD_ID}"
+    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/mod"
+    DEPENDS mod
+    COMMENT "Zipping ${MOD_ZIP}"
+    VERBATIM)

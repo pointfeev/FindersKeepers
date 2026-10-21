@@ -1,0 +1,46 @@
+# Publishes to Nexus Mods (tools/publish.py). The zip is built locally (it needs the game install) and attached to a
+# GitHub release; publishing the release uploads it with the release notes as its changelog. Page text edits pushed to
+# master update the page on their own.
+name: Nexus Mods
+
+on:
+  release:
+    types: [published]
+  push:
+    branches: [master]
+    paths: [store/description.bbcode, store/summary.txt, store/nexus.json]
+  workflow_dispatch:
+
+concurrency: nexus
+
+permissions:
+  contents: read
+
+jobs:
+  page:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - run: python3 tools/publish.py page
+        env:
+          NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+
+  file:
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      # The tag is v<version>, and the zip is named after the same version, so a mismatch finds no asset and fails.
+      - name: Download the release zip
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name }}
+          BODY: ${{ github.event.release.body }}
+        run: |
+          version="${TAG#v}"
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+          gh release download "$TAG" --pattern "FindersKeepers-$version.zip" --dir dist
+          printf '%s' "$BODY" > dist/changelog.txt
+      - run: python3 tools/publish.py file "dist/FindersKeepers-$VERSION.zip" "$VERSION" --changelog dist/changelog.txt
+        env:
+          NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}

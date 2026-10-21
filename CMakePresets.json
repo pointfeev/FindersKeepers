@@ -49,6 +49,12 @@
       "displayName": "Release: deploy to the game",
       "configurePreset": "release",
       "targets": ["deploy"]
+    },
+    {
+      "name": "package",
+      "displayName": "Release: zip for publishing",
+      "configurePreset": "release",
+      "targets": ["package"]
     }
   ]
 }
