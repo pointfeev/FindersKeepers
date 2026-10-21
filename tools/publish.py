@@ -98,6 +98,12 @@ def upload(archive: Path) -> str:
     return created["id"]
 
 
+def changelog_entries(notes: str) -> str:
+    """Release notes as Nexus changelog text. Nexus makes each line an entry, drops blank lines and shows a list
+    marker as typed, so the markers go."""
+    return "\n".join(re.sub(r"^[-*+]\s+", "", line.strip()) for line in notes.splitlines() if line.strip())
+
+
 def publish_file(mod: str, archive: Path, version: str, changelog: str) -> None:
     if not re.fullmatch(r"[a-zA-Z0-9.-]{1,50}", version):
         raise SystemExit(f"Nexus versions are letters, digits, dots and dashes: {version!r}")
@@ -144,7 +150,7 @@ def main() -> int:
     if args.command == "page":
         publish_page(mod)
     else:
-        changelog = args.changelog.read_text(encoding="utf-8").strip() if args.changelog else ""
+        changelog = changelog_entries(args.changelog.read_text(encoding="utf-8")) if args.changelog else ""
         publish_file(mod, args.archive, args.version, changelog)
     return 0
 
