@@ -2,7 +2,7 @@
 <kcd_mod>
   <info>
     <name>Finders Keepers</name>
-    <description>Marks where the treasure maps you have read lead, on the world map, the compass and in the world.</description>
+    <description>Marks where treasure maps, quest maps and riddle notes lead, and where each one is found, on the world map, the compass and in the world.</description>
     <author>pointfeev</author>
     <version>1.0.0</version>
     <modid>finderskeepers</modid>

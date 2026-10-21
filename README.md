@@ -1,6 +1,6 @@
 # Finders Keepers
 
-A Kingdom Come: Deliverance II mod that marks where the treasure maps you have read lead, on the world map, the compass and in the world. A [KCSE](https://www.nexusmods.com/kingdomcomedeliverance2/mods/3332) plugin for game 1.5.6.
+A Kingdom Come: Deliverance II mod that marks where treasure maps, quest maps and riddle notes lead, and where each one is found, on the world map, the compass and in the world. A [KCSE](https://www.nexusmods.com/kingdomcomedeliverance2/mods/3332) plugin for game 1.5.6.
 
 ## Layout
 
@@ -8,7 +8,7 @@ A Kingdom Come: Deliverance II mod that marks where the treasure maps you have r
 |------------------------|------------------------------------------------------------------------------------------------------------|
 | `plugin/src/`          | The plugin (C++23)                                                                                         |
 | `mod/`                 | Manifest, strings, `.pak` data, and `game_files.json` (game textures copied into the `.pak` at build time) |
-| `research/`            | How maps tie to their destinations; the 38-map table                                                       |
+| `research/`            | How maps tie to their destinations; the map table (45 maps, 40 marked)                                     |
 | `tools/treasure_data/` | Game data tooling (Python)                                                                                 |
 
 ## Requirements

@@ -4,7 +4,7 @@ How the mod decides what to mark, the options it will offer, and what was consid
 
 ## Scope
 
-Treasure and what leads to it: treasure maps, the carved map in the Tunnel in the Cliffs, and riddle notes (the Strange Little Verses, the Strange Riddle).
+Treasure and what leads to it: treasure maps, quest maps, the carved map in the Tunnel in the Cliffs, and riddle notes (the Strange Little Verses, the Strange Riddle).
 
 ## Rules
 
