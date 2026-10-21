@@ -936,17 +936,17 @@
       "how": "npc_sale",
       "summary": "Black Bartosch at Trosky Castle (dice tables by the combat arena, west side of the castle grounds) once the castle is open: buy for 250 g, win it at dice (50 g stake), or pickpocket. The quest gives the item to soul CernyBartos (AddSoulDefaultItem) while 'Bartos je na Troskach'.",
       "level": "trosecko",
-      "entity_name": "dice_behaviors[Table/table_dice3_74a5fb67-ea54-4d7a-b834-fd46720ae7b5]",
-      "entity_id": "26076",
-      "entity_guid": "4dc561dc-199f-02f6",
-      "pos": "2382.768,2592.526,207.9593",
+      "entity_name": "ttro_cernyBartos",
+      "entity_id": "194871",
+      "entity_guid": "fb866be1-87c9-4d15",
+      "pos": "2384.243,2565.712,239.5405",
       "confidence": "verified",
       "sources": [
         "https://www.gamerguides.com/kingdom-come-deliverance-ii/guide/free-form-quests/trosky/caught-thiefs-map-treasure-location-guide",
         "https://thefilibusterblog.com/kingdom-come-deliverance-2-solution-for-caught-thiefs-map-treasure-location/"
       ],
       "entity_check": "ok",
-      "notes": "Entity: (SmartObjectHolder bound as asset bartosuvStul); NPC ttro_cernyBartos id 194871 home spot 2384.243,2565.712,239.54"
+      "notes": "Entity: Bartosch's NPC, whose soul (43bef37a-1599-c008, soul__ttro.xml) is the CernyBartos asset that AddSoulDefaultItem gives the map to, so his inventory says whether he still has it. His dice table (SmartObjectHolder 26076, asset bartosuvStul) has no inventory."
     },
     "entity_check": "ok"
   },

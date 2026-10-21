@@ -18,7 +18,7 @@ Mark type `FindersKeepersMapDestination`.
 
 - A map's destinations are marked once the player has read it, carried or not: the game keeps reading progress per item class, and it survives the map being dropped and a reload (tested in game). A carving counts once examined, and only after Laboratores (`socky`), because its trigger is also off before the open world unlocks.
 - A map that leads to several places marks each one.
-- A destination clears when its hole is dug, its container is emptied or its item is taken.
+- A destination clears when its hole is dug, its container is emptied or its item is taken. A quest's interaction trigger is marked only while it takes a press: from the quest step that switches it on until it is used. Keep finished does not keep a used one, because it looks the same as one whose step is not reached yet.
 - A riddle note's destination also clears once the player has, or has read, the next note.
 
 ### Map locations
@@ -84,7 +84,6 @@ Settings act first (what is created at all) and the map legend's Track toggle se
 
 ## Open questions (need play)
 
-- Do item slots keep their item while their part of the level is unloaded?
 - Is the Tunnel in the Cliffs reachable before Laboratores?
 - Is 15 m right for the quest marker check, and what does gathering quest markers every probe cost?
 

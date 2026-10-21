@@ -12,9 +12,11 @@ Game build: Steam 1.5.6 (`release_1_5-15693`). Per-map data (entity ids, positio
 ## Game rules
 
 - **Quest markers:** only tracked quests (three at most) put markers on the map and compass ([TheGamer](https://www.thegamer.com/kingdom-come-deliverance-2-find-side-quests-tipsters-how-to/)). The game's own gather (0x180DC5E68) matches: tracked quests, plus every quest while the quest log page is open. Areas are yellow search areas of unstated size; treasure maps never get a quest marker.
-- **Restocking:** since 1.5, "Chests no longer restock themselves if all their owners are dead". No destination chest or sack has an owner (no `bOwnedByHome`, no entity links), so none refills ([patch notes](https://kingdomcomedeliverance2.wiki.fextralife.com/Patch_Notes)).
+- **Stash loot:** a chest gets its preset loot when the game registers it, or when a save is loaded, never on opening (Ghidra, C_Stash). Opening only records the robbed value the owners' AI reads (`GetStashRobbedValue`); nothing records that the player opened it.
+- **NPC loot:** a soul's inventory is filled from its presets once, when the soul is initialized or reset, guarded by a flag in its data (Ghidra, C_InventorySoul vtable slot 2); getting the inventory never fills it. A spawned NPC therefore carries its items, and an empty inventory has been stripped. Quests add or move items on top (`AddQuestItem`, `AddSoulDefaultItem`) while their node is active.
+- **Restocking:** stashes, souls, shops and item slots restock on a schedule (`FullyRestock`, `wh_ent_RestockStartTimeMinutes`). A stash or item slot restocks its preset some days after its items are taken (`nRestockPeriodDays`, 7 by default in AnimStash.lua and ItemSlot.lua, 0 disables). Of the destination chests, Brunswick II-IV, the Zhelejov marsh purse, the woodcutters' pay chest, the smugglers' dugout, the deceased's stash, Boruta's chest and the carving's chest and sack set 0; the rest keep 7. Since 1.5, "Chests no longer restock themselves if all their owners are dead" ([patch notes](https://kingdomcomedeliverance2.wiki.fextralife.com/Patch_Notes)); whether that stops ownerless chests is unconfirmed. Marks follow the contents, so a restocked chest is marked again.
 - **Holes:** stay dug since 1.3 ("Holes dug by the player now stay dug out after level switch").
-- **Loose items:** not known to respawn, though nothing official says so either way.
+- **Loose items:** an item slot restocks like a stash (`nRestockPeriodDays`, 7 by default; multi-class slots never). Slots also spawn and despawn their item's entity with distance (`wh_item_ItemSlotDynSpawning*`), but the slot keeps its item while despawned: the despawn removes only the item's entity (Ghidra, C_ItemSlotDynamicSpawner). So the slot's item, which the mod reads like the quest check IsItemInSlot does, holds from any distance.
 - **Quest items:** an `AddQuestItem` exists only while its quest state is active. Some quests hand over a normal copy when they end (`CreatePlayerReward` on an `_afterQuest` state).
 - **Failure:** quests have a Failed state (patch notes). Main quests do not fail; losing a key NPC is a game over.
 - **Open world:** `socky` (M03) is Laboratores (game string `socky_CpmD`); its end opens the Trosky region ([kcd2.org](https://kcd2.org/en/post/kcd2-walkthrough)).
@@ -86,7 +88,7 @@ Game build: Steam 1.5.6 (`release_1_5-15693`). Per-map data (entity ids, positio
 
 **Map of Kuttenberg underground** (`andelStrazny_underground_map`)
 - Found: sewn into hanged Angel's coat, or Striped Tonies' reward.
-- Leads to: Goatskin's barrel (Master Schindel's stolen items), a trigger with no done state. The barrel cannot be used before the quest is taken from Adam, and the quest marks no stash. [wotpack](https://wotpack.ru/en/igrushki-mastera-shindelya-v-kingdom-come-deliverance-2-gde-nayti-ukradennye-veschi-v-podzemnom-taynike/)
+- Leads to: Goatskin's barrel (Master Schindel's stolen items), interaction trigger 139871. In Master Schindel's toys (`u66__andel_strazny`, `quest_itemy.xml`) it takes a press only from the step where Goatskin tells about the map until the items are collected, and only once; using it grants the items. The mark follows that switch, so it shows only while the barrel gives something. The quest marks no stash. [wotpack](https://wotpack.ru/en/igrushki-mastera-shindelya-v-kingdom-come-deliverance-2-gde-nayti-ukradennye-veschi-v-podzemnom-taynike/)
 
 **Storage Yard Plan** (`dlc2_mrtvyNemluvi_mapStash`), Legacy of the Forge: from the dying bandit Ondrej; the steel chest in the Rabstein ruin.
 
@@ -144,7 +146,7 @@ Other notes that point at places are quest-marked (Knight Konrad's diary, Bavor'
 
 ### Unobtainable
 
-**Map hidden at Vostatek** (`poi_skryseSPitim_map`): only in `item.xml`; no guide shows how to get it. Most likely shows Vostatek's five booze stashes in the Vidlak woods.
+**Map hidden at Vostatek** (`poi_skryseSPitim_map`): only in `item.xml`; no guide shows how to get it. Most likely shows Vostatek's five booze stashes in the Vidlak woods: one-shot interaction triggers (a monologue) from the open world on, `vostkovoPiti/triggery_na_mistech_s_pitim.xml`, so their marks would clear once used.
 
 **Miners' Underground Map** (`kuttenberg_underground_map`): only in `item.xml`; no source, no target.
 

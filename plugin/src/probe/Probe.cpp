@@ -23,8 +23,9 @@ namespace {
     std::map<std::string_view, Game::QuestProgress> g_quests;
     // The destinations a quest marker covered at the last probe, logged when that changes.
     std::vector<std::uint64_t> g_covered;
-    // Maps whose carving trigger could not be asked, logged once each.
+    // Maps whose carving trigger could not be asked, or whose source has no inventory, logged once each.
     std::vector<std::string_view> g_loggedTrigger;
+    std::vector<std::string_view> g_loggedSource;
 
     // The entity at a place, if it is in the loaded level.
     const Engine::Entity *Find(const MapTable::Place &place) {
@@ -43,6 +44,28 @@ namespace {
     bool Revealed(const MapTable::Map &map, const Game::Inventory *player) {
         return IsSet(map.reveals) &&
                (Game::CountOfClass(player, map.reveals) > 0 || Game::ReadProgress(map.reveals) >= 1.f);
+    }
+
+    // Whether a quest's interaction trigger takes a press right now; empty for entities without one. Quest graphs
+    // switch these on only while using them does something (the open world unlocked, a quest step reached) and a
+    // one-shot one off once used.
+    std::optional<bool> PressEnabled(const Engine::Entity *entity) {
+        const Engine::ScriptTable *script = Engine::EntityScript(entity);
+        ScriptValue component, enabled;
+        if (!script || !Engine::TableGet(script, "interactionTrigger", component) ||
+            component.type != ScriptValue::Table)
+            return std::nullopt;
+        if (Engine::CallMethod(static_cast<const Engine::ScriptTable *>(component.table), "IsPressEnabled", enabled) &&
+            enabled.type == ScriptValue::Boolean)
+            return enabled.boolean;
+        return std::nullopt;
+    }
+
+    // A quest trigger that takes no press gives nothing there: its quest step is not reached (Goatskin's barrel) or it
+    // was used. The two look the same, so it is never marked, whatever the keep-finished option says.
+    bool Inactive(const Engine::Entity *entity) {
+        const std::optional<bool> enabled = PressEnabled(entity);
+        return enabled && !*enabled;
     }
 
     // Whether a destination has been dealt with: a hole dug (Hole.lua's nDepth is 1 once dug), a loose item taken
@@ -100,31 +123,20 @@ namespace {
         return true;
     }
 
-    // Whether a carving's one-shot quest trigger still takes a press: it stops once the carving has been examined
-    // (and is also off before the open world unlocks).
-    bool PressEnabled(const MapTable::Map &map, const Engine::Entity *trigger) {
-        const Engine::ScriptTable *script = Engine::EntityScript(trigger);
-        ScriptValue component, enabled;
-        if (script && Engine::TableGet(script, "interactionTrigger", component) &&
-            component.type == ScriptValue::Table &&
-            Engine::CallMethod(static_cast<const Engine::ScriptTable *>(component.table), "IsPressEnabled", enabled) &&
-            enabled.type == ScriptValue::Boolean)
-            return enabled.boolean;
-        if (!std::ranges::contains(g_loggedTrigger, std::string_view(map.name))) {
-            Log::Write("probe: could not ask {}'s trigger whether it was examined", map.name);
-            g_loggedTrigger.emplace_back(map.name);
-        }
-        return true;
-    }
-
     // Whether the player has a map: carries its item, or has examined its carving. A carving's trigger is also off
     // before its quest gate (the open world unlocking), so it only counts as examined once that quest is done.
     bool HasMap(const MapTable::Map &map, const Game::Inventory *player) {
         if (IsItem(map))
             return Game::CountOfClass(player, map.item) > 0;
         const Engine::Entity *trigger = Find(map.seen);
-        return trigger && (!map.seenAfter || ProgressOf(map.seenAfter) == Game::QuestProgress::Done) &&
-               !PressEnabled(map, trigger);
+        if (!trigger || (map.seenAfter && ProgressOf(map.seenAfter) != Game::QuestProgress::Done))
+            return false;
+        const std::optional<bool> enabled = PressEnabled(trigger);
+        if (!enabled && !std::ranges::contains(g_loggedTrigger, std::string_view(map.name))) {
+            Log::Write("probe: could not ask {}'s trigger whether it was examined", map.name);
+            g_loggedTrigger.emplace_back(map.name);
+        }
+        return !enabled.value_or(true);
     }
 
     // Whether the player knows where a map leads: a map item once read (its reading progress, which the game keeps per
@@ -141,14 +153,21 @@ namespace {
     }
 
     // Whether the object a map is found on still holds it: an item slot while it holds an item (a quest may fill it
-    // only for a while), an inventory that has been filled unless it lacks the map (taken and sold, say). An empty
-    // inventory may simply not be filled yet, and objects with neither (a carving's trigger) have no say; both count
-    // as holding it while the player does not have the map.
+    // only for a while), a chest or NPC while its inventory has the map. Chests and souls get their items when the game
+    // registers or initializes them, not when first opened (C_Stash, C_InventorySoul, checked in Ghidra), so what the
+    // inventory has is what is there. A carving's trigger is the map itself, found until examined.
     bool HoldsMap(const MapTable::Map &map, const Engine::Entity *entity) {
         if (const std::optional<bool> holds = Game::SlotHoldsItem(map.source.entity))
             return *holds;
-        const Game::Inventory *inventory = IsItem(map) ? Game::EntityInventory(entity) : nullptr;
-        return !inventory || Game::ItemCount(inventory) == 0 || Game::CountOfClass(inventory, map.item) > 0;
+        if (!IsItem(map))
+            return true;
+        if (const Game::Inventory *inventory = Game::EntityInventory(entity))
+            return Game::CountOfClass(inventory, map.item) > 0;
+        if (!std::ranges::contains(g_loggedSource, std::string_view(map.name))) {
+            Log::Write("probe: {}'s source has no inventory to hold it", map.name);
+            g_loggedSource.emplace_back(map.name);
+        }
+        return false;
     }
 
     void Add(ProbeResult &result, const MapTable::Map &map, const Engine::Entity *entity, const char *label,
@@ -185,7 +204,7 @@ ProbeResult Probe::Run() {
             for (const MapTable::Place &place : map.targets)
                 if (place.afterQuest ? questOver : !retired)
                     if (const Engine::Entity *entity = Find(place);
-                        entity && (options.keepFinished || !Done(place, entity)))
+                        entity && !Inactive(entity) && (options.keepFinished || !Done(place, entity)))
                         Add(result, map, entity, map.label, false);
         } else if (options.mapLocations && !has && !retired && map.source.entity) {
             if (const Engine::Entity *entity = Find(map.source); entity && HoldsMap(map, entity))
@@ -220,4 +239,5 @@ void Probe::Reset() {
     g_quests.clear();
     g_covered.clear();
     g_loggedTrigger.clear();
+    g_loggedSource.clear();
 }
