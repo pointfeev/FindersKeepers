@@ -14,7 +14,7 @@ Game build: Steam 1.5.6 (`release_1_5-15693`). Per-map data (entity ids, positio
 - **Quest markers:** only tracked quests (three at most) put markers on the map and compass ([TheGamer](https://www.thegamer.com/kingdom-come-deliverance-2-find-side-quests-tipsters-how-to/)). The game's own gather (0x180DC5E68) matches: tracked quests, plus every quest while the quest log page is open. Areas are yellow search areas of unstated size; treasure maps never get a quest marker.
 - **Stash loot:** a chest gets its preset loot when the game registers it, or when a save is loaded, never on opening (Ghidra, C_Stash). Opening only records the robbed value the owners' AI reads (`GetStashRobbedValue`); nothing records that the player opened it.
 - **NPC loot:** a soul's inventory is filled from its presets once, when the soul is initialized or reset, guarded by a flag in its data (Ghidra, C_InventorySoul vtable slot 2); getting the inventory never fills it. A spawned NPC therefore carries its items, and an empty inventory has been stripped. Quests add or move items on top (`AddQuestItem`, `AddSoulDefaultItem`) while their node is active.
-- **Restocking:** stashes, souls, shops and item slots restock on a schedule (`FullyRestock`, `wh_ent_RestockStartTimeMinutes`). A stash or item slot restocks its preset some days after its items are taken (`nRestockPeriodDays`, 7 by default in AnimStash.lua and ItemSlot.lua, 0 disables). Of the destination chests, Brunswick II-IV, the Zhelejov marsh purse, the woodcutters' pay chest, the smugglers' dugout, the deceased's stash, Boruta's chest and the carving's chest and sack set 0; the rest keep 7. Since 1.5, "Chests no longer restock themselves if all their owners are dead" ([patch notes](https://kingdomcomedeliverance2.wiki.fextralife.com/Patch_Notes)); whether that stops ownerless chests is unconfirmed. Marks follow the contents, so a restocked chest is marked again.
+- **Restocking:** stashes, souls, shops and item slots restock on a schedule (`FullyRestock`, `wh_ent_RestockStartTimeMinutes`). A stash or item slot restocks its preset some days after its items are taken (`nRestockPeriodDays`, 7 by default in AnimStash.lua and ItemSlot.lua, 0 disables). Of the destination chests, Brunswick II-IV, the Zhelejov marsh purse, the woodcutters' pay chest, the smugglers' dugout, the deceased's stash, Boruta's chest and the carving's chest and sack set 0; the rest keep 7. Since 1.5, "Chests no longer restock themselves if all their owners are dead" ([patch notes](https://kingdomcomedeliverance2.wiki.fextralife.com/Patch_Notes)). The daily restock skips a chest only when its owner has souls and every one the check counts is dead; a chest with no owner restocks as before (Ghidra, C_Stash restock tick). A chest is owned by the home it stands in (`bOwnedByHome`, on by default) or by a quest's SetOwner. Of the destinations that restock, only the Storage Yard chest (Rabstein ruin) and the mint's ledger chest stand in a home, so they stop restocking once that home's people are dead; the rest have no owner. Marks follow the contents, so a restocked chest is marked again.
 - **Holes:** stay dug since 1.3 ("Holes dug by the player now stay dug out after level switch").
 - **Loose items:** an item slot restocks like a stash (`nRestockPeriodDays`, 7 by default; multi-class slots never). Slots also spawn and despawn their item's entity with distance (`wh_item_ItemSlotDynSpawning*`), but the slot keeps its item while despawned: the despawn removes only the item's entity (Ghidra, C_ItemSlotDynamicSpawner). So the slot's item, which the mod reads like the quest check IsItemInSlot does, holds from any distance.
 - **Quest items:** an `AddQuestItem` exists only while its quest state is active. Some quests hand over a normal copy when they end (`CreatePlayerReward` on an `_afterQuest` state).
@@ -76,7 +76,7 @@ Game build: Steam 1.5.6 (`release_1_5-15693`). Per-map data (entity ids, positio
 **Carving in the Tunnel in the Cliffs** (`tunelVeSkalach_carving`)
 - Not an item: examined on the east cave wall (trigger 20483), one-shot; its prompt goes off once examined.
 - Leads to: the "Hidden treasure" north of Trosky Castle, a chest (16919) and a sack (16775). [Gamer Guides](https://www.gamerguides.com/kingdom-come-deliverance-ii/guide/free-form-quests/trosky/apollonia-cave-wall-map-treasure-location-guide)
-- The trigger is also off before the open world; we count it only after Laboratores. Whether the cave is reachable earlier is undocumented.
+- The trigger is off until Laboratores ends, so before then it reads as examined. Its `activatetrigger` is fed by the open world unlock (`poi_trosecko`), which `socky` fires from the same `quest_done` sequence that sets the quest done, right after it. We count the carving only once Laboratores is done; whether the cave can be reached earlier does not matter, since the carving takes no press before that.
 
 **Bohuta's map** (`sedmStatecnychDva_borutsMap`), The Devil's Pack: a buried armour set SW of Pschitoky (needs a spade). Guides say the map's roads are wrong.
 
@@ -149,13 +149,3 @@ Other notes that point at places are quest-marked (Knight Konrad's diary, Bavor'
 **Map hidden at Vostatek** (`poi_skryseSPitim_map`): only in `item.xml`; no guide shows how to get it. Most likely shows Vostatek's five booze stashes in the Vidlak woods: one-shot interaction triggers (a monologue) from the open world on, `vostkovoPiti/triggery_na_mistech_s_pitim.xml`, so their marks would clear once used.
 
 **Miners' Underground Map** (`kuttenberg_underground_map`): only in `item.xml`; no source, no target.
-
-## Other mods
-
-- **Minimap** ([Nexus 3330](https://www.nexusmods.com/kingdomcomedeliverance2/mods/3330)) marks buried treasure for maps you own, with options to keep, mark done or hide dug-up spots. No in-world icon, no area maps. Its decoy marker "stayed on the map forever" until v1.22.
-- No other mod found marks treasure-map destinations.
-
-## Open
-
-- Whether an item slot keeps its item while its part of the level is not loaded (in-game test).
-- Guide claims have not been checked in the game.

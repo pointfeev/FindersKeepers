@@ -16,7 +16,7 @@ The mod stores nothing but its options. Every mark is worked out from game state
 
 Mark type `FindersKeepersMapDestination`.
 
-- A map's destinations are marked once the player has read it, carried or not: the game keeps reading progress per item class, and it survives the map being dropped and a reload (tested in game). A carving counts once examined, and only after Laboratores (`socky`), because its trigger is also off before the open world unlocks.
+- A map's destinations are marked once the player has read it, carried or not: the game keeps reading progress per item class, and it survives the map being dropped and a reload (tested in game). A carving counts once examined, and only after Laboratores (`socky`): its trigger is off until that quest ends, which would read as examined.
 - A map that leads to several places marks each one.
 - A destination clears when its hole is dug, its container is emptied or its item is taken. A quest's interaction trigger is marked only while it takes a press: from the quest step that switches it on until it is used. Keep finished does not keep a used one, because it looks the same as one whose step is not reached yet.
 - A riddle note's destination also clears once the player has, or has read, the next note.
@@ -81,11 +81,6 @@ Settings act first (what is created at all) and the map legend's Track toggle se
 - A new category needs the generator's category list, `MapTable::Category`, a settings entry (the INI and MCM follow) and a case in the probe's category check.
 - A new mark type, with its own icon and legend entry, needs an entry in `MarkType::kTypes` (naming, importance and tooltips already loop over it), its icons in `game_files.json` and its legend string. Three places still assume exactly two types: `ProbeResult::Target` has `bool source`, `GameMark` picks the type from it, and `plugin.cpp` keeps two position lists and two icon calls. Before the next type, give `Target` a `const MarkType::Type *` and loop over `kTypes` there. It's a small change, and after it a type is just data.
 - A source that is not a map (stashes, keys) doesn't fit yet, since the probe only walks the map table. Before the first one, split the probe into providers that each return targets, with the map table as one of them. Not before: one provider does not need the split.
-
-## Open questions (need play)
-
-- Is the Tunnel in the Cliffs reachable before Laboratores?
-- Is 15 m right for the quest marker check, and what does gathering quest markers every probe cost?
 
 ## Set aside
 
