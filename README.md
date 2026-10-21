@@ -26,6 +26,7 @@ cmake --preset release
 cmake --build --preset release    # plugin and build/release/mod/finderskeepers
 cmake --build --preset deploy     # also replaces <KCD2_DIR>/Mods/finderskeepers
 cmake --build --preset package    # also zips it as build/release/FindersKeepers-<version>.zip
+cmake --build --preset publish    # also publishes that zip as the GitHub release
 ```
 
 Publishing the zip is in [store/README.md](store/README.md).

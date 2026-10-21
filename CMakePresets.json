@@ -55,6 +55,12 @@
       "displayName": "Release: zip for publishing",
       "configurePreset": "release",
       "targets": ["package"]
+    },
+    {
+      "name": "publish",
+      "displayName": "Release: zip and publish on GitHub",
+      "configurePreset": "release",
+      "targets": ["publish"]
     }
   ]
 }

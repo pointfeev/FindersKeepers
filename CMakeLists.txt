@@ -104,3 +104,11 @@ add_custom_target(package
     DEPENDS mod
     COMMENT "Zipping ${MOD_ZIP}"
     VERBATIM)
+
+# Publishes the zip as the GitHub release for the manifest's version, which the Nexus Mods workflow then uploads.
+add_custom_target(publish
+    COMMAND "${UV_EXECUTABLE}" run --project "${CMAKE_CURRENT_SOURCE_DIR}" python
+            "${CMAKE_CURRENT_SOURCE_DIR}/tools/release.py" "${MOD_ZIP}"
+    DEPENDS package
+    COMMENT "Publishing the GitHub release for ${MOD_VERSION}"
+    VERBATIM)

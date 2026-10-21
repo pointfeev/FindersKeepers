@@ -13,7 +13,7 @@ The workflow `.github/workflows/nexus.yml` runs the script with the repository s
 - A push to master that changes the page text or `nexus.json`, a release, or a manual run updates the summary and description.
 - Publishing a GitHub release tagged `v<version>` with `FindersKeepers-<version>.zip` attached uploads the zip as the main file's next version, and the release notes become its changelog. The previous version moves to old files on its own.
 
-To release, bump the version in `mod/mod.manifest`, build the zip with `cmake --build --preset package`, then publish the release with the zip from `build/release/`. The zip can't be built in CI, because the pak copies icons and map names from the installed game.
+To release, bump the version in `mod/mod.manifest`, add its section to `CHANGELOG.md`, commit and push master, then run `cmake --build --preset publish`. That builds the zip and has `tools/release.py` publish the `v<version>` release with it, using the GitHub CLI (`gh`, signed in with `gh auth login`). The zip can't be built in CI, because the pak copies icons and map names from the installed game.
 
 The same commands run locally with the key in `NEXUS_API_KEY`: `python tools/publish.py page`, or `python tools/publish.py file <zip> <version>`.
 
