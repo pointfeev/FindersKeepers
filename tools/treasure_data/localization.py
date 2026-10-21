@@ -31,8 +31,8 @@ def read_ui_names(game_dir: Path) -> dict[str, str]:
         for info in pak.infolist():
             if info.filename.startswith(ITEM_TABLES) and info.filename.endswith(".xml"):
                 for doc in ET.fromstring(read_member(pak, info)).iter("Document"):
-                    if doc.get("Id") and doc.get("UIName"):
-                        labels[doc.get("Id").lower()] = doc.get("UIName")
+                    if (item_id := doc.get("Id")) and (label := doc.get("UIName")):
+                        labels[item_id.lower()] = label
     return labels
 
 

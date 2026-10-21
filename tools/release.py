@@ -39,7 +39,9 @@ def changelog_notes(version: str) -> str:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(prog="release.py", description=__doc__.splitlines()[0])
+    parser = argparse.ArgumentParser(
+        prog="release.py", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     parser.add_argument("archive", type=Path, help="the release zip, from the package preset")
     args = parser.parse_args()
 

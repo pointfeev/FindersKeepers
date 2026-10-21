@@ -151,7 +151,7 @@ def load_levels(root: Path, strings: dict[str, str]) -> Levels:
                 )
                 entities[(level, entity.id)] = entity
             for match in _POI_RE.finditer(text):
-                attrs = dict(_ATTR_RE.findall(match.group(1)))
+                attrs: dict[str, str] = dict(_ATTR_RE.findall(match.group(1)))
                 label = attrs.get("CustomLabel", "")
                 pois.append(
                     Poi(
@@ -191,8 +191,8 @@ def load_quest_graphs(root: Path) -> dict[Path, QuestGraph]:
             nodes = top.find("Nodes")
             instances: dict[str, list[str]] = defaultdict(list)
             for node in nodes if nodes is not None else []:
-                if node.get("Name"):
-                    instances[node.tag].append(node.get("Name"))
+                if name := node.get("Name"):
+                    instances[node.tag].append(name)
             graphs[path] = QuestGraph(
                 kind=top.tag,
                 name=top.get("Name", ""),

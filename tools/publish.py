@@ -19,6 +19,7 @@ import time
 import urllib.error
 import urllib.request
 from pathlib import Path
+from typing import Any
 
 API = "https://api.nexusmods.com/v3"
 STORE = Path(__file__).resolve().parents[1] / "store"
@@ -33,8 +34,9 @@ SUMMARY_LIMIT = 350
 UPLOAD_TIMEOUT = 300
 
 
-def call(method: str, url: str, body: dict | None = None) -> dict | None:
-    """One API request; a failure stops the script with Nexus's problem details."""
+def call(method: str, url: str, body: dict | None = None) -> Any:
+    """One API request, returning the response's parsed `data`, or None when it has no body (a PATCH). A failure stops
+    the script with Nexus's problem details."""
     request = urllib.request.Request(
         url if url.startswith("https://") else API + url,
         method=method,
@@ -137,7 +139,9 @@ def publish_file(mod: str, archive: Path, version: str, changelog: str) -> None:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(prog="publish.py", description=__doc__.splitlines()[0])
+    parser = argparse.ArgumentParser(
+        prog="publish.py", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("page", help="update the summary and description")
     file_cmd = commands.add_parser("file", help="upload a release zip as the main file's next version")

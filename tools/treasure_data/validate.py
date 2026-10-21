@@ -39,11 +39,11 @@ class Checker:
         self.report = report
 
     def check(self, label: str, ref: dict) -> None:
-        level = ref.get("level")
         entity_id = str(ref.get("entity_id") or "")
-        guid = ref.get("entity_guid") or ""
         if not entity_id:
             return
+        level: str = ref["level"]
+        guid = ref.get("entity_guid") or ""
         entity = self.levels.entities.get((level, entity_id))
         if entity is None:
             moved_to = self.by_guid.get((level, guid), []) if guid else []

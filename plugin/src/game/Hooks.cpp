@@ -130,9 +130,9 @@ std::uintptr_t Hooks::Detour(const char *what, const std::uintptr_t function, co
 void *Hooks::ReplaceVirtual(void *object, const std::size_t slot, void *function) {
     void **entry = *static_cast<void ***>(object) + slot;
     DWORD old = 0;
-    VirtualProtect(entry, sizeof *entry, PAGE_READWRITE, &old);
+    VirtualProtect(static_cast<void *>(entry), sizeof *entry, PAGE_READWRITE, &old);
     void *previous = InterlockedExchangePointer(entry, function);
-    VirtualProtect(entry, sizeof *entry, old, &old);
+    VirtualProtect(static_cast<void *>(entry), sizeof *entry, old, &old);
     return previous;
 }
 

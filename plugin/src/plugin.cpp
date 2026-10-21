@@ -80,12 +80,13 @@ namespace {
         if (const ULONGLONG now = GetTickCount64(); started && now >= g_nextProbe) {
             g_nextProbe = now + kProbeIntervalMs;
             Options::Refresh();
-            LogProbe(Probe::Run());
+            const ProbeResult result = Probe::Run();
+            LogProbe(result);
             g_destinations.clear();
             g_sources.clear();
-            for (const auto &t : g_last->targets)
+            for (const auto &t : result.targets)
                 (t.source ? g_sources : g_destinations).push_back(t.pos);
-            GameMark::Sync(Options::Get().mapMarkers ? std::span(g_last->targets)
+            GameMark::Sync(Options::Get().mapMarkers ? std::span(result.targets)
                                                      : std::span<const ProbeResult::Target>());
         }
         // A setting changed (the menu or the file): probe again at once.

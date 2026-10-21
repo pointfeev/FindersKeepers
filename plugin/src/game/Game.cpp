@@ -2,7 +2,6 @@
 
 #include <new>
 
-#include "Log.h"
 #include "game/Engine.h"
 #include "game/Hooks.h"
 

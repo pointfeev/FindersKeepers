@@ -1,6 +1,5 @@
 #include "game/Engine.h"
 
-#include "Log.h"
 #include "game/Hooks.h"
 
 namespace {
