@@ -47,7 +47,7 @@ namespace {
 
     // Whether a destination has been dealt with: a hole dug (Hole.lua's nDepth is 1 once dug), a loose item taken
     // from its item slot, or a container emptied. Destinations with none of these (areas, triggers) stay marked while
-    // the map is had.
+    // the player has the map.
     bool Done(const MapTable::Place &place, const Engine::Entity *entity) {
         if (const Engine::ScriptTable *script = Engine::EntityScript(entity)) {
             if (ScriptValue depth; Engine::TableGet(script, "nDepth", depth) && depth.type == ScriptValue::Number)
@@ -88,7 +88,6 @@ namespace {
         });
     }
 
-    // Whether the options mark this kind of map.
     bool Shown(const MapTable::Category category, const Options::Values &options) {
         switch (category) {
         case MapTable::Category::Treasure:
@@ -177,7 +176,6 @@ ProbeResult Probe::Run() {
         const bool questOver = QuestOver(map);
         const bool retired = questOver && options.retireQuestMaps;
         const bool has = HasMap(map, inventory);
-        // Known: read (or, when reading is not required, carried too), and carried when that is required.
         bool known = Knows(map, has) || (!options.requireRead && has);
         if (options.requireCarried)
             known = known && has;

@@ -1,7 +1,7 @@
 [project]
-name = "finders-keepers"
+name = "FindersKeepers"
 version = "0.1.0"
-description = "Tooling for the finders-keepers KCD2 mod: game data extraction, indexing and map table validation."
+description = "Build and game data tooling for the Finders Keepers KCD2 mod."
 requires-python = ">=3.12"
 dependencies = []
 
@@ -17,11 +17,7 @@ module-root = "tools"
 module-name = "treasure_data"
 
 [tool.ruff]
-indent-width = 4
 line-length = 120
-
-[tool.ruff.format]
-docstring-code-format = false
 
 [dependency-groups]
 dev = [

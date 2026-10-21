@@ -19,7 +19,6 @@ namespace Engine {
         Vec3() = default;
         Vec3(const float x, const float y, const float z) : x(x), y(y), z(z) {}
         Vec3 operator-(const Vec3 &o) const { return {x - o.x, y - o.y, z - o.z}; }
-        bool operator==(const Vec3 &) const = default;
         float Length() const { return std::sqrt(x * x + y * y + z * z); }
     };
 

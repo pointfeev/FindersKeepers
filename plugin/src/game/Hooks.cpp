@@ -11,8 +11,8 @@
 #include "Log.h"
 
 namespace {
-    // One page of executable memory within 2 GB of WHGame.dll, so a 5-byte jump from game code reaches it; it holds
-    // every stub and relay (about 200 bytes today).
+    // One page of executable memory within 2 GB of WHGame.dll, so a 5-byte jump from game code reaches it. Every stub
+    // and relay goes in it.
     constexpr std::size_t kPatchMemory = 4096;
     constexpr std::size_t kRelaySize = Hooks::kAbsoluteJumpSize;
 
@@ -35,21 +35,6 @@ namespace {
             }
         }
         return false;
-    }
-
-    // `size` bytes of patch memory, keeping room for the relay of the branch that will lead to them.
-    std::uint8_t *Reserve(const char *what, const std::size_t size) {
-        if (!g_memory && !CreatePatchMemory()) {
-            Log::Write("hooks: could not allocate patch memory near WHGame.dll; {} not patched", what);
-            return nullptr;
-        }
-        if (kPatchMemory - g_used < size + kRelaySize) {
-            Log::Write("hooks: patch memory is full; {} not patched", what);
-            return nullptr;
-        }
-        std::uint8_t *result = g_memory + g_used;
-        g_used += size;
-        return result;
     }
 
     constexpr int kAnyByte = -1;
@@ -134,7 +119,7 @@ std::uintptr_t Hooks::Detour(const char *what, const std::uintptr_t function, co
         Log::Write("hooks: {} does not start as expected; not patched", what);
         return 0;
     }
-    auto *original = Reserve(what, entry.size() + kAbsoluteJumpSize);
+    auto *original = AllocateStub(what, entry.size() + kAbsoluteJumpSize);
     if (!original)
         return 0;
     StubWriter(original).Bytes(entry).AbsoluteJump(function + entry.size());
@@ -151,10 +136,22 @@ void *Hooks::ReplaceVirtual(void *object, const std::size_t slot, void *function
     return previous;
 }
 
-std::uint8_t *Hooks::AllocateStub(const char *what, const std::size_t size) { return Reserve(what, size); }
+std::uint8_t *Hooks::AllocateStub(const char *what, const std::size_t size) {
+    if (!g_memory && !CreatePatchMemory()) {
+        Log::Write("hooks: could not allocate patch memory near WHGame.dll; {} not patched", what);
+        return nullptr;
+    }
+    if (kPatchMemory - g_used < size + kRelaySize) {
+        Log::Write("hooks: patch memory is full; {} not patched", what);
+        return nullptr;
+    }
+    std::uint8_t *result = g_memory + g_used;
+    g_used += size;
+    return result;
+}
 
 void Hooks::Branch(const std::uintptr_t function, const std::uintptr_t target) {
-    // Reserve always leaves room for this relay.
+    // AllocateStub always leaves room for this relay.
     std::uint8_t *relay = g_memory + g_used;
     g_used += kRelaySize;
     StubWriter(relay).AbsoluteJump(target);

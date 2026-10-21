@@ -138,11 +138,8 @@
     "alt_entities": [],
     "how_matched": "mrtviNemluvi.xml declares StashAsset 'stash' and ItemAsset 'map' = this GUID; SmartObjectHolder mrtviNemluvi links asset['stash'] -> Stash29 (layer Main/krab_rabstejnsko/rabstejnRuin/_common); zelezo_ve_stashi.xml / questitem.xml AddStashDefaultItem put the steel there; objective najdi_tajne_skladiste Done log says the goods were found in the ruin near the Rabstejn homestead. Online guide: map points to the Rabstein (mill) ruins, chest upstairs via a ladder.",
     "confidence": "verified",
-    "sources": [
-      "https://escorenews.com/en/article/71885-how-to-find-secret-stash-in-the-service-of-the-guild-in-kcd2-where-is-location-from-storage-yard-plan-map-in-legacy-of-the-forge-dlc",
-      "https://kcd2.org/en/post/kcd2-in-the-service-of-the-guild"
-    ],
-    "notes": "Lead verified. Objective najdi_tajne_skladiste ('Find the secret storage yard') has NO Marker attribute and the parent objective only carries a steel-count tracker, so the quest does not mark the stash: good candidate for a mod marker. Escorenews was read only through a search snippet (page behind a Cloudflare challenge).",
+    "sources": ["https://kcd2.org/en/post/kcd2-in-the-service-of-the-guild"],
+    "notes": "Lead verified. Objective najdi_tajne_skladiste ('Find the secret storage yard') has NO Marker attribute and the parent objective only carries a steel-count tracker, so the quest does not mark the stash: good candidate for a mod marker.",
     "source": {
       "how": "npc_loot",
       "summary": "Carried by the dying bandit (Ondrej) near the dead bandits' camp in the forest west of the Maleshov stud farm; he hands it over if kept alive long enough, otherwise take it from him/his body.",
@@ -159,9 +156,7 @@
         }
       ],
       "confidence": "verified",
-      "sources": [
-        "https://escorenews.com/en/article/71885-how-to-find-secret-stash-in-the-service-of-the-guild-in-kcd2-where-is-location-from-storage-yard-plan-map-in-legacy-of-the-forge-dlc"
-      ],
+      "sources": [],
       "entity_check": "ok"
     },
     "entity_check": "ok"
@@ -402,10 +397,7 @@
     "alt_entities": [],
     "how_matched": "prvni_cast_zbroje.xml: precteni_mapky (mapka = map_bruncvik_01) outputs mapka_prectena -> objective_na_druhou_cast_zbroje_je_aktivni -> druha_cast_zbroje (objective najdi_cast_bruncvikovy_zbroje_u_dvou_stromu). brneni_ve_stashich.xml puts the plate legs (96981577) in asset druhaStash. SmartObjectHolder bruncvikovaZbroj (47551) links asset['druhaStash'] -> Stash 36209. The designer note gives goto 1927.16,3000.40,89.95 (POI Vlci doupe).",
     "confidence": "verified",
-    "sources": [
-      "https://www.powerpyx.com/kingdom-come-deliverance-2-the-lions-crest-walkthrough/",
-      "https://primagames.com/?p=302784"
-    ],
+    "sources": ["https://www.powerpyx.com/kingdom-come-deliverance-2-the-lions-crest-walkthrough/"],
     "notes": "Online guides confirm the location (wolf den, sack behind two trees) but number the maps by pickup order, not by item name. The item-to-destination link comes from the quest data. The stash has no preset; it holds only quest-added items plus junk. The quest objectives have no map markers, so a mod marker is useful.",
     "source": {
       "how": "quest_reward",
@@ -440,10 +432,7 @@
     "alt_entities": [],
     "how_matched": "prvni_cast_zbroje.xml: precteni_mapky_1 (mapka = map_bruncvik_02) outputs -> hadanka_na_treti_cast_zbroje_byla_prectena -> treti_cast_zbroje (objective najdi_cast_bruncvikovy_zbroje_u_krizu_na_skale). The armour (448e8c3b) goes in asset tretiStash. SmartObjectHolder bruncvikovaZbroj links asset['tretiStash'] -> Stash 15711 (preset inventory_poi_krizeNaSkalach). The designer note gives goto 1298.99,2781.89 (POI Krize na skalach).",
     "confidence": "verified",
-    "sources": [
-      "https://www.powerpyx.com/kingdom-come-deliverance-2-the-lions-crest-walkthrough/",
-      "https://primagames.com/?p=302784"
-    ],
+    "sources": ["https://www.powerpyx.com/kingdom-come-deliverance-2-the-lions-crest-walkthrough/"],
     "notes": "The kit's quest_refs file is prvni_cast_zbroje.xml because the map is read in the first-part graph. Its destination is the third stash. The stash also has its own POI loot preset.",
     "source": {
       "how": "quest_reward",
@@ -483,10 +472,7 @@
     ],
     "how_matched": "druha_cast_zbroje.xml: precteni_mapky (mapka = map_bruncvik_03, granted when the plate legs are taken) outputs hadanka_na_ctvrtou_cast_zbroje_* -> ctvrta_cast_zbroje (objective najdi_cast_bruncvikovy_zbroje_u_stareho_kostlivce). The cuirass (8f0afc06) goes in asset ctvrtaStash. SmartObjectHolder links asset['ctvrtaStash'] -> Stash 11970 (preset inventory_poi_zapomenutyKriz2). The designer note gives goto 1653.91,2332.99 (POI Zapomenuty kriz).",
     "confidence": "verified",
-    "sources": [
-      "https://www.powerpyx.com/kingdom-come-deliverance-2-the-lions-crest-walkthrough/",
-      "https://primagames.com/?p=302784"
-    ],
+    "sources": ["https://www.powerpyx.com/kingdom-come-deliverance-2-the-lions-crest-walkthrough/"],
     "notes": "Layer tkrc_krcak/_common.",
     "source": {
       "how": "quest_reward",
@@ -544,10 +530,7 @@
     ],
     "how_matched": "treti_cast_zbroje.xml: precteni_mapky (mapka = map_bruncvik_04, granted when the arm armour is taken) outputs hadanka_na_patou_cast_zbroje_* -> pata_cast_zbroje (objective najdi_cast_bruncvikovy_zbroje_u_kamenne_mohyly). The helmet (157697b8) goes in asset pataStash. SmartObjectHolder links asset['pataStash'] -> Stash 9534 (preset inventory_poi_lovciPokladu_burrialMound, sOpenMessage @pata_cast_prozkoumat_mohy_PyUd). The designer note gives goto 1290.14,1969.52 (POI Lovci pokladu).",
     "confidence": "verified",
-    "sources": [
-      "https://www.powerpyx.com/kingdom-come-deliverance-2-the-lions-crest-walkthrough/",
-      "https://primagames.com/?p=302784"
-    ],
+    "sources": ["https://www.powerpyx.com/kingdom-come-deliverance-2-the-lions-crest-walkthrough/"],
     "notes": "Map IV leads to pataStash, the 5th stash, not ctvrtaStash. Its quest file is treti_cast_zbroje.xml because it is granted with the third piece. Several other camp containers sit within 20 m.",
     "source": {
       "how": "quest_reward",
@@ -857,10 +840,7 @@
     ],
     "how_matched": "Names pair map _1 with POI 1: the map's images are 'POI_NemcuvPoklad_treasureMap', and the target preset is inventory_poi_nemcuvPoklad1_chestInMarsh at POI nemcuvPoklad1_poi. Online (Steam guide 'Treasure Maps!', Gamerpillar), the Footpad's hideout map leads to a tree east of Kuttenberg with a chest and a bird's nest holding its key. The level data has Nest entity 99810 5 m from Stash27; there is no nest at the other stash.",
     "confidence": "verified",
-    "sources": [
-      "https://steamcommunity.com/sharedfiles/filedetails/?id=3435821401",
-      "https://gamerpillar.com/footpads-hideout-map-treasure-location-kingdom-come-deliverance-ii-kcd2/"
-    ],
+    "sources": ["https://gamerpillar.com/footpads-hideout-map-treasure-location-kingdom-come-deliverance-ii-kcd2/"],
     "notes": "Gamerpillar calls it 'buried', but there is no Hole entity at Stash27. The POI label is 'Sunken chest' (in a marsh), so no shovel is needed.",
     "source": {
       "how": "chest",
@@ -872,8 +852,7 @@
       "confidence": "verified",
       "sources": [
         "https://kingdomcomedeliverance2.wiki.fextralife.com/Footpad's_Hideout_Map",
-        "https://www.powerpyx.com/?p=266813",
-        "https://steamcommunity.com/sharedfiles/filedetails/?id=3435821401"
+        "https://www.powerpyx.com/?p=266813"
       ],
       "entity_check": "ok",
       "entity_guid": "92835d0c-a335-490b"
@@ -904,10 +883,7 @@
     ],
     "how_matched": "The map's images are 'nemcuv_Poklad_planek_POI2', and the target preset is inventory_poi_nemcuvPoklad2_sackInHole at POI nemcuvPokladOpatovice_poi ('Buried treasure'). Diggable Hole 140316 sits on the stash. Online, the Old Hideout Map leads to a grave under a two-forked tree north-east of Bohunowitz; you dig it up with a shovel and find a sack inside.",
     "confidence": "verified",
-    "sources": [
-      "https://steamcommunity.com/sharedfiles/filedetails/?id=3435821401",
-      "https://gamerpillar.com/old-hideout-map-treasure-location-kingdom-come-deliverance-ii-kcd2/"
-    ],
+    "sources": ["https://gamerpillar.com/old-hideout-map-treasure-location-kingdom-come-deliverance-ii-kcd2/"],
     "notes": "Buried: the Stash is under Hole 140316, so the 3D marker could point at the Hole.",
     "source": {
       "how": "chest",
@@ -917,10 +893,7 @@
       "entity_id": "952830",
       "pos": "3036.624,713.6868,51.57442",
       "confidence": "verified",
-      "sources": [
-        "https://kingdomcomedeliverance2.wiki.fextralife.com/Old_Hideout_Map",
-        "https://steamcommunity.com/sharedfiles/filedetails/?id=3435821401"
-      ],
+      "sources": ["https://kingdomcomedeliverance2.wiki.fextralife.com/Old_Hideout_Map"],
       "entity_check": "ok",
       "entity_guid": "92835d0c-a335-490b"
     },
@@ -1311,11 +1284,10 @@
         "pos": "3177.87,763.8649,47.06441"
       }
     ],
-    "how_matched": "Online guides (Patch Crazy, Deltia's, Fextralife 'Locked Dugout') say the map from the dead smuggler in the Kuttenberg tunnels marks the Locked Dugout. The only POI labelled 'Locked dugout' is skladPaseraku_poi. The chest beside it has its own preset, inventory_poi_skladPaseraku_chest. That preset's recipe_longswordduel matches guides that put the Duelling longsword sketch in the Locked Dugout chest.",
+    "how_matched": "Online guides (Patch Crazy, Fextralife 'Locked Dugout') say the map from the dead smuggler in the Kuttenberg tunnels marks the Locked Dugout. The only POI labelled 'Locked dugout' is skladPaseraku_poi. The chest beside it has its own preset, inventory_poi_skladPaseraku_chest. That preset's recipe_longswordduel matches guides that put the Duelling longsword sketch in the Locked Dugout chest.",
     "confidence": "verified",
     "sources": [
       "https://patchcrazy.co.uk/kcd2-all-treasure-map-locations/",
-      "https://deltiasgaming.com/all-treasure-map-locations-in-kingdom-come-deliverance-2/",
       "https://kingdomcomedeliverance2.wiki.fextralife.com/Locked_Dugout",
       "https://kingdomcomedeliverance2.wiki.fextralife.com/Smugglers's_Map"
     ],
@@ -1364,11 +1336,10 @@
         "pos": "1576.76,2372.435,41.62"
       }
     ],
-    "how_matched": "Layer Main/tkrc_krcak/Poi_zakopanyPokladMrtveho ('dead man's buried treasure'); preset inventory_poi_zakopanyPokladMrtveho_stash = 157 g, golden cross with garnets, 3 Saviour schnapps, 3 silver cups, identical to the loot GameRant/fandom list for this map. It lies NW of the inn (inn centroid ~1651,2164) and SW of the Kerchak bandit camp, as the guides say.",
+    "how_matched": "Layer Main/tkrc_krcak/Poi_zakopanyPokladMrtveho ('dead man's buried treasure'); preset inventory_poi_zakopanyPokladMrtveho_stash = 157 g, golden cross with garnets, 3 Saviour schnapps, 3 silver cups, identical to the loot GameRant lists for this map. It lies NW of the inn (inn centroid ~1651,2164) and SW of the Kerchak bandit camp, as the guides say.",
     "confidence": "verified",
     "sources": [
       "https://gamerant.com/kingdom-come-deliverance-2-kcd2-how-get-map-left-deceased/",
-      "https://kingdom-come-deliverance.fandom.com/wiki/Map_left_by_the_deceased",
       "https://thefilibusterblog.com/kingdom-come-deliverance-2-locating-the-map-left-by-the-deceased-and-its-solution/"
     ],
     "notes": "No map POI for it in pois.csv. Don't confuse it with krizAKostlivec_poi 'Cross and skeleton' (1650.7,2333.1; stashes 11898/11970), which is also north of the inn.",
@@ -1381,10 +1352,7 @@
       "entity_guid": "eb214501-c73b-4a82",
       "pos": "2661.782,2046.269,109.6621",
       "confidence": "verified",
-      "sources": [
-        "https://kingdom-come-deliverance.fandom.com/wiki/Map_left_by_the_deceased",
-        "https://gamerant.com/kingdom-come-deliverance-2-kcd2-how-get-map-left-deceased/"
-      ],
+      "sources": ["https://gamerant.com/kingdom-come-deliverance-2-kcd2-how-get-map-left-deceased/"],
       "entity_check": "ok"
     },
     "entity_check": "ok"
@@ -1595,10 +1563,7 @@
     ],
     "how_matched": "Map images are named borutovaTruhla_treasureMap*; Stash15 sits in layer Main/kpri_pritoky/poi_borutovaTruhla with preset inventory_poi_borutovaTruhla, co-located with Hole 65189 and POI borutovaZakopanaVybava_poi ('Buried stash'). Online guides put the dig spot in a fenced tree cluster SW of Pschitoky / between Miskovitz and Pschitoky, matching the coordinates. No quest graph references the stash (plain POI treasure).",
     "confidence": "verified",
-    "sources": [
-      "https://primagames.com/tips/kingdom-come-deliverance-2-how-to-find-bohuta-treasure-map",
-      "https://patchcrazy.co.uk/bohutas-treasure-map-location-kcd-2/"
-    ],
+    "sources": ["https://patchcrazy.co.uk/bohutas-treasure-map-location-kcd-2/"],
     "notes": "Quest sedmStatecnych2 ('The Devil's Pack') only creates the map on Bohuta (borutova_mapa.xml AddSoulDefaultItem Mode=Create on quest start) and hands it over in dialogue s_borutem_u_hrobu; no objective marks the treasure. Guides warn the drawn roads do not match the world map well.",
     "source": {
       "how": "quest_reward",
@@ -1616,10 +1581,7 @@
         }
       ],
       "confidence": "verified",
-      "sources": [
-        "https://primagames.com/tips/kingdom-come-deliverance-2-how-to-find-bohuta-treasure-map",
-        "https://deltiasgaming.com/?p=154504"
-      ],
+      "sources": [],
       "entity_check": "ok"
     },
     "entity_check": "ok"
@@ -1661,10 +1623,7 @@
       "entity_guid": null,
       "pos": null,
       "confidence": "verified",
-      "sources": [
-        "https://deltiasgaming.com/all-maps-in-kingdom-come-deliverance-2-listed/",
-        "https://kingdomcomedeliverance2.wiki.fextralife.com/Black_Darko"
-      ],
+      "sources": ["https://kingdomcomedeliverance2.wiki.fextralife.com/Black_Darko"],
       "entity_check": "no_id"
     },
     "entity_check": "ok"

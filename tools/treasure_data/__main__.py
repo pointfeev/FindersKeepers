@@ -16,7 +16,7 @@ from .validate import validate
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 # Outside the repo: tens of thousands of unpacked game files that an IDE would otherwise index.
-DEFAULT_CACHE = Path(os.environ.get("LOCALAPPDATA") or Path.home() / ".cache") / "finders-keepers"
+DEFAULT_CACHE = Path(os.environ.get("LOCALAPPDATA") or Path.home() / ".cache") / "FindersKeepers"
 
 
 def main() -> int:

@@ -1,6 +1,6 @@
 # Treasure maps in KCD2: research notes
 
-Game build: Steam 1.5.6 (`release_1_5-15693`). Per-map data (entity ids, positions, sources) is in [treasure_maps.json](treasure_maps.json); this file keeps what we learned about each map and the game rules the mod relies on. "Data" means the extracted game files; "guides" means the linked walkthroughs. Fandom, Deltia's, Prima, Nexus and Steam threads block fetching, so claims from them rest on search snippets.
+Game build: Steam 1.5.6 (`release_1_5-15693`). Per-map data (entity ids, positions, sources) is in [treasure_maps.json](treasure_maps.json); this file keeps what we learned about each map and the game rules the mod relies on. Below, "data" is the extracted game files and "guides" are the linked walkthroughs.
 
 ## How a map ties to a place
 
@@ -14,7 +14,7 @@ Game build: Steam 1.5.6 (`release_1_5-15693`). Per-map data (entity ids, positio
 - **Quest markers:** only tracked quests (three at most) put markers on the map and compass ([TheGamer](https://www.thegamer.com/kingdom-come-deliverance-2-find-side-quests-tipsters-how-to/)). The game's own gather (0x180DC5E68) matches: tracked quests, plus every quest while the quest log page is open. Areas are yellow search areas of unstated size; treasure maps never get a quest marker.
 - **Restocking:** since 1.5, "Chests no longer restock themselves if all their owners are dead". No destination chest or sack has an owner (no `bOwnedByHome`, no entity links), so none refills ([patch notes](https://kingdomcomedeliverance2.wiki.fextralife.com/Patch_Notes)).
 - **Holes:** stay dug since 1.3 ("Holes dug by the player now stay dug out after level switch").
-- **Loose items:** players report they do not respawn (Steam snippet; nothing official).
+- **Loose items:** not known to respawn, though nothing official says so either way.
 - **Quest items:** an `AddQuestItem` exists only while its quest state is active. Some quests hand over a normal copy when they end (`CreatePlayerReward` on an `_afterQuest` state).
 - **Failure:** quests have a Failed state (patch notes). Main quests do not fail; losing a key NPC is a game over.
 - **Open world:** `socky` (M03) is Laboratores (game string `socky_CpmD`); its end opens the Trosky region ([kcd2.org](https://kcd2.org/en/post/kcd2-walkthrough)).

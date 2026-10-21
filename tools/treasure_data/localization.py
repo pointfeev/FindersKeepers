@@ -19,7 +19,8 @@ from .maptable import map_source, marked_rows, tooltip_label
 
 TABLE_NAME = "text_ui_finderskeepers.xml"
 ITEM_TABLES = "Libs/Tables/item/item"
-# Our mark types' names in our own table, the tooltip's "<type>": on a map's destinations and on its own location.
+# The labels of our two mark types' names, which fill a tooltip's "<type>". Keyed by whether the mark is on the map's
+# own location rather than on a destination.
 TYPE_STRINGS = {False: "ui_maplegend_FindersKeepersMapDestination", True: "ui_maplegend_FindersKeepersMapLocation"}
 
 

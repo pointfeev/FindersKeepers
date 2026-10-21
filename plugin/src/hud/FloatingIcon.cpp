@@ -17,9 +17,8 @@ using Flash::Value;
 using Flash::VarPtr;
 
 namespace {
-    // Per type, in MarkType::kTypes order: whether its icons' first showing has been logged, and how many clips it has
-    // made (clips are kept and reused; the ones not needed in a frame are hidden).
-    std::array<bool, MarkType::kTypes.size()> g_loggedShown{};
+    // Per type, in MarkType::kTypes order, how many clips it has made. Clips are kept and reused; the ones not needed
+    // in a frame are hidden.
     std::array<std::size_t, MarkType::kTypes.size()> g_clipCount{};
 
     std::size_t TypeIndex(const MarkType::Type &type) {
@@ -60,11 +59,10 @@ namespace {
     // Places a clip over a target and returns true, or returns false when the target is out of range or off screen.
     // Icons are hidden beyond the options' range and fade in until fully opaque at their fade distance; their size is
     // given for a 1080-line screen and scaled with the screen height.
-    bool Place(const VarPtr &clip, const Vec3 &target, const Vec3 &playerPos, const float width, const float height,
-               float &distance) {
+    bool Place(const VarPtr &clip, const Vec3 &target, const Vec3 &playerPos, const float width, const float height) {
         const Options::Values &options = Options::Get();
         const Vec3 anchor = Anchor(target);
-        distance = (anchor - playerPos).Length();
+        const float distance = (anchor - playerPos).Length();
         float sx = 0.f, sy = 0.f, sz = 0.f;
         // ProjectToScreen reports percent of the viewport; sz > 1 is behind the camera.
         if (distance > options.iconShowDistance || !Engine::ProjectToScreen(anchor, sx, sy, sz) || sz > 1.f)
@@ -106,16 +104,10 @@ void FloatingIcon::Update(const MarkType::Type &type, const std::span<const Vec3
             VarPtr clip;
             if (!GetClip(fp, type, shown, clip))
                 break;
-            if (float distance = 0.f; Place(clip, target, playerPos, width, height, distance)) {
-                if (bool &logged = g_loggedShown[TypeIndex(type)]; !logged) {
-                    Log::Write("float: '{}' shown over a target {:.1f} m away, on a {:.0f}x{:.0f} screen", type.name,
-                               distance, width, height);
-                    logged = true;
-                }
+            if (Place(clip, target, playerPos, width, height))
                 ++shown;
-            } else {
+            else
                 clip->SetVisible(false);
-            }
         }
     }
     for (std::size_t i = shown; i < g_clipCount[TypeIndex(type)]; ++i)

@@ -27,24 +27,14 @@ namespace {
     // A PoiMarker's Id: the entity mark's id, which C_UIFlashMapPoiMarker sends as a string.
     std::optional<std::int32_t> MarkerId(const Flash::Var *marker) {
         const auto id = Member(marker, "Id");
-        if (!id)
+        if (!id || id->type != Flash::Value::String)
             return std::nullopt;
-        switch (id->type) {
-        case Flash::Value::String: {
-            const std::string_view text(id->string);
-            std::int32_t value = 0;
-            if (const auto [end, error] = std::from_chars(text.data(), text.data() + text.size(), value);
-                error == std::errc() && end == text.data() + text.size())
-                return value;
-            return std::nullopt;
-        }
-        case Flash::Value::Int:
-            return id->i;
-        case Flash::Value::Double:
-            return static_cast<std::int32_t>(id->d);
-        default:
-            return std::nullopt;
-        }
+        const std::string_view text(id->string);
+        std::int32_t value = 0;
+        if (const auto [end, error] = std::from_chars(text.data(), text.data() + text.size(), value);
+            error == std::errc() && end == text.data() + text.size())
+            return value;
+        return std::nullopt;
     }
 
     // The mark's tooltip label when `marker` is one of our PoiMarkers; null otherwise.

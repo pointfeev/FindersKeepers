@@ -55,7 +55,6 @@ namespace Game {
     // without one.
     struct Inventory;
     const Inventory *EntityInventory(const Engine::Entity *entity);
-    // How many items it holds, and how many of an item class.
     int ItemCount(const Inventory *inventory);
     int CountOfClass(const Inventory *inventory, const ItemClassId &item);
     // An entity's WUID, as XGenAIModule.GetMyWUID gives it; 0 for entities without one.

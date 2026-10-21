@@ -19,7 +19,7 @@ namespace {
         Mark(const std::uint64_t wuid, const bool source, std::string label)
             : wuid_(wuid), source_(source), label_(std::move(label)) {}
 
-        // Whether this mark is for this target: the same object and the same kind of mark.
+        // The same object and the same kind of mark.
         bool For(const ProbeResult::Target &target) const { return wuid_ == target.wuid && source_ == target.source; }
         const std::string &Label() const { return label_; }
         bool Live() const { return mark_ != nullptr; }

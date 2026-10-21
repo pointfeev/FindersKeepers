@@ -1,1 +1,1 @@
-"""Game data tooling for the finders-keepers mod: extract, index and validate KCD2 treasure map data."""
+"""Game data tooling for the Finders Keepers mod. The commands are listed in __main__."""

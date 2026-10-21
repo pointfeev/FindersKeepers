@@ -16,7 +16,7 @@
 #include "options/Options.h"
 #include "probe/Probe.h"
 
-// A KCSE plugin (see the exports at the end) that brings its own game access: it runs on the game framework's
+// A KCSE plugin (see the exports at the end). It finds the game code it needs itself and runs on the game framework's
 // per-frame update.
 namespace {
     // Often enough that marks follow what the player does at once; one probe costs a few dozen lookups.
@@ -124,9 +124,10 @@ namespace {
         }
         Options::Install();
         Mcm::Install(kcse);
+        // KCSE loads plugins after the framework exists, so a null one means the lookup is wrong for this game version.
         void *framework = Engine::Framework();
         if (!framework) {
-            Log::Write("not started: the game framework does not exist yet");
+            Log::Write("not started: the game framework was not found");
             return false;
         }
         g_frame = reinterpret_cast<FrameFn>(

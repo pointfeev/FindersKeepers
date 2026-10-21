@@ -10,6 +10,7 @@ namespace {
     // KCSE's plugin interface and messaging, and MCM's settings builder, declared here from their documented ABI
     // (KCSE's KCSEAPI.h, MCM's MCM_API.h) in their declaration order, so MSVC lays the vtables out the same way.
     // Members the plugin never calls still hold their place: removing one would shift the slots and offsets after it.
+    // KCSE and MCM own these objects, so their destructors are protected and never called here.
     struct Message {
         const char *sender;
         std::uint32_t type;
@@ -28,7 +29,7 @@ namespace {
         virtual void *QueryInterface(std::uint32_t id) const = 0;
 
       protected:
-        ~KcseInterface() = default; // owned by KCSE, never deleted here
+        ~KcseInterface() = default;
     };
     constexpr std::uint32_t kMessagingInterface = 0;
 
@@ -39,7 +40,7 @@ namespace {
         virtual bool RegisterListener(const char *sender, Listener handler) = 0;
 
       protected:
-        ~Messaging() = default; // owned by KCSE, never deleted here
+        ~Messaging() = default;
     };
 
     // Sent by "MCM": each time its menu is built (data: a SettingsBuilder valid during the call), and for each change.
@@ -65,7 +66,7 @@ namespace {
         virtual void SetValue(const char *modId, const char *id, double value) = 0;
 
       protected:
-        ~SettingsBuilder() = default; // owned by MCM, never deleted here
+        ~SettingsBuilder() = default;
     };
 
     constexpr char kModId[] = "finderskeepers";
@@ -107,7 +108,7 @@ namespace {
 
 void Mcm::Install(const void *kcse) {
     const auto *root = static_cast<const KcseInterface *>(kcse);
-    auto *messaging = root ? static_cast<Messaging *>(root->QueryInterface(kMessagingInterface)) : nullptr;
+    auto *messaging = static_cast<Messaging *>(root->QueryInterface(kMessagingInterface));
     if (!messaging || !messaging->RegisterListener("MCM", &OnMessage))
         Log::Write("mcm: KCSE messaging is not available; settings are only in FindersKeepers.ini");
 }

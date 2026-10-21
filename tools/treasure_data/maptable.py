@@ -20,8 +20,11 @@ def cpp_string(text: str) -> str:
 
 
 def cpp_place(place: dict | None) -> str:
-    """A level entity: its EntityId and name (ids repeat across levels and names within one, so the plugin checks
-    both), and whether it is marked only once the map's quest has ended; an empty place has id 0."""
+    """A level entity as a MapTable::Place, or an empty one (id 0).
+
+    The plugin checks both the EntityId and the name, since ids repeat across levels and names within one. A place
+    can also be marked only once the map's quest has ended.
+    """
     if place is None:
         return "{}"
     after_quest = ", true" if place.get("after_quest") else ""
@@ -63,9 +66,12 @@ def cpp_optional_string(text: str | None) -> str:
 
 
 def build(table_path: Path) -> str:
-    """One MapTable::Map per map (plugin/src/probe/MapTable.h): how the player gets it (an item class carried, or a
-    trigger examined, and the quest before which examining does not count), every place it leads to, where it is
-    found, the tooltip labels of both, and the quest whose end retires it."""
+    """The plugin's map table: one MapTable::Map per map (plugin/src/probe/MapTable.h).
+
+    Each map has how the player gets it (an item class to carry, or a trigger to examine, which may only count after
+    a quest), every place it leads to, where it is found, the tooltip labels for both, and the quest whose end
+    retires it.
+    """
     targets, maps = [], []
     for n, row in enumerate(marked_rows(table_path)):
         places = ", ".join(cpp_place(place) for place in [row, *row.get("extra_targets", [])])

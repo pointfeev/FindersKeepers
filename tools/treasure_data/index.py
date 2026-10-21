@@ -183,10 +183,7 @@ def load_quest_graphs(root: Path) -> dict[Path, QuestGraph]:
                 continue
             path = Path(os.path.normpath(os.path.join(dirpath, filename)))
             raw = path.read_bytes()
-            try:
-                skald = ET.fromstring(raw).find("Skald")
-            except ET.ParseError:
-                continue
+            skald = ET.fromstring(raw).find("Skald")
             if skald is None or len(skald) == 0:
                 continue
             top = skald[0]

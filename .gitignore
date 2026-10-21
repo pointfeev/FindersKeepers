@@ -2,7 +2,7 @@
 /build/
 /cmake-build-*/
 
-# Per-user IDE state (JetBrains). The project is defined by CMakeLists.txt, CMakePresets.json and pyproject.toml.
+# Per-user IDE state (JetBrains).
 /.idea/
 
 /.venv/

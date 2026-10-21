@@ -26,8 +26,8 @@ class Report:
 
 
 def _distance(a: str, b: str) -> float:
-    ax, ay, *_ = (float(v) for v in str(a).split(","))
-    bx, by, *_ = (float(v) for v in str(b).split(","))
+    ax, ay, *_ = (float(v) for v in a.split(","))
+    bx, by, *_ = (float(v) for v in b.split(","))
     return math.hypot(ax - bx, ay - by)
 
 

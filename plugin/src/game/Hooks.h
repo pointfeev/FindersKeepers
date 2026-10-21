@@ -27,7 +27,6 @@ namespace Hooks {
     // under `what`).
     std::uintptr_t Find(const char *what, std::span<const Rung> rungs);
 
-    // Whether the code at `function` starts with `bytes`.
     bool StartsWith(std::uintptr_t function, std::span<const std::uint8_t> bytes);
 
     // Redirects `function` to `hook` and returns the original as a callable copy: its first `entrySize` bytes,

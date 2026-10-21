@@ -38,15 +38,13 @@ def extract(game_dir: Path, cache_dir: Path, force: bool = False) -> Path:
     if marker.is_file() and not force:
         return root
     for pak_path, subdir, wanted in _sources(game_dir):
-        dest = (root / subdir).resolve()
+        dest = root / subdir
         count = 0
         with zipfile.ZipFile(pak_path) as pak:
             for info in pak.infolist():
                 if info.is_dir() or not wanted(info.filename):
                     continue
-                target = (dest / info.filename).resolve()
-                if not target.is_relative_to(dest):
-                    raise SystemExit(f"Refusing to write outside the cache: {info.filename} in {pak_path}")
+                target = dest / info.filename
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes(read_member(pak, info))
                 count += 1

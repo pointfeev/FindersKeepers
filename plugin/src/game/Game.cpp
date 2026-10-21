@@ -87,7 +87,8 @@ namespace {
              "48 83 EC 28 48 8B 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 8B C8 33 C0 48 85 C9 74 ?? 48 8B 41 18 48 83 C4 28 "
              "C3 CC 40 53 48 83 EC 20 48 8B D9 41 B8 08 00 00 00 48 B9 25 23 22 84 E4 9C F2 CB",
          .offset = -0x28},
-    }; // An entity's WUID, as XGenAIModule.GetMyWUID finds it (0x1819771B8): the entity GUID (entity slot 2) looked up
+    };
+    // An entity's WUID, as XGenAIModule.GetMyWUID finds it (0x1819771B8): the entity GUID (entity slot 2) looked up
     // in the GUID -> WUID map (global 0x185496338, lookup 0x18047E638, which returns a pointer to the WUID).
     constexpr char kGetMyWuid[] =
         "48 8B 03 48 8B CB 8B 54 24 48 FF 50 70 48 85 C0 0F 84 ?? ?? ?? ?? 48 8B 10 48 8B C8 48 8B 1D ?? ?? ?? ?? "
@@ -253,7 +254,7 @@ namespace {
     }
 
     void *GuiModule() {
-        const std::uint8_t *context = g_context ? g_context() : nullptr;
+        const std::uint8_t *context = g_context();
         return context ? At<void *>(context, kGuiModule) : nullptr;
     }
 
@@ -301,7 +302,7 @@ bool Game::Install() {
 }
 
 bool Game::GameplayStarted() {
-    const std::uint8_t *context = g_context ? g_context() : nullptr;
+    const std::uint8_t *context = g_context();
     const void *framework = context ? At<void *>(context, kFramework) : nullptr;
     return framework && At<bool>(framework, kGameplayStarted);
 }
