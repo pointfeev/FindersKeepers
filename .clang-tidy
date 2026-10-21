@@ -4,4 +4,5 @@ Checks: >-
   -bugprone-easily-swappable-parameters,
   performance-*,
   -performance-no-int-to-ptr,
+  -performance-enum-size,
   clang-analyzer-*
