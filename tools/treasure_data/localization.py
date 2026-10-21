@@ -1,6 +1,6 @@
 """Build the mod's localization paks (Localization/<Language>_xml.pak) from one string table.
 
-The table maps each string id to its text per game language. Each pak holds one text_ui_treasurefinder.xml in the
+The table maps each string id to its text per game language. Each pak holds one text_ui_finderskeepers.xml in the
 game's format: a <Row> per string with the id, the English original and the translation. Each marked map in the
 map table also gets its tooltip strings, "<type>: <map name>" in that language's own format, on its destinations
 and on its own location, the map name taken from the install's own localization.
@@ -17,10 +17,10 @@ from xml.sax.saxutils import escape
 from .game import read_member
 from .maptable import map_source, marked_rows, tooltip_label
 
-TABLE_NAME = "text_ui_treasurefinder.xml"
+TABLE_NAME = "text_ui_finderskeepers.xml"
 ITEM_TABLES = "Libs/Tables/item/item"
 # Our mark types' names in our own table, the tooltip's "<type>": on a map's destinations and on its own location.
-TYPE_STRINGS = {False: "ui_maplegend_TreasureFinder", True: "ui_maplegend_TreasureFinderMap"}
+TYPE_STRINGS = {False: "ui_maplegend_FindersKeepersMapDestination", True: "ui_maplegend_FindersKeepersMapLocation"}
 
 
 def read_ui_names(game_dir: Path) -> dict[str, str]:

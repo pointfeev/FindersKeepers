@@ -12,8 +12,8 @@
 namespace {
     constexpr char kMEnum[] = "_global.MEnum";
     // The game's own GetPoiImportance, kept on MEnum under this name; its presence also marks the movie as patched.
-    constexpr char kOriginal[] = "treasureFinderGetPoiImportance";
-    constexpr char kOriginalPath[] = "_global.MEnum.treasureFinderGetPoiImportance";
+    constexpr char kOriginal[] = "findersKeepersGetPoiImportance";
+    constexpr char kOriginalPath[] = "_global.MEnum.findersKeepersGetPoiImportance";
     // MEnum.POI_IMPORTANCE_HIGH in ApseMap.gfx.
     constexpr int kImportanceHigh = 2;
 

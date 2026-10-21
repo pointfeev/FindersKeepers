@@ -1,7 +1,7 @@
 [project]
-name = "treasure-finder"
+name = "finders-keepers"
 version = "0.1.0"
-description = "Tooling for the treasure-finder KCD2 mod: game data extraction, indexing and map table validation."
+description = "Tooling for the finders-keepers KCD2 mod: game data extraction, indexing and map table validation."
 requires-python = ">=3.12"
 dependencies = []
 

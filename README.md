@@ -1,4 +1,4 @@
-# treasure-finder
+# finders-keepers
 
 A Kingdom Come: Deliverance II mod that marks where the treasure maps you carry lead, on the world map, the compass and in the world. A [KCSE](https://www.nexusmods.com/kingdomcomedeliverance2/mods/3332) plugin for game 1.5.6.
 
@@ -23,11 +23,11 @@ From an x64 Visual Studio developer shell, after `uv sync`:
 
 ```bash
 cmake --preset release
-cmake --build --preset release    # plugin and build/release/mod/treasurefinder
-cmake --build --preset deploy     # also replaces <KCD2_DIR>/Mods/treasurefinder
+cmake --build --preset release    # plugin and build/release/mod/finderskeepers
+cmake --build --preset deploy     # also replaces <KCD2_DIR>/Mods/finderskeepers
 ```
 
-`debug` is the unoptimized preset. `KCD2_DIR` defaults to the Steam install. Deploy with the game closed; a new mod folder also needs a line in `Mods/mod_order.txt`. The plugin logs to `kcd.log` with a `[TreasureFinder]` prefix.
+`debug` is the unoptimized preset. `KCD2_DIR` defaults to the Steam install. Deploy with the game closed; a new mod folder also needs a line in `Mods/mod_order.txt`. The plugin logs to `kcd.log` with a `[FindersKeepers]` prefix.
 
 ## Game data tooling
 
@@ -37,4 +37,4 @@ uv run treasure-data index      # build indexes for this game build
 uv run treasure-data validate   # check research/treasure_maps.json against the installed build
 ```
 
-`--game <folder>` or `KCD2_DIR` picks the install; files go to `%LOCALAPPDATA%\treasure-finder\<build>`. After a game patch, run `validate` and re-research only the maps it flags.
+`--game <folder>` or `KCD2_DIR` picks the install; files go to `%LOCALAPPDATA%\finders-keepers\<build>`. After a game patch, run `validate` and re-research only the maps it flags.

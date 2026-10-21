@@ -1,6 +1,6 @@
 {
-  "Libs/UI/Textures/Icons/Map/TreasureFinder_icon.dds": "IPL_GameData.pak:Libs/UI/Textures/Icons/Items/dlc2_zlodejskeZakazky_inscriptionBox_icon.dds",
-  "Libs/UI/Textures/Icons/Map/TreasureFinder_undiscovered_icon.dds": "IPL_GameData.pak:Libs/UI/Textures/Icons/Items/dlc2_zlodejskeZakazky_inscriptionBox_icon.dds",
-  "Libs/UI/Textures/Icons/Map/TreasureFinderMap_icon.dds": "IPL_GameData.pak:Libs/UI/Textures/Icons/Items/map_book_icon.dds",
-  "Libs/UI/Textures/Icons/Map/TreasureFinderMap_undiscovered_icon.dds": "IPL_GameData.pak:Libs/UI/Textures/Icons/Items/map_book_icon.dds"
+  "Libs/UI/Textures/Icons/Map/FindersKeepersMapDestination_icon.dds": "IPL_GameData.pak:Libs/UI/Textures/Icons/Items/dlc2_zlodejskeZakazky_inscriptionBox_icon.dds",
+  "Libs/UI/Textures/Icons/Map/FindersKeepersMapDestination_undiscovered_icon.dds": "IPL_GameData.pak:Libs/UI/Textures/Icons/Items/dlc2_zlodejskeZakazky_inscriptionBox_icon.dds",
+  "Libs/UI/Textures/Icons/Map/FindersKeepersMapLocation_icon.dds": "IPL_GameData.pak:Libs/UI/Textures/Icons/Items/map_book_icon.dds",
+  "Libs/UI/Textures/Icons/Map/FindersKeepersMapLocation_undiscovered_icon.dds": "IPL_GameData.pak:Libs/UI/Textures/Icons/Items/map_book_icon.dds"
 }

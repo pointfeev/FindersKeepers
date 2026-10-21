@@ -100,8 +100,8 @@ namespace {
         const auto shown = [&](const MarkType::Type &type) {
             return options.floatingIcons && (!options.mapMarkers || (map && Game::IsTypeVisible(map, type.id)));
         };
-        FloatingIcon::Update(MarkType::kDestination, g_destinations, shown(MarkType::kDestination));
-        FloatingIcon::Update(MarkType::kSource, g_sources, shown(MarkType::kSource));
+        FloatingIcon::Update(MarkType::kMapDestination, g_destinations, shown(MarkType::kMapDestination));
+        FloatingIcon::Update(MarkType::kMapLocation, g_sources, shown(MarkType::kMapLocation));
     }
 
     // CCryAction::PostUpdate (vtable slot 11, 0x180669C88): (framework, haveFocus, updateFlags), once per frame. KCSE
@@ -152,7 +152,7 @@ struct KcsePluginVersion {
 
 __declspec(dllexport) KcsePluginVersion KCSEPlugin_Version = {.dataVersion = 1,
                                                               .pluginVersion = 1,
-                                                              .name = "TreasureFinder",
+                                                              .name = "FindersKeepers",
                                                               .author = "pointfeev",
                                                               .compatibleGameVersions = {},
                                                               .kcseVersionRequired = 0,

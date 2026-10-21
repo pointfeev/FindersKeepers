@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <kcd_mod>
   <info>
-    <name>Treasure Finder</name>
-    <description>Marks where the treasure maps you carry lead, on the world map and in the world.</description>
+    <name>Finders Keepers</name>
+    <description>Marks where the treasure maps you have read lead, on the world map, the compass and in the world.</description>
     <author>pointfeev</author>
     <version>0.1.0</version>
-    <modid>treasurefinder</modid>
+    <modid>finderskeepers</modid>
     <modifies_level>false</modifies_level>
     <dependencies></dependencies>
   </info>

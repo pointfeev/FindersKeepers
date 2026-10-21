@@ -55,7 +55,7 @@ def map_source(row: dict) -> dict | None:
 def tooltip_label(row: dict, source: bool = False) -> str:
     """The localization label of a map's tooltip text, on its destinations or on its own location; built by
     localization.build."""
-    return f"ui_treasurefinder_{'mapsource' if source else 'map'}_{row['map']}"
+    return f"ui_finderskeepers_{'mapsource' if source else 'map'}_{row['map']}"
 
 
 def cpp_optional_string(text: str | None) -> str:

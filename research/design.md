@@ -10,27 +10,27 @@ Treasure and what leads to it: treasure maps, the carved map in the Tunnel in th
 
 **State.** The mod stores nothing but its options. Every mark is worked out from game state at each probe.
 
-**Destinations** (mark type `TreasureFinder`)
+**Map destinations** (mark type `FindersKeepersMapDestination`)
 - A map's destinations are marked once the player has read it, carried or not: the game keeps reading progress per item class, and it survives the map being dropped and a reload (tested in game). A carving counts once examined, and only after Laboratores (`socky`), because its trigger is also off before the open world unlocks.
 - A map that leads to several places marks each one.
 - A destination clears when its hole is dug, its container is emptied or its item is taken.
 - A riddle note's destination also clears once the player has, or has read, the next note.
 
-**Map locations** (mark type `TreasureFinderMap`): where a map is found, marked while the player has neither carried nor read it, and while the container or item slot still holds it.
+**Map locations** (mark type `FindersKeepersMapLocation`): where a map is found, marked while the player has neither carried nor read it, and while the container or item slot still holds it.
 
 **Quests**
 - A map tied to a quest stops being marked once the quest is done or failed. Places flagged `after_quest` are marked only from then on (the secret mint's ledger chest after Via Argentum).
 - A destination hides while the map shows a tracked quest's marker within 15 m of it (a point or a search area's bounds).
 
 **Display**
-- Tooltips read "Treasure: <map name>" in each language, with its own punctuation.
+- Tooltips read "Map destination: <map name>" or "Map location: <map name>" in each language, with its own punctuation; the legend and the settings use the same two names.
 - Each marked place within range gets its own in-world icon.
 
 **Not possible under the state rule**: an unread map that leaves the inventory. Finding it again would mean remembering when it left, or searching every inventory and dropped item.
 
 ## Options
 
-Settings live in `Mods/treasurefinder/KCSE/Plugins/TreasureFinder.ini` (`plugin/src/options`), the convention other KCSE plugins use. The mod does not ship it: the plugin writes it with the defaults when missing, re-reads it when it changes on disk, and adds keys a new version brings. The deploy step keeps it. The map legend's Track toggle per mark type still applies on top.
+Settings live in `Mods/finderskeepers/KCSE/Plugins/FindersKeepers.ini` (`plugin/src/options`), the convention other KCSE plugins use. The mod does not ship it: the plugin writes it with the defaults when missing, re-reads it when it changes on disk, and adds keys a new version brings. The deploy step keeps it. The map legend's Track toggle per mark type still applies on top.
 
 [Mod Configuration Menu](https://www.nexusmods.com/kingdomcomedeliverance2/mods/3363) (MCM), when installed, shows the same settings in the pause menu. It stores nothing: the plugin hears its "build settings" and "value changed" messages through KCSE's messaging interface and writes the INI. Without MCM the messages never come and the INI alone holds the settings. MCM's limits: it needs the Address Library (1.5.6 only, not Game Pass), so it breaks on game updates until republished, and it has no controller support. Its headers are GPL-3.0, so the plugin declares the few interfaces it calls itself.
 
@@ -38,7 +38,7 @@ Settings live in `Mods/treasurefinder/KCSE/Plugins/TreasureFinder.ini` (`plugin/
 |-----------|-------------------------|---------|---------|
 | Display      | `MapMarkers`            | on      |         |
 | Display      | `FloatingIcons`         | on      |         |
-| Marks        | `Destinations`          | on      |         |
+| Marks        | `MapDestinations`       | on      |         |
 | Marks        | `MapLocations`          | on      |         |
 | Maps         | `TreasureMaps`, `QuestMaps`, `RiddleNotes` (each covers both marks) | on | |
 | Rules        | `RequireRead`           | on      |         |

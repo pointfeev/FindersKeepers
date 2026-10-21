@@ -27,7 +27,7 @@ namespace {
     }
 
     std::string ClipPath(const MarkType::Type &type, const std::size_t index) {
-        return std::format("_root.treasureFinderFloat_{}_{}", type.name, index);
+        return std::format("_root.findersKeepersFloat_{}_{}", type.name, index);
     }
 
     // The type's index-th clip, directly under the hud movie's _root, whose coordinates are screen pixels; made on

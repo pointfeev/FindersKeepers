@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 4.0)
 
-project(TreasureFinder LANGUAGES CXX)
+project(FindersKeepers LANGUAGES CXX)
 
-set(MOD_ID treasurefinder)
+set(MOD_ID finderskeepers)
 
 if(DEFINED ENV{KCD2_DIR})
     set(KCD2_DIR_DEFAULT "$ENV{KCD2_DIR}")
@@ -14,13 +14,13 @@ set(KCD2_DIR "${KCD2_DIR_DEFAULT}" CACHE PATH "KCD2 install folder that the depl
 file(GLOB_RECURSE PLUGIN_SOURCES CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/plugin/src/*.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/plugin/src/*.h")
-add_library(TreasureFinder SHARED ${PLUGIN_SOURCES})
-set_target_properties(TreasureFinder PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED ON)
-target_compile_definitions(TreasureFinder PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX)
-target_compile_options(TreasureFinder PRIVATE /utf-8 /W4)
-target_include_directories(TreasureFinder PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/plugin/src")
+add_library(FindersKeepers SHARED ${PLUGIN_SOURCES})
+set_target_properties(FindersKeepers PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED ON)
+target_compile_definitions(FindersKeepers PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX)
+target_compile_options(FindersKeepers PRIVATE /utf-8 /W4)
+target_include_directories(FindersKeepers PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/plugin/src")
 
-# ---- Mod folder: <build>/mod/treasurefinder, laid out as it sits in the game's Mods folder ----
+# ---- Mod folder: <build>/mod/finderskeepers, laid out as it sits in the game's Mods folder ----
 set(MOD_STAGE "${CMAKE_BINARY_DIR}/mod/${MOD_ID}")
 set(MOD_PAK "${MOD_STAGE}/Data/${MOD_ID}.pak")
 set(MOD_MANIFEST "${CMAKE_CURRENT_SOURCE_DIR}/mod/mod.manifest")
@@ -44,8 +44,8 @@ add_custom_command(
     DEPENDS "${MAP_TABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tools/treasure_data/maptable.py"
     COMMENT "Generating the map table"
     VERBATIM)
-target_sources(TreasureFinder PRIVATE "${MAP_TABLE_DATA}")
-target_include_directories(TreasureFinder PRIVATE "${CMAKE_BINARY_DIR}/generated")
+target_sources(FindersKeepers PRIVATE "${MAP_TABLE_DATA}")
+target_include_directories(FindersKeepers PRIVATE "${CMAKE_BINARY_DIR}/generated")
 
 add_custom_command(
     OUTPUT "${MOD_PAK}"
@@ -77,8 +77,8 @@ add_custom_target(mod ALL
     COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${MOD_MANIFEST}" "${MOD_STAGE}/mod.manifest"
     COMMAND "${CMAKE_COMMAND}" -E make_directory "${MOD_STAGE}/KCSE/Plugins"
     # The DLL only: debuggers find its PDB at the build path recorded in the DLL.
-    COMMAND "${CMAKE_COMMAND}" -E copy_if_different "$<TARGET_FILE:TreasureFinder>" "${MOD_STAGE}/KCSE/Plugins"
-    DEPENDS TreasureFinder "${MOD_PAK}" "${MOD_LOCALIZATION_STAMP}" "${MOD_MANIFEST}"
+    COMMAND "${CMAKE_COMMAND}" -E copy_if_different "$<TARGET_FILE:FindersKeepers>" "${MOD_STAGE}/KCSE/Plugins"
+    DEPENDS FindersKeepers "${MOD_PAK}" "${MOD_LOCALIZATION_STAMP}" "${MOD_MANIFEST}"
     COMMENT "Staging ${MOD_STAGE}"
     SOURCES "${MOD_MANIFEST}" "${MOD_STRINGS}" "${MOD_GAME_FILES}" ${MOD_DATA_FILES}
     VERBATIM)
@@ -86,7 +86,7 @@ add_custom_target(mod ALL
 # The mod folder is replaced whole, so files no longer part of the mod go too; the player's settings file stays.
 add_custom_target(deploy
     COMMAND "${CMAKE_COMMAND}" "-DSTAGE=${MOD_STAGE}" "-DTARGET=${KCD2_DIR}/Mods/${MOD_ID}"
-            "-DKEEP=KCSE/Plugins/TreasureFinder.ini" -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/deploy.cmake"
+            "-DKEEP=KCSE/Plugins/FindersKeepers.ini" -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/deploy.cmake"
     DEPENDS mod
     COMMENT "Copying the mod into ${KCD2_DIR}/Mods/${MOD_ID}"
     VERBATIM)

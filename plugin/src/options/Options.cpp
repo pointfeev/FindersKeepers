@@ -31,14 +31,14 @@ namespace {
          .tooltip = "Draw an icon over each marked place within range. Icons follow the map legend's Track toggle, "
                     "except while map and compass markers are off.",
          .toggle = &Values::floatingIcons},
-        {.id = "Destinations",
+        {.id = "MapDestinations",
          .section = "Marks",
-         .label = "Where maps lead",
+         .label = "Map destinations",
          .tooltip = "Mark the places the maps you know lead to.",
-         .toggle = &Values::destinations},
+         .toggle = &Values::mapDestinations},
         {.id = "MapLocations",
          .section = "Marks",
-         .label = "Where maps are found",
+         .label = "Map locations",
          .tooltip = "Mark where maps you have not found yet lie.",
          .toggle = &Values::mapLocations},
         {.id = "TreasureMaps",
@@ -141,7 +141,7 @@ namespace {
                            reinterpret_cast<LPCWSTR>(&IniPath), &self);
         wchar_t path[MAX_PATH * 2];
         const DWORD length = GetModuleFileNameW(self, path, std::size(path));
-        return std::filesystem::path(std::wstring(path, length)).replace_filename(L"TreasureFinder.ini");
+        return std::filesystem::path(std::wstring(path, length)).replace_filename(L"FindersKeepers.ini");
     }
 
     // Applies a value to one setting (sliders clamped to their range); true when it changed.
@@ -179,7 +179,7 @@ namespace {
 
     void Save() {
         std::ofstream out(g_path, std::ios::trunc);
-        out << "; Treasure Finder settings. Change them in game with Mod Configuration Menu, or here: edits apply\n"
+        out << "; Finders Keepers settings. Change them in game with Mod Configuration Menu, or here: edits apply\n"
                "; within a moment while the game runs. Delete this file to restore the defaults.\n";
         const char *section = nullptr;
         for (const Setting &setting : kSettings) {

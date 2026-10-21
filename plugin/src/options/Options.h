@@ -4,16 +4,16 @@
 #include <span>
 #include <string_view>
 
-// The player's settings, kept in TreasureFinder.ini next to the plugin: the only thing the mod stores. The file is
+// The player's settings, kept in FindersKeepers.ini next to the plugin: the only thing the mod stores. The file is
 // written with the defaults when missing (it is not shipped, so a mod update keeps the player's choices), re-read when
 // it changes on disk, and rewritten when a setting changes in game (Mcm).
 namespace Options {
     struct Values {
         // What shows.
-        bool mapMarkers = true;    // world map and compass markers (one game mark, so one switch)
-        bool floatingIcons = true; // icons in the world over places in range
-        bool destinations = true;  // where maps lead
-        bool mapLocations = true;  // where maps are found
+        bool mapMarkers = true;      // world map and compass markers (one game mark, so one switch)
+        bool floatingIcons = true;   // icons in the world over places in range
+        bool mapDestinations = true; // where maps lead
+        bool mapLocations = true;    // where maps are found
         // What counts.
         bool requireRead = true;     // a map's destinations show only once it is read
         bool requireCarried = false; // ... and only while it is carried

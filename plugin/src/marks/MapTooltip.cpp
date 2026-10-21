@@ -15,8 +15,8 @@ namespace {
     constexpr char kRoot[] = "_root";
     constexpr char kShowTooltip[] = "OnShowTooltip";
     // The game's own OnShowTooltip, kept on _root under this name; its presence also marks the movie as patched.
-    constexpr char kOriginal[] = "treasureFinderOnShowTooltip";
-    constexpr char kOriginalPath[] = "_root.treasureFinderOnShowTooltip";
+    constexpr char kOriginal[] = "findersKeepersOnShowTooltip";
+    constexpr char kOriginalPath[] = "_root.findersKeepersOnShowTooltip";
 
     std::optional<Flash::Value> Member(const Flash::Var *object, const char *name) {
         if (Flash::VarPtr member; object->GetMember(name, member.put()) && member)

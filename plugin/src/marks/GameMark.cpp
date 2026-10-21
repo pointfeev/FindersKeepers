@@ -26,7 +26,7 @@ namespace {
         bool Is(const std::int32_t id) const { return mark_ && mark_->id == id; }
 
         bool Add(Game::Map *map, void *object) {
-            const MarkType::Type &type = source_ ? MarkType::kSource : MarkType::kDestination;
+            const MarkType::Type &type = source_ ? MarkType::kMapLocation : MarkType::kMapDestination;
             mark_ = Game::AddEntityMark(map, type.id, object, kMarkParam);
             if (!mark_)
                 return false;

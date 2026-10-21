@@ -182,7 +182,7 @@ ProbeResult Probe::Run() {
         if (options.requireCarried)
             known = known && has;
         if (known) {
-            if (!options.destinations)
+            if (!options.mapDestinations)
                 continue;
             for (const MapTable::Place &place : map.targets)
                 if (place.afterQuest ? questOver : !retired)

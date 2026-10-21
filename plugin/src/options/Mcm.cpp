@@ -68,14 +68,14 @@ namespace {
         ~SettingsBuilder() = default; // owned by MCM, never deleted here
     };
 
-    constexpr char kModId[] = "treasurefinder";
+    constexpr char kModId[] = "finderskeepers";
 
     // Declares every setting with its default, then shows its current value (so the menu's reset restores the
     // default, not whatever is in effect).
     void Build(SettingsBuilder *builder) {
         static constexpr Options::Values defaults;
         const Options::Values &values = Options::Get();
-        builder->AddMod(kModId, "Treasure Finder");
+        builder->AddMod(kModId, "Finders Keepers");
         const char *section = nullptr;
         for (const Options::Setting &setting : Options::Settings()) {
             if (!section || std::strcmp(section, setting.section) != 0) {
@@ -109,5 +109,5 @@ void Mcm::Install(const void *kcse) {
     const auto *root = static_cast<const KcseInterface *>(kcse);
     auto *messaging = root ? static_cast<Messaging *>(root->QueryInterface(kMessagingInterface)) : nullptr;
     if (!messaging || !messaging->RegisterListener("MCM", &OnMessage))
-        Log::Write("mcm: KCSE messaging is not available; settings are only in TreasureFinder.ini");
+        Log::Write("mcm: KCSE messaging is not available; settings are only in FindersKeepers.ini");
 }
