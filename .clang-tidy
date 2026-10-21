@@ -1,0 +1,7 @@
+Checks: >-
+  -*,
+  bugprone-*,
+  -bugprone-easily-swappable-parameters,
+  performance-*,
+  -performance-no-int-to-ptr,
+  clang-analyzer-*

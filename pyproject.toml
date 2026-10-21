@@ -19,7 +19,11 @@ module-name = "treasure_data"
 [tool.ruff]
 line-length = 120
 
+[tool.pyright]
+typeCheckingMode = "standard"
+
 [dependency-groups]
 dev = [
+    "pyright>=1.1.414",
     "ruff>=0.17.1",
 ]
