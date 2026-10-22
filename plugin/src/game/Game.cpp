@@ -196,10 +196,12 @@ namespace {
     // dereferences (0x181F45A20).
     constexpr std::size_t kQuestLogInApse = 0x10C8;
     constexpr std::size_t kQuestLogApse = 0x420;
-    // A gathered marker record (0x38 bytes, built in 0x181F457F0) points at its target at +0x30: the target's slot 2
-    // gives its position, and its WUID is at +8. An area's slot 3 fills its bounds (min, then max) into a buffer and
-    // returns them (0x1814A81D0).
+    // A gathered marker record (0x38 bytes, built in 0x181F457F0) starts with its quest's internal name (a CryString
+    // copied from the quest's +0x10, the name the quest log also compares with "sedmStatecnych2") and points at its
+    // target at +0x30: the target's slot 2 gives its position, and its WUID is at +8. An area's slot 3 fills its
+    // bounds (min, then max) into a buffer and returns them (0x1814A81D0).
     constexpr std::size_t kMarkerRecordSize = 0x38;
+    constexpr std::size_t kMarkerQuest = 0x00;
     constexpr std::size_t kMarkerTarget = 0x30;
     constexpr std::size_t kTargetPositionSlot = 2;
     constexpr std::size_t kTargetWuid = 0x08;
@@ -400,13 +402,17 @@ std::vector<Game::QuestMarker> Game::QuestMarkers() {
     for (const std::uint8_t *record = records.begin; record != records.end; record += kMarkerRecordSize) {
         const void *target = At<void *>(record, kMarkerTarget);
         const auto wuid = At<std::uint64_t>(target, kTargetWuid);
+        std::string quest = At<const char *>(record, kMarkerQuest);
         if (const void *area = g_isArea(nullptr, wuid) ? g_findArea(nullptr, wuid) : nullptr) {
             float buffer[6];
             auto bounds = Engine::VCall<const float *>(area, kAreaBoundsSlot, buffer);
-            markers.push_back({.min = {bounds[0], bounds[1], bounds[2]}, .max = {bounds[3], bounds[4], bounds[5]}});
+            markers.push_back({.min = {bounds[0], bounds[1], bounds[2]},
+                               .max = {bounds[3], bounds[4], bounds[5]},
+                               .area = true,
+                               .quest = std::move(quest)});
         } else {
             const Engine::Vec3 pos = *Engine::VCall<const Engine::Vec3 *>(target, kTargetPositionSlot);
-            markers.push_back({.min = pos, .max = pos});
+            markers.push_back({.min = pos, .max = pos, .area = false, .quest = std::move(quest)});
         }
     }
     g_freeMarkers(&records);

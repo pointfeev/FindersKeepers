@@ -19,16 +19,25 @@ def cpp_string(text: str) -> str:
     return '"' + text.replace("\\", "\\\\").replace('"', '\\"') + '"'
 
 
-def cpp_place(place: dict | None) -> str:
+def cpp_place(place: dict | None, treasure: str | None = None) -> str:
     """A level entity as a MapTable::Place, or an empty one (id 0).
 
     The plugin checks both the EntityId and the name, since ids repeat across levels and names within one. A place
-    can also be marked only once the map's quest has ended.
+    can also be marked only once the map's quest has ended, and a container names the array of its treasure items
+    and whether taking any of them clears it (any_taken) or only taking all of them (all_taken).
     """
     if place is None:
         return "{}"
-    after_quest = ", true" if place.get("after_quest") else ""
-    return f"{{{int(place['entity_id'])}, {cpp_string(place['entity_name'])}{after_quest}}}"
+    # In MapTable::Place's declaration order, as designated initializers require.
+    fields = [f".name = {cpp_string(place['entity_name'])}"]
+    if treasure:
+        fields.append(f".treasure = {treasure}")
+    fields.append(f".entity = {int(place['entity_id'])}")
+    if place.get("after_quest"):
+        fields.append(".afterQuest = true")
+    if treasure and place["clears_when"] == "any_taken":
+        fields.append(".anyTaken = true")
+    return "{" + ", ".join(fields) + "}"
 
 
 def cpp_item_class(guid: str) -> str:
@@ -69,13 +78,20 @@ def build(table_path: Path) -> str:
     """The plugin's map table: one MapTable::Map per map (plugin/src/probe/MapTable.h).
 
     Each map has how the player gets it (an item class to carry, or a trigger to examine, which may only count after
-    a quest), every place it leads to, where it is found, the tooltip labels for both, and the quest whose end
-    retires it.
+    a quest), every place it leads to (a container with its treasure items), where it is found, the tooltip labels
+    for both, and the quest whose end retires it.
     """
     targets, maps = [], []
     for n, row in enumerate(marked_rows(table_path)):
-        places = ", ".join(cpp_place(place) for place in [row, *row.get("extra_targets", [])])
-        targets.append(f"inline constexpr Place kTargets{n}[] = {{{places}}};")
+        places = []
+        for k, place in enumerate([row, *row.get("extra_targets", [])]):
+            treasure = None
+            if place.get("treasure"):
+                treasure = f"kTreasure{n}_{k}"
+                items = ", ".join(cpp_item_class(entry["guid"]) for entry in place["treasure"])
+                targets.append(f"inline constexpr Game::ItemClassId {treasure}[] = {{{items}}};")
+            places.append(cpp_place(place, treasure))
+        targets.append(f"inline constexpr Place kTargets{n}[] = {{{', '.join(places)}}};")
         examined = row.get("examined")
         source = map_source(row)
         maps.append(

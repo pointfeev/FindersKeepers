@@ -2,6 +2,16 @@
 
 Each version's section becomes its GitHub release notes and its Nexus Mods changelog, where every line is one entry, so keep each entry on one line.
 
+## 1.0.2
+
+- Some loose items in the world never got a mark or an in-world icon; they now do.
+- The Map from chest by Sedletz now marks the book in the Love nest, and the Map of game near Slatego the bow on its hunting ground.
+- The Key from Below Trosky is now marked beside the first treasure map's chest, and the Map of the Zhelejov marshes where it lies.
+- A chest now clears once you take any of its loot, rather than only once it is empty, so junk or loot you leave behind no longer keeps it marked.
+- A chest holding quest items that never come back (Brunswick's armour, the Storage Yard's red gold, asphalt and axe recipe, the warlock's books and recipes) clears once you take those, and stays clear when the rest of it refills.
+- The mod page now explains that chests which refill about a week after you loot them are marked again once their loot is back.
+- A mark now steps aside only for its own quest's marker on the same spot, never for a search area, so the Drowner's urn no longer hides under The Axe from the Lake's.
+
 ## 1.0.1
 
 - Goatskin's barrel (Map of Kuttenberg underground) is marked only while it gives Master Schindel's items, from Goatskin's step until you take them.

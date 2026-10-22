@@ -69,8 +69,9 @@ namespace {
     }
 
     // Whether a destination has been dealt with: a hole dug (Hole.lua's nDepth is 1 once dug), a loose item taken
-    // from its item slot, or a container emptied. Destinations with none of these (areas, triggers) stay marked while
-    // the player has the map.
+    // from its item slot, or a container's treasure taken (any of its loot, or all of its quest items; a container
+    // without a list once emptied). Destinations with none of these (areas, triggers) stay marked while the player has
+    // the map.
     bool Done(const MapTable::Place &place, const Engine::Entity *entity) {
         if (const Engine::ScriptTable *script = Engine::EntityScript(entity)) {
             if (ScriptValue depth; Engine::TableGet(script, "nDepth", depth) && depth.type == ScriptValue::Number)
@@ -79,7 +80,12 @@ namespace {
         if (const std::optional<bool> holds = Game::SlotHoldsItem(place.entity))
             return !*holds;
         const Game::Inventory *inventory = Game::EntityInventory(entity);
-        return inventory && Game::ItemCount(inventory) == 0;
+        if (!inventory)
+            return false;
+        if (place.treasure.empty())
+            return Game::ItemCount(inventory) == 0;
+        const auto gone = [&](const Game::ItemClassId &item) { return Game::CountOfClass(inventory, item) == 0; };
+        return place.anyTaken ? std::ranges::any_of(place.treasure, gone) : std::ranges::all_of(place.treasure, gone);
     }
 
     // A quest's progress, logging each change so quest gates show up in the log.
@@ -101,14 +107,18 @@ namespace {
         return progress == Game::QuestProgress::Done || progress == Game::QuestProgress::Failed;
     }
 
-    // Whether a quest marker on the map already points at a position: it lies within reach of the marker's point or
-    // inside (or within reach of) its search area, on the ground plane.
-    bool Covered(const Engine::Vec3 &pos, const std::span<const Game::QuestMarker> markers, const float reach) {
-        return std::ranges::any_of(markers, [&](const Game::QuestMarker &marker) {
-            const float dx = std::max({marker.min.x - pos.x, 0.f, pos.x - marker.max.x});
-            const float dy = std::max({marker.min.y - pos.y, 0.f, pos.y - marker.max.y});
-            return dx * dx + dy * dy <= reach * reach;
-        });
+    // Whether a point marker of the map's own quest already points at a position: within reach of it, on the ground
+    // plane. Search areas never count, even the map's own quest's: an area says to search, the mark says where.
+    // Other quests' markers point at their own business (The Axe from the Lake's area covers the Drowner's urn).
+    bool Covered(const Engine::Vec3 &pos, const std::span<const Game::QuestMarker> markers, const char *quest,
+                 const float reach) {
+        return quest && std::ranges::any_of(markers, [&](const Game::QuestMarker &marker) {
+                   if (marker.area || marker.quest != quest)
+                       return false;
+                   const float dx = marker.min.x - pos.x;
+                   const float dy = marker.min.y - pos.y;
+                   return dx * dx + dy * dy <= reach * reach;
+               });
     }
 
     bool Shown(const MapTable::Category category, const Options::Values &options) {
@@ -170,14 +180,14 @@ namespace {
         return false;
     }
 
-    void Add(ProbeResult &result, const MapTable::Map &map, const Engine::Entity *entity, const char *label,
-             const bool source) {
-        if (const std::uint64_t wuid = Game::EntityWuid(entity))
-            result.targets.push_back({.map = map.name,
-                                      .label = label,
-                                      .source = source,
-                                      .wuid = wuid,
-                                      .pos = Engine::EntityPosition(entity)});
+    void Add(ProbeResult &result, const MapTable::Map &map, const MapTable::Place &place, const Engine::Entity *entity,
+             const char *label, const bool source) {
+        result.targets.push_back({.map = map.name,
+                                  .label = label,
+                                  .source = source,
+                                  .entity = place.entity,
+                                  .wuid = Game::EntityWuid(entity),
+                                  .pos = Engine::EntityPosition(entity)});
     }
 } // namespace
 
@@ -205,24 +215,25 @@ ProbeResult Probe::Run() {
                 if (place.afterQuest ? questOver : !retired)
                     if (const Engine::Entity *entity = Find(place);
                         entity && !Inactive(entity) && (options.keepFinished || !Done(place, entity)))
-                        Add(result, map, entity, map.label, false);
+                        Add(result, map, place, entity, map.label, false);
         } else if (options.mapLocations && !has && !retired && map.source.entity) {
             if (const Engine::Entity *entity = Find(map.source); entity && HoldsMap(map, entity))
-                Add(result, map, entity, map.sourceLabel, true);
+                Add(result, map, map.source, entity, map.sourceLabel, true);
         }
     }
 
-    // A destination a quest marker already points at is left to the quest while that marker shows.
+    // A destination its map's quest already points at is left to the quest while that marker shows.
     std::vector<std::uint64_t> covered;
     if (options.hideUnderQuestMarkers && std::ranges::any_of(result.targets, [](const auto &t) { return !t.source; })) {
         const std::vector<Game::QuestMarker> markers = Game::QuestMarkers();
         std::erase_if(result.targets, [&](const ProbeResult::Target &t) {
-            if (t.source || !Covered(t.pos, markers, options.questMarkerReach))
+            const MapTable::Map &map = *std::ranges::find(MapTable::kMaps, t.map, &MapTable::Map::name);
+            if (t.source || !Covered(t.pos, markers, map.quest, options.questMarkerReach))
                 return false;
             covered.push_back(t.wuid);
             if (!std::ranges::contains(g_covered, t.wuid))
-                Log::Write("quest: a quest marker points at {}'s destination {:016x}; it is left to the quest", t.map,
-                           t.wuid);
+                Log::Write("quest: a {} marker points at {}'s destination {:016x}; it is left to the quest", map.quest,
+                           t.map, t.wuid);
             return true;
         });
     }

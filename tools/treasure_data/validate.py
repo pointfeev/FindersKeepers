@@ -15,6 +15,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from .index import Levels, load_levels, load_map_items, load_strings
+from .treasure import container_items, guaranteed_items, item_ids, item_prices
 
 QUEST_NAME = re.compile(r'<Quest Name="([^"]+)"')
 
@@ -84,12 +85,57 @@ def document_ids(root: Path) -> set[str]:
     return ids
 
 
+@dataclass
+class Loot:
+    """What the game puts in containers, for checking treasure lists."""
+
+    ids: dict[str, str]
+    prices: dict[str, int]
+    possible: dict[tuple[str, str], set[str]]
+    guaranteed: dict[str, set[str]]
+
+
+def check_treasure(label: str, place: dict, levels: Levels, loot: Loot, report: Report) -> None:
+    """A container destination's treasure items must still be items the game puts in that container. Under any_taken
+    they must be exactly its loot list's guaranteed items of some value, so that a missing one means a taken one."""
+    key = (place["level"], str(place.get("entity_id") or ""))
+    treasure = place.get("treasure")
+    if not treasure:
+        if key in loot.possible:
+            report.warnings.append(f"{label}: no treasure items, so it clears only once empty")
+        return
+    entity = levels.entities.get(key)
+    if entity is None:
+        return
+    rule = place.get("clears_when")
+    if rule == "any_taken":
+        expected = {item for item in loot.guaranteed.get(entity.preset, set()) if loot.prices.get(item, 0) > 0}
+        listed = {entry["item"] for entry in treasure}
+        if listed != expected:
+            report.errors.append(
+                f"{label}: any_taken treasure should be its loot list's items {sorted(expected)}, table has "
+                f"{sorted(listed)}"
+            )
+    elif rule != "all_taken":
+        report.errors.append(f"{label}: clears_when is {rule!r}, not any_taken or all_taken")
+    ids = loot.ids
+    for entry in treasure:
+        item, guid = entry["item"], entry["guid"]
+        if ids.get(item) != guid:
+            report.errors.append(f"{label}: treasure item {item} has GUID {ids.get(item)}, table says {guid}")
+        if item not in loot.possible.get(key, set()):
+            report.errors.append(f"{label}: treasure item {item} is no longer among what the game puts there")
+
+
 def validate(root: Path, table_path: Path, tolerance: float) -> Report:
     report = Report()
     strings = load_strings(root)
     game_maps = load_map_items(root, strings)
     documents = document_ids(root)
-    checker = Checker(load_levels(root, strings), tolerance, report)
+    levels = load_levels(root, strings)
+    ids = item_ids(root)
+    loot = Loot(ids, item_prices(root), container_items(root, levels, ids), guaranteed_items(root))
+    checker = Checker(levels, tolerance, report)
     rows = json.loads(table_path.read_text(encoding="utf-8"))
     quests = quest_names(root)
     for row in rows:
@@ -113,8 +159,10 @@ def validate(root: Path, table_path: Path, tolerance: float) -> Report:
         if row.get("reveals") and row["reveals"] not in documents:
             report.errors.append(f"{row['map']}: the note it reveals, {row['reveals']}, no longer exists in the game")
         checker.check(f"{row['map']} destination", row)
+        check_treasure(f"{row['map']} destination", row, levels, loot, report)
         for place in row.get("extra_targets", []):
             checker.check(f"{row['map']} destination {place['entity_id']}", place)
+            check_treasure(f"{row['map']} destination {place['entity_id']}", place, levels, loot, report)
         if row.get("source"):
             checker.check(f"{row['map']} source", row["source"])
     return report

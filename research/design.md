@@ -18,7 +18,7 @@ Mark type `FindersKeepersMapDestination`.
 
 - A map's destinations are marked once the player has read it, carried or not: the game keeps reading progress per item class, and it survives the map being dropped and a reload (tested in game). A carving counts once examined, and only after Laboratores (`socky`): its trigger is off until that quest ends, which would read as examined.
 - A map that leads to several places marks each one.
-- A destination clears when its hole is dug, its container is emptied or its item is taken. A quest's interaction trigger is marked only while it takes a press: from the quest step that switches it on until it is used. Keep finished does not keep a used one, because it looks the same as one whose step is not reached yet.
+- A destination clears when its hole is dug, its item is taken, or its container's treasure is taken. A container's treasure items are listed in `treasure_maps.json` with a rule. Most clear once any of them is gone (`any_taken`): the list is exactly the items its loot preset always gives, worth more than nothing, so a missing one means the player found the place and took something; what they leave, and junk rolled on top, does not matter. Where a quest adds items that never refill (`DisableRestock`: Brunswick's armour, the Storage Yard's red gold, asphalt and axe recipe, the warlock's books), those alone are the treasure and the place clears once all of them are gone (`all_taken`), for good. A container with no list clears once empty. Value judgements ("is what is left worth a visit") are left to the worth filter under Set aside. A quest's interaction trigger is marked only while it takes a press: from the quest step that switches it on until it is used. Keep finished does not keep a used one, because it looks the same as one whose step is not reached yet.
 - A riddle note's destination also clears once the player has, or has read, the next note.
 
 ### Map locations
@@ -28,7 +28,7 @@ Mark type `FindersKeepersMapLocation`. Where a map is found, marked while the pl
 ### Quests
 
 - A map tied to a quest stops being marked once the quest is done or failed. Places flagged `after_quest` are marked only from then on (the secret mint's ledger chest after Via Argentum).
-- A destination hides while the map shows a tracked quest's marker within 15 m of it (a point or a search area's bounds).
+- A destination hides while a tracked point marker of its map's own quest is within `QuestMarkerReach` of it. Search areas never hide one, not even its own quest's: an area says where to search, the mark says where to dig. Other quests' markers point at their own business (The Axe from the Lake's area covers the Drowner's urn).
 
 ### Display
 
@@ -38,6 +38,20 @@ Mark type `FindersKeepersMapLocation`. Where a map is found, marked while the pl
 ### Not possible under the state rule
 
 An unread map that leaves the inventory. Finding it again would mean remembering when it left, or searching every inventory and dropped item.
+
+A refilled destination. Most treasure containers and loose items refill 7 days after they are taken (18 marked destinations: 15 containers and 3 item slots; see findings, Restocking), and the game keeps no lasting record that one was looted: its restock record resets once it is full again. So once its loot is back it is marked again. Under `any_taken` it stays clear until the refill completes. Keeping it clear means storing that it was looted, and every place to store it has a catch:
+- The map's read progress cannot hold it: maps are not timed documents, so the game keeps their read state as a GUID set, not a number (Ghidra, C_RPGMinigames). Adding made-up GUIDs to that set risks a crash in any code that looks them up as item classes.
+- A field on the container's script needs the game's stash scripts replaced, as Loot Info does, which clashes with Loot Info and with patches to those scripts.
+- Loot Info's own `bSearchedAllready` (set on opening, saved per container) would give back-progress, but couples the mod to another mod's internals, already renamed once.
+- A file of our own per save drifts when an older save is loaded.
+- A token item in the inventory, as Loot Info stores its settings, is visible clutter that can be sold, dropped or confiscated.
+- A hidden permanent buff per place: a save holding a buff whose definition is gone (the mod removed) loads it without one, and whether the game survives that is untraced.
+- A quest of our own: a new quest must be wired into a vanilla parent graph, and setting its variables from C++ needs much more RE.
+- Spare map legend flags: 12 mark type ids are unnamed (33, 35, 40, 41, 54, 62-68), each saved as a raw byte under the name we give it and skipped once unknown, so three hold the 18 places. The legend's Track all fills every flag byte, so it needs a hook that keeps ours.
+- The player's `AI` script table (best so far): `Player:OnSaveAI` and `OnLoadAI` save and restore it whole, and no vanilla script reads keys inside it, so a `player.AI.FindersKeepers` table would ride the save, invisible, and be ignored without the mod. Untested: that KCD2's save reaches this CryEngine AI script path for the player, and that nested tables survive. A throwaway build that writes a value, then reads it after a save and reload, settles it.
+- A discovered POI only says the player was near.
+
+If this comes back, only the 18 places that refill need it, marked `refills` from game data (a refill period above 0 and treasure that is not a quest item).
 
 ## Options
 
@@ -65,7 +79,7 @@ KCSE needs the Address Library for KCSE, according to its Nexus page. The librar
 | Distances | `IconHeight`            | 1.2 m   | 0-3     |
 | Distances | `QuestMarkerReach`      | 15 m    | 0-50    |
 
-Map and compass markers come from one game entity mark (`RegisterEntityMark` builds the compass marker), so they share one switch; separating them needs RE. The compass range is the game's. Labels are English only; MCM can show localised `@` keys if they are added to the localisation table.
+Map and compass markers come from one game entity mark (`RegisterEntityMark` builds the compass marker), so they share one switch; separating them needs RE. An entity with no AI object gets its mark through a stand-in ([findings](findings.md#game-rules)). The compass range is the game's. Labels are English only; MCM can show localised `@` keys if they are added to the localisation table.
 
 ### Icons
 
@@ -77,10 +91,25 @@ Settings act first (what is created at all) and the map legend's Track toggle se
 
 ## Extending
 
-- Another map or note of an existing kind is a row in `treasure_maps.json`. The build generates, validates and localises it.
+- Another map or note of an existing kind is a row in `treasure_maps.json`, with the treasure items and rule of each container it leads to. The build generates, validates and localises it; `validate` checks every treasure item against what the game puts in that container, and an `any_taken` list against the loot preset's guaranteed items.
 - A new category needs the generator's category list, `MapTable::Category`, a settings entry (the INI and MCM follow) and a case in the probe's category check.
 - A new mark type, with its own icon and legend entry, needs an entry in `MarkType::kTypes` (naming, importance and tooltips already loop over it), its icons in `game_files.json` and its legend string. Three places still assume exactly two types: `ProbeResult::Target` has `bool source`, `GameMark` picks the type from it, and `plugin.cpp` keeps two position lists and two icon calls. Before the next type, give `Target` a `const MarkType::Type *` and loop over `kTypes` there. It's a small change, and after it a type is just data.
 - A source that is not a map (stashes, keys) doesn't fit yet, since the probe only walks the map table. Before the first one, split the probe into providers that each return targets, with the map table as one of them. Not before: one provider does not need the split.
+
+## Surviving game updates
+
+What the build bakes in from `treasure_maps.json` and the game files: each map's item GUID, its destinations and source by level entity id and name, quest names, the carving's trigger, the next riddle note, categories, treasure items and rules, localised map names and the icons. What the plugin reads live at every probe: what the player carries and has read, quest progress, whether a hole is dug, a slot holds its item or a container its treasure, whether a quest trigger takes a press, positions, WUIDs and quest markers. Its hold on the game code is about 56 signature patterns and 28 struct offsets and vtable slots, found by pattern at start-up.
+
+A patch can break the signatures and offsets (the log says the plugin did not start; KCSE and its Address Library have to update first anyway), or renumber and rename level entities and change quests, map items and loot (`uv run treasure-data validate` reports each against the new build, so run it after every patch; it needs the installed game, so not in CI). The game-state logic rarely breaks.
+
+To come back to: move more of the baked data into runtime logic, so a patch needs fewer rebuilds.
+- Find entities by their level GUID at runtime instead of id and name: GUIDs stay put when a patch renumbers. Needs RE on a lookup by GUID.
+- Read an `any_taken` container's treasure from its own loot preset at runtime instead of the table. Needs RE on the inventory preset database. The same lookup would also give a riddle note's `reveals` (the next note is in its stash's preset).
+- Read an `all_taken` container's quest items from the stash's default items at runtime: quests add them with `DisableRestock`, likely the preset entry flag 0x100 the refill skips (see findings). Needs RE on where AddStashDefaultItem keeps them.
+- Read a container's refill period from its script's `Properties.Database.nRestockPeriodDays` at runtime (a plain script table read, like a hole's `nDepth`), if a `refills` flag is ever needed.
+- Compose the tooltips at runtime from the game's own localised item name (the map item's UIName) and our two type labels, instead of copying every map's name per language into the pak at build. A patch that renames a map then shows the new name without a rebuild. Needs RE on the localisation lookup.
+
+Better kept in the table: which map leads where (only the game's quest graphs or a map's picture say so, and most maps are matched by hand), map sources, quest names, the carving's trigger and its quest gate, `after_quest` places. These are research results, not something a probe can read, and `validate` checks every one after a patch. The icons are copies of game textures; a patch can only make them stale, not break them.
 
 ## Set aside
 

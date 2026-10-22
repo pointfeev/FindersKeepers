@@ -10,10 +10,11 @@ struct ProbeResult {
     // Where a map the player has read (carried or not) leads, or where a map the player does not have yet is found; in
     // the loaded level and not dealt with yet.
     struct Target {
-        const char *map;    // the map's id in the table
-        const char *label;  // the map tooltip's localization label
-        bool source;        // the map's own location rather than where it leads
-        std::uint64_t wuid; // the marked object's WUID
+        const char *map;      // the map's id in the table
+        const char *label;    // the map tooltip's localization label
+        bool source;          // the map's own location rather than where it leads
+        std::uint32_t entity; // the marked entity's EntityId
+        std::uint64_t wuid; // its WUID; 0 for an entity the game made no AI object for (an item slot nothing links to)
         Engine::Vec3 pos;
     };
 

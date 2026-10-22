@@ -36,7 +36,7 @@ namespace {
     bool SameMarks(const ProbeResult &a, const ProbeResult &b) {
         return a.playerReady == b.playerReady &&
                std::ranges::equal(a.targets, b.targets, [](const auto &x, const auto &y) {
-                   return x.map == y.map && x.source == y.source && x.wuid == y.wuid;
+                   return x.map == y.map && x.source == y.source && x.entity == y.entity && x.wuid == y.wuid;
                });
     }
 
@@ -48,8 +48,8 @@ namespace {
             return;
         Log::Write("probe: player={} targets={}", r.playerReady, r.targets.size());
         for (const auto &t : r.targets)
-            Log::Write("probe: {} {} WUID {:016x} at ({:.1f}, {:.1f}, {:.1f})", t.map,
-                       t.source ? "lies at" : "leads to", t.wuid, t.pos.x, t.pos.y, t.pos.z);
+            Log::Write("probe: {} {} entity {} WUID {:016x} at ({:.1f}, {:.1f}, {:.1f})", t.map,
+                       t.source ? "lies at" : "leads to", t.entity, t.wuid, t.pos.x, t.pos.y, t.pos.z);
     }
 
     void Tick() {

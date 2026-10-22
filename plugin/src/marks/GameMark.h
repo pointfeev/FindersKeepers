@@ -8,7 +8,8 @@
 // Markers on the compass and the world map, through the game's own entity marks (the mechanism quests use to point at
 // an object: C_UIMap::GetOrCreateEntityMark + RegisterEntityMark), of our own mark types (MarkType: destinations and
 // map locations). Whether they show follows each type's filter flag: on by default, switched by the legend's Track
-// toggle and kept in saves.
+// toggle and kept in saves. An entity the game made no AI object for is marked through a stand-in object at its
+// position.
 namespace GameMark {
     // Marks exactly these targets' objects, each with its kind's type: adds marks for new targets whose objects exist,
     // removes the rest. A mark also goes when the game destroys its object, and comes back on a later call once the

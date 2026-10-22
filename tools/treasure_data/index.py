@@ -228,10 +228,14 @@ class QuestLinker:
                     {
                         "file": path.relative_to(self.quests_root).as_posix(),
                         "chain": [link.relative_to(self.quests_root).as_posix() for link in chain],
-                        "bound_entities": [bound for link in chain for bound in self._bound(link)],
+                        "bound_entities": self.bound(path),
                     }
                 )
         return refs
+
+    def bound(self, path: Path) -> list[dict]:
+        """The level entities bound to the assets of a graph and of every graph above it."""
+        return [bound for link in self._chain(path) for bound in self._bound(link)]
 
     def _chain(self, path: Path) -> list[Path]:
         """The graph and every graph above it, up to the quest root."""

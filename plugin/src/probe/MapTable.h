@@ -10,9 +10,14 @@
 namespace MapTable {
     // A level entity: its EntityId and name (ids repeat across levels, so the name confirms the match); id 0 for none.
     struct Place {
-        std::uint32_t entity = 0;
         const char *name = nullptr;
+        // A container's treasure items, empty for other places and for a container that counts as found only once
+        // empty. With anyTaken, the container's guaranteed loot: it counts as found once any of it is gone. Without,
+        // quest items that never refill: found once all of them are gone.
+        std::span<const Game::ItemClassId> treasure = {};
+        std::uint32_t entity = 0;
         bool afterQuest = false; // a destination marked only once the map's quest has ended, instead of until then
+        bool anyTaken = false;
     };
 
     // The table's categories, each switched by its own option.

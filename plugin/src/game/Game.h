@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "game/Engine.h"
@@ -69,9 +70,12 @@ namespace Game {
     // A quest's progress by its name; None for a name the game does not know.
     QuestProgress GetQuestProgress(const char *name);
 
-    // Where a quest marker on the map points, in world coordinates: a point (min == max), or a search area's bounds.
+    // Where a quest marker on the map points, in world coordinates: a point (min == max), or a search area's bounds;
+    // and the quest it belongs to, by its internal name.
     struct QuestMarker {
         Engine::Vec3 min, max;
+        bool area;
+        std::string quest;
     };
     // The quest markers the map shows right now (the tracked quests' active objectives), gathered the way the map
     // screen does it; works while the map is closed.

@@ -1,12 +1,12 @@
 [size=5][b]Description[/b][/size]
-Marks where every treasure map leads, and where each map is found, on the world map, the compass and in the world. Covers all 28 treasure maps, the cave-wall carving in the Tunnel in the Cliffs, the 6 quest maps and the riddle notes (the Strange Little Verses, the Strange Riddle). Maps that lead to several spots get a mark on each, and a mark clears once its spot is dug, emptied or looted.
+Marks where every treasure map leads, and where each map is found, on the world map, the compass and in the world. Covers all 28 treasure maps, the cave-wall carving in the Tunnel in the Cliffs, the 6 quest maps and the riddle notes (the Strange Little Verses, the Strange Riddle). Maps that lead to several spots get a mark on each, and a mark clears once its spot is dug or looted. No more looking up where a map leads!
 
 [size=5][b]Features[/b][/size]
 [list]
 [*]A map's destinations show once you've read it, whether you still carry it or not. You can require carrying it instead, or show them before reading.
 [*]The chest, body or merchant holding a map you haven't found yet is marked too.
-[*]A mark steps aside while a tracked quest points at the same spot, and quest maps stop being marked once their quest ends.
-[*]Dug holes, emptied chests and taken items lose their marks.
+[*]A mark steps aside while its own tracked quest points at the same spot, and quest maps stop being marked once their quest ends.
+[*]Dug holes, looted chests and taken items lose their marks. A chest counts as looted once you take any of its loot (junk aside); one holding quest items, such as Brunswick's armour, once you take those.
 [*]Tooltips name the map, as in "Map destination: Map left by the deceased".
 [*]Marked spots within range get an icon in the world, with adjustable range, fade, size and height.
 [*]Treasure maps, quest maps and riddle notes can each be hidden.
@@ -37,7 +37,7 @@ Almost all of this can be switched off or tuned; see Settings.
 [/list]
 [size=5][b]Compatibility[/b][/size]
 [list]
-[*]Safe to add or remove mid-playthrough: it writes nothing to your save and keeps no record of its own. Every mark is read straight from the game's current state, so maps you already read show up at once.
+[*]Safe to add or remove mid-playthrough: it keeps no record of its own. Every mark is read straight from the game's current state, so maps you already read show up at once. The only trace in your save is the map legend's Track setting for its two mark types, which the game stores like any other and ignores once the mod is removed.
 [*]Uses its own two marker types; replaces nothing.
 [*]Finds the game code it needs by pattern, so it often survives patches once KCSE and its Address Library support the new version. If a patch breaks it, [font=Courier New]kcd.log[/font] says so and the game runs without it.
 [/list]
@@ -45,6 +45,7 @@ Almost all of this can be switched off or tuned; see Settings.
 [list]
 [*]Not every map has been played through yet. Destinations and map locations come from the game's own data, checked against guides, but some are only verified on paper. If a mark is in the wrong place, missing, or never clears, please report it on the [url=https://www.nexusmods.com/kingdomcomedeliverance2/mods/3863?tab=bugs]Bugs tab[/url] or as a [url=https://github.com/pointfeev/FindersKeepers/issues]GitHub issue[/url], with the map's name.
 [*]An unread map that leaves your inventory is not marked; the game keeps no record of where it went, and the mod keeps none of its own.
+[*]Many treasure chests, and a few loose items such as the book in the Love nest, refill about a week after you loot them, and they are marked again once their loot is back, since the game keeps no record that you already found them. Quest items such as Brunswick's armour never come back, so those spots stay clear.
 [/list]
 [size=5][b]Maybe later[/b][/size]
 Other things the mod could mark, each as its own mark type with its own legend entry and settings. They are researched but not built, mostly to keep the map from drowning in marks. Tell me in the comments if you want any of these, or something else entirely.
