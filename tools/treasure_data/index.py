@@ -21,12 +21,14 @@ from .game import LEVELS
 MAP_DOCUMENT_CLASS = "4"
 CONTAINER_CLASSES = {"Stash", "Hole", "SO_DiggingSpot", "StashCorpse", "CartStash", "DestroStash"}
 
-_ENTITY_RE = re.compile(r"<Entity\s([^>]*?)\s*(?:/>|>(.*?)</Entity>)", re.S)
+_ENTITY_RE = re.compile(r"<Entity\s([^>]*?)\s*(?:/>|>(.*?)</Entity>)", re.DOTALL)
 _POI_RE = re.compile(r'<Object Type="POI" ([^>]*)/>')
 _ATTR_RE = re.compile(r'(\w+)="([^"]*)"')
 _ASSET_LINK_RE = re.compile(r'<Link TargetId="(\d+)"[^>]*Name="asset\[&apos;([^&]*)&apos;\]"')
 _PRESET_RE = re.compile(r'sInventoryPreset="([^"]*)"')
-_INVENTORY_PRESET_RE = re.compile(r'<InventoryPreset\s[^>]*Name="([^"]*)"[^>]*?(?:/>|>(.*?)</InventoryPreset>)', re.S)
+_INVENTORY_PRESET_RE = re.compile(
+    r'<InventoryPreset\s[^>]*Name="([^"]*)"[^>]*?(?:/>|>(.*?)</InventoryPreset>)', re.DOTALL
+)
 _PRESET_ITEM_RE = re.compile(r'<PresetItem\s[^>]*Name="([^"]*)"')
 _PRESET_REF_RE = re.compile(r'<InventoryPresetRef\s[^>]*Name="([^"]*)"')
 

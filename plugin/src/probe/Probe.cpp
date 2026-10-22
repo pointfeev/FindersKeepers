@@ -17,10 +17,17 @@ using Engine::ScriptValue;
 namespace {
     constexpr const char *kProgressNames[] = {"not started", "active", "done", "failed"};
 
-    // Per map item, whether it was read when last checked, so a map being read shows up as one log line.
-    std::map<std::string_view, bool> g_read;
+    // Per map item, whether it was read when last checked, so a map being read shows up as one log line. The maps are
+    // function-local: MSVC's std::map allocates when constructed, and a throw while the DLL loads fails the load.
+    std::map<std::string_view, bool> &ReadState() {
+        static std::map<std::string_view, bool> read;
+        return read;
+    }
     // Per quest, its progress when last checked, logged when it changes.
-    std::map<std::string_view, Game::QuestProgress> g_quests;
+    std::map<std::string_view, Game::QuestProgress> &QuestState() {
+        static std::map<std::string_view, Game::QuestProgress> quests;
+        return quests;
+    }
     // The destinations a quest marker covered at the last probe, logged when that changes.
     std::vector<std::uint64_t> g_covered;
     // Maps whose carving trigger could not be asked, or whose source has no inventory, logged once each.
@@ -90,8 +97,9 @@ namespace {
     // A quest's progress, logging each change so quest gates show up in the log.
     Game::QuestProgress ProgressOf(const char *quest) {
         const Game::QuestProgress progress = Game::GetQuestProgress(quest);
-        if (const auto it = g_quests.find(quest); it == g_quests.end() || it->second != progress) {
-            g_quests[quest] = progress;
+        std::map<std::string_view, Game::QuestProgress> &quests = QuestState();
+        if (const auto it = quests.find(quest); it == quests.end() || it->second != progress) {
+            quests[quest] = progress;
             Log::Write("quest: {} is {}", quest, kProgressNames[static_cast<int>(progress)]);
         }
         return progress;
@@ -155,9 +163,10 @@ namespace {
         if (!IsItem(map))
             return has;
         const bool read = Game::ReadProgress(map.item) >= 1.f;
-        if (const auto it = g_read.find(map.name); it == g_read.end() ? read : it->second != read)
+        std::map<std::string_view, bool> &states = ReadState();
+        if (const auto it = states.find(map.name); it == states.end() ? read : it->second != read)
             Log::Write("read: {} is {}", map.name, read ? "read" : "no longer read");
-        g_read[map.name] = read;
+        states[map.name] = read;
         return read;
     }
 
@@ -245,8 +254,8 @@ ProbeResult Probe::Run() {
 }
 
 void Probe::Reset() {
-    g_read.clear();
-    g_quests.clear();
+    ReadState().clear();
+    QuestState().clear();
     g_covered.clear();
     g_loggedTrigger.clear();
     g_loggedSource.clear();
