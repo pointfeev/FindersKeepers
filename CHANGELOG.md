@@ -2,7 +2,7 @@
 
 Each version's section becomes its GitHub release notes and its Nexus Mods changelog, where every line is one entry, so keep each entry on one line.
 
-## 1.0.2
+## 1.1.0
 
 - Some loose items in the world never got a mark or an in-world icon; they now do.
 - The Map from chest by Sedletz now marks the book in the Love nest, and the Map of game near Slatego the bow on its hunting ground.
