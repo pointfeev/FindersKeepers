@@ -38,19 +38,21 @@ namespace {
     constexpr std::size_t kRenderer = 0x108;
 
     // Interface slots, checked in their vtables in Ghidra.
-    constexpr std::size_t kLogAlways = 12;       // CLog 0x183B27C30: 0x18079B32C, LogV(always, fmt, args)
-    constexpr std::size_t kBeginCall = 15;       // script system 0x183B8C610: 0x1808FE42C (table, function name)
-    constexpr std::size_t kEndCallAny = 20;      // script system: 0x180A286AC (ScriptAnyValue &result)
-    constexpr std::size_t kPushParamAny = 30;    // script system: 0x180718548 (const ScriptAnyValue &)
-    constexpr std::size_t kTableRelease = 4;     // CScriptTable 0x183A4A700: 0x180715EF0
-    constexpr std::size_t kTableGetAny = 8;      // CScriptTable: 0x18071624C (key, ScriptAnyValue &, bool chain)
-    constexpr std::size_t kGetEntity = 14;       // entity system: called by System.GetEntity, 0x18082B440 (EntityId)
+    constexpr std::size_t kLogAlways = 12;    // CLog 0x183B27C30: 0x18079B32C, LogV(always, fmt, args)
+    constexpr std::size_t kBeginCall = 15;    // script system 0x183B8C610: 0x1808FE42C (table, function name)
+    constexpr std::size_t kEndCallAny = 20;   // script system: 0x180A286AC (ScriptAnyValue &result)
+    constexpr std::size_t kPushParamAny = 30; // script system: 0x180718548 (const ScriptAnyValue &)
+    constexpr std::size_t kTableRelease = 4;  // CScriptTable 0x183A4A700: 0x180715EF0
+    constexpr std::size_t kTableGetAny = 8;   // CScriptTable: 0x18071624C (key, ScriptAnyValue &, bool chain)
+    constexpr std::size_t kGetEntity = 14;    // entity system: called by System.GetEntity, 0x18082B440 (EntityId)
+    // Entity system: 0x18047AB4C (const level GUID *) -> EntityId, 0 when absent; System.GetEntityByGUID's lookup.
+    constexpr std::size_t kFindIdByGuid = 47;
     constexpr std::size_t kGetHeight = 70;       // CD3D9Renderer 0x183DFC008: 0x1809A8730
     constexpr std::size_t kGetWidth = 71;        // CD3D9Renderer: 0x1807F52A0
     constexpr std::size_t kProjectToScreen = 97; // CD3D9Renderer: 0x1809356D8 (wx, wy, wz, &sx, &sy, &sz), percent
     constexpr std::size_t kClientEntity = 66;    // CCryAction 0x1840472D0: 0x1835711A4
     constexpr std::size_t kWorldPos = 46;        // CEntity 0x184072C78: 0x180648030, translation into a Vec3
-    constexpr std::size_t kEntityName = 18;      // CEntity: 0x181A76100, the name at +0xE0
+    constexpr std::size_t kEntityIdSlot = 1;     // CEntity: the EntityId at +0xC
     // CEntity slot 74 (proxy by type) with 2, the script proxy, whose slot 18 is its script table (0x1805D7094).
     constexpr std::size_t kEntityProxy = 74;
     constexpr int kScriptProxy = 2;
@@ -124,7 +126,15 @@ const Engine::Entity *Engine::GetEntity(const std::uint32_t id) {
     return entities ? VCall<const Entity *>(entities, kGetEntity, id) : nullptr;
 }
 
-const char *Engine::EntityName(const Entity *entity) { return VCall<const char *>(entity, kEntityName); }
+const Engine::Entity *Engine::GetEntityByGuid(const std::uint64_t guid) {
+    const void *entities = Member(kEntitySystem);
+    if (!entities)
+        return nullptr;
+    const auto id = VCall<std::uint32_t>(entities, kFindIdByGuid, &guid);
+    return id ? GetEntity(id) : nullptr;
+}
+
+std::uint32_t Engine::EntityId(const Entity *entity) { return VCall<std::uint32_t>(entity, kEntityIdSlot); }
 
 Engine::Vec3 Engine::EntityPosition(const Entity *entity) {
     Vec3 out;

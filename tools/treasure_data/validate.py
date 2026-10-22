@@ -1,8 +1,9 @@
 """Check the curated map table against the current game build.
 
 Run after every game patch: map items that appeared or vanished, and destination or source entities that no longer
-exist, were renumbered, renamed or moved, are reported. Entities are identified by level, entity id and level GUID;
-names are not unique within a level (dozens of entities are called Stash20), so a name only confirms the match.
+exist, were renumbered, renamed or moved, are reported. The plugin finds entities by their level GUID; the table also
+keeps level and entity id, so a renumbered entity is reported with its new id. Names are not unique within a level
+(dozens of entities are called Stash20), so a name only confirms the match.
 """
 
 from __future__ import annotations
@@ -36,6 +37,10 @@ class Checker:
     def __init__(self, levels: Levels, tolerance: float, report: Report):
         self.levels = levels
         self.by_guid = levels.by_guid()
+        self.by_guid_anywhere: dict[str, list] = {}
+        for entity in levels.entities.values():
+            if entity.guid:
+                self.by_guid_anywhere.setdefault(entity.guid, []).append(entity)
         self.tolerance = tolerance
         self.report = report
 
@@ -58,9 +63,17 @@ class Checker:
         if guid and entity.guid != guid:
             self.report.errors.append(f"{label}: entity {entity_id} has GUID {entity.guid}, table says {guid}")
         elif not guid:
-            self.report.warnings.append(f"{label}: no entity_guid in the table (game has {entity.guid})")
+            self.report.errors.append(
+                f"{label}: no entity_guid in the table, which the plugin finds it by (game has {entity.guid})"
+            )
         if len(self.by_guid.get((level, entity.guid), [])) > 1:
             self.report.errors.append(f"{label}: GUID {entity.guid} is not unique in {level}")
+        # The plugin looks the GUID up in whichever level is loaded, so in another level it must be the same object.
+        for other in self.by_guid_anywhere.get(entity.guid, []):
+            if other.level != level and other.name != entity.name:
+                self.report.errors.append(
+                    f"{label}: GUID {entity.guid} is also '{other.name}' in {other.level}, which would be marked there"
+                )
         name = ref.get("entity_name")
         if name and entity.name != name:
             self.report.errors.append(f"{label}: entity {entity_id} is named '{entity.name}', table says '{name}'")

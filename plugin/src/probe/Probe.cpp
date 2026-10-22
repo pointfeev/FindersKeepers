@@ -29,8 +29,7 @@ namespace {
 
     // The entity at a place, if it is in the loaded level.
     const Engine::Entity *Find(const MapTable::Place &place) {
-        const Engine::Entity *entity = place.entity ? Engine::GetEntity(place.entity) : nullptr;
-        return entity && std::string_view(Engine::EntityName(entity)) == place.name ? entity : nullptr;
+        return place.guid ? Engine::GetEntityByGuid(place.guid) : nullptr;
     }
 
     bool IsSet(const Game::ItemClassId &item) {
@@ -77,7 +76,7 @@ namespace {
             if (ScriptValue depth; Engine::TableGet(script, "nDepth", depth) && depth.type == ScriptValue::Number)
                 return depth.number >= 1.f;
         }
-        if (const std::optional<bool> holds = Game::SlotHoldsItem(place.entity))
+        if (const std::optional<bool> holds = Game::SlotHoldsItem(Engine::EntityId(entity)))
             return !*holds;
         const Game::Inventory *inventory = Game::EntityInventory(entity);
         if (!inventory)
@@ -167,7 +166,7 @@ namespace {
     // registers or initializes them, not when first opened (C_Stash, C_InventorySoul, checked in Ghidra), so what the
     // inventory has is what is there. A carving's trigger is the map itself, found until examined.
     bool HoldsMap(const MapTable::Map &map, const Engine::Entity *entity) {
-        if (const std::optional<bool> holds = Game::SlotHoldsItem(map.source.entity))
+        if (const std::optional<bool> holds = Game::SlotHoldsItem(Engine::EntityId(entity)))
             return *holds;
         if (!IsItem(map))
             return true;
@@ -180,12 +179,12 @@ namespace {
         return false;
     }
 
-    void Add(ProbeResult &result, const MapTable::Map &map, const MapTable::Place &place, const Engine::Entity *entity,
-             const char *label, const bool source) {
+    void Add(ProbeResult &result, const MapTable::Map &map, const Engine::Entity *entity, const char *label,
+             const bool source) {
         result.targets.push_back({.map = map.name,
                                   .label = label,
                                   .source = source,
-                                  .entity = place.entity,
+                                  .entity = Engine::EntityId(entity),
                                   .wuid = Game::EntityWuid(entity),
                                   .pos = Engine::EntityPosition(entity)});
     }
@@ -215,10 +214,10 @@ ProbeResult Probe::Run() {
                 if (place.afterQuest ? questOver : !retired)
                     if (const Engine::Entity *entity = Find(place);
                         entity && !Inactive(entity) && (options.keepFinished || !Done(place, entity)))
-                        Add(result, map, place, entity, map.label, false);
-        } else if (options.mapLocations && !has && !retired && map.source.entity) {
+                        Add(result, map, entity, map.label, false);
+        } else if (options.mapLocations && !has && !retired && map.source.guid) {
             if (const Engine::Entity *entity = Find(map.source); entity && HoldsMap(map, entity))
-                Add(result, map, map.source, entity, map.sourceLabel, true);
+                Add(result, map, entity, map.sourceLabel, true);
         }
     }
 

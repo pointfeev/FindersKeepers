@@ -82,7 +82,10 @@ namespace Engine {
     const Entity *PlayerEntity();
     // A level entity by its EntityId; null when no such entity exists.
     const Entity *GetEntity(std::uint32_t id);
-    const char *EntityName(const Entity *entity);
+    // A level entity by its level GUID (the level data's EntityGuid "AAAAAAAA-BBBB-CCCC" as 0xCCCCBBBBAAAAAAAA), which
+    // stays put when a patch renumbers EntityIds; null when the loaded level has none.
+    const Entity *GetEntityByGuid(std::uint64_t guid);
+    std::uint32_t EntityId(const Entity *entity);
     Vec3 EntityPosition(const Entity *entity);
     // The entity's script table (the Lua `self` of its script); null for entities without a script.
     const ScriptTable *EntityScript(const Entity *entity);

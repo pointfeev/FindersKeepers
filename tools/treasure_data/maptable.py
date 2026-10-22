@@ -19,20 +19,26 @@ def cpp_string(text: str) -> str:
     return '"' + text.replace("\\", "\\\\").replace('"', '\\"') + '"'
 
 
-def cpp_place(place: dict | None, treasure: str | None = None) -> str:
-    """A level entity as a MapTable::Place, or an empty one (id 0).
+def cpp_entity_guid(guid: str) -> str:
+    """A level EntityGuid "AAAAAAAA-BBBB-CCCC" as the 64-bit value the game parses it into (0xCCCCBBBBAAAAAAAA)."""
+    low, middle, high = (int(part, 16) for part in guid.split("-"))
+    return f"0x{high:04X}{middle:04X}{low:08X}ull"
 
-    The plugin checks both the EntityId and the name, since ids repeat across levels and names within one. A place
-    can also be marked only once the map's quest has ended, and a container names the array of its treasure items
-    and whether taking any of them clears it (any_taken) or only taking all of them (all_taken).
+
+def cpp_place(place: dict | None, treasure: str | None = None) -> str:
+    """A level entity as a MapTable::Place, or an empty one (GUID 0).
+
+    The plugin finds it by its level GUID, which a patch that renumbers EntityIds leaves alone. A place can also be
+    marked only once the map's quest has ended, and a container names the array of its treasure items and whether
+    taking any of them clears it (any_taken) or only taking all of them (all_taken).
     """
     if place is None:
         return "{}"
     # In MapTable::Place's declaration order, as designated initializers require.
-    fields = [f".name = {cpp_string(place['entity_name'])}"]
+    fields = []
     if treasure:
         fields.append(f".treasure = {treasure}")
-    fields.append(f".entity = {int(place['entity_id'])}")
+    fields.append(f".guid = {cpp_entity_guid(place['entity_guid'])}")
     if place.get("after_quest"):
         fields.append(".afterQuest = true")
     if treasure and place["clears_when"] == "any_taken":

@@ -98,18 +98,16 @@ Settings act first (what is created at all) and the map legend's Track toggle se
 
 ## Surviving game updates
 
-What the build bakes in from `treasure_maps.json` and the game files: each map's item GUID, its destinations and source by level entity id and name, quest names, the carving's trigger, the next riddle note, categories, treasure items and rules, localised map names and the icons. What the plugin reads live at every probe: what the player carries and has read, quest progress, whether a hole is dug, a slot holds its item or a container its treasure, whether a quest trigger takes a press, positions, WUIDs and quest markers. Its hold on the game code is about 56 signature patterns and 28 struct offsets and vtable slots, found by pattern at start-up.
+What the build bakes in from `treasure_maps.json` and the game files: each map's item GUID, its destinations and source by level GUID, quest names, the carving's trigger, the next riddle note, categories, treasure items and rules, localised map names and the icons. What the plugin reads live at every probe: the entities behind those GUIDs, what the player carries and has read, quest progress, whether a hole is dug, a slot holds its item or a container its treasure, whether a quest trigger takes a press, positions, WUIDs and quest markers. Its hold on the game code is about 56 signature patterns and 30 struct offsets and vtable slots, found by pattern at start-up.
 
-A patch can break the signatures and offsets (the log says the plugin did not start; KCSE and its Address Library have to update first anyway), or renumber and rename level entities and change quests, map items and loot (`uv run treasure-data validate` reports each against the new build, so run it after every patch; it needs the installed game, so not in CI). The game-state logic rarely breaks.
+A patch can break the signatures and offsets (the log says the plugin did not start; KCSE and its Address Library have to update first anyway), or change level entities, quests, map items and loot (`uv run treasure-data validate` reports each against the new build, so run it after every patch; it needs the installed game, so not in CI). The game-state logic rarely breaks.
 
-To come back to: move more of the baked data into runtime logic, so a patch needs fewer rebuilds.
-- Find entities by their level GUID at runtime instead of id and name: GUIDs stay put when a patch renumbers. Needs RE on a lookup by GUID.
-- Read an `any_taken` container's treasure from its own loot preset at runtime instead of the table. Needs RE on the inventory preset database. The same lookup would also give a riddle note's `reveals` (the next note is in its stash's preset).
-- Read an `all_taken` container's quest items from the stash's default items at runtime: quests add them with `DisableRestock`, likely the preset entry flag 0x100 the refill skips (see findings). Needs RE on where AddStashDefaultItem keeps them.
-- Read a container's refill period from its script's `Properties.Database.nRestockPeriodDays` at runtime (a plain script table read, like a hole's `nDepth`), if a `refills` flag is ever needed.
-- Compose the tooltips at runtime from the game's own localised item name (the map item's UIName) and our two type labels, instead of copying every map's name per language into the pak at build. A patch that renames a map then shows the new name without a rebuild. Needs RE on the localisation lookup.
-
-Better kept in the table: which map leads where (only the game's quest graphs or a map's picture say so, and most maps are matched by hand), map sources, quest names, the carving's trigger and its quest gate, `after_quest` places. These are research results, not something a probe can read, and `validate` checks every one after a patch. The icons are copies of game textures; a patch can only make them stale, not break them.
+Decision: keep the data compiled. A patch needs a check and a release either way, and `validate` turns every data change into a report in seconds, while code that reads the same data from the game at runtime is more RE that a patch can break silently. The one exception is the entity lookup: places are found by their level GUID (`EntitySystem::FindIdByGuid`, entity system slot 47), which saves rely on and patches leave alone, so a renumbered entity keeps its mark without a release; `validate` still checks every GUID, also across levels. Considered and kept compiled:
+- `any_taken` treasure from the loot preset at runtime: needs RE on the preset database and the game's preset rules rebuilt in C++, for tables that rarely change and that `validate` checks exactly. The same goes for a riddle note's `reveals`.
+- `all_taken` quest items from the stash's default items: needs quest-system internals for six chests.
+- Tooltips composed from the game's localised map names: needs the localisation lookup, for a cosmetic gain (a renamed map shows its new name before the next release).
+- A container's refill period, for a `refills` flag: only if a looted record is ever stored, and then a plain script read either way.
+- Which map leads where, map sources, quest names, the carving's trigger and its quest gate, `after_quest` places: research results no probe can read. The icons are copies of game textures; a patch can only make them stale, not break them.
 
 ## Set aside
 
