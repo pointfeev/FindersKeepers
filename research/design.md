@@ -23,7 +23,7 @@ Mark type `FindersKeepersMapDestination`.
 
 ### Map locations
 
-Mark type `FindersKeepersMapLocation`. Where a map is found, marked while the player has neither carried nor read it, and while the container or item slot still holds it.
+Mark type `FindersKeepersMapLocation`. Where a map is found, marked while the player neither carries the map nor counts as knowing where it leads, its quest has not ended, and the container, NPC or item slot there still holds it. By default knowing means having read it. With `RequireCarried` a map counts only while carried, so a read map put down shows where a copy lies again: carrying that copy brings its destinations back.
 
 ### Quests
 
