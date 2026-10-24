@@ -17,7 +17,7 @@ namespace Options {
         // What counts.
         bool requireRead = true;     // a map's destinations show only once it is read
         bool requireCarried = false; // ... and only while it is carried
-        bool keepFinished = false;   // dug, emptied or taken places stay marked
+        bool keepFound = false;      // dug, emptied or taken places, and found maps' locations, stay marked
         bool retireQuestMaps = true; // a quest's maps stop showing once the quest is over
         bool hideUnderQuestMarkers = true;
         // Which maps (both their marks).

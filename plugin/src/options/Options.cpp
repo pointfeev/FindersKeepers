@@ -67,11 +67,13 @@ namespace {
          .label = "Only maps you carry",
          .tooltip = "Hide where a map leads once it leaves your inventory, even if you have read it.",
          .toggle = &Values::requireCarried},
-        {.id = "KeepFinished",
+        {.id = "KeepFound",
          .section = "Rules",
-         .label = "Keep finished places",
-         .tooltip = "Keep marking places whose hole is dug, container looted or item taken.",
-         .toggle = &Values::keepFinished},
+         .label = "Keep marks once found",
+         .tooltip =
+             "Keep marking places after you find what they hold: a hole dug, a container looted, an item taken, a "
+             "map found.",
+         .toggle = &Values::keepFound},
         {.id = "RetireQuestMaps",
          .section = "Rules",
          .label = "Retire quest maps",
@@ -169,12 +171,30 @@ namespace {
                               : std::format("{:g}{}", defaults.*setting.slider, setting.suffix);
     }
 
+    bool SameKey(const std::string_view a, const std::string_view b) {
+        return std::ranges::equal(a, b, [](const char x, const char y) { return std::tolower(x) == std::tolower(y); });
+    }
+
     const Setting *FindSetting(const std::string_view id) {
-        const auto it = std::ranges::find_if(kSettings, [&](const Setting &setting) {
-            return std::ranges::equal(id, std::string_view(setting.id),
-                                      [](const char a, const char b) { return std::tolower(a) == std::tolower(b); });
-        });
+        const auto it =
+            std::ranges::find_if(kSettings, [&](const Setting &setting) { return SameKey(id, setting.id); });
         return it == std::end(kSettings) ? nullptr : &*it;
+    }
+
+    // Keys an earlier version wrote, read as the setting that replaced them so a player's choice carries over; the
+    // file is then rewritten under the current key.
+    struct Renamed {
+        const char *old;
+        const char *id;
+    };
+    constexpr Renamed kRenamed[] = {
+        {.old = "KeepFinished", .id = "KeepFound"}, // 1.1.0 and before
+    };
+
+    const Setting *FindRenamed(const std::string_view key) {
+        const auto it =
+            std::ranges::find_if(kRenamed, [&](const Renamed &renamed) { return SameKey(key, renamed.old); });
+        return it == std::end(kRenamed) ? nullptr : FindSetting(it->id);
     }
 
     void Save() {
@@ -203,7 +223,8 @@ namespace {
     }
 
     // Reads the file over the defaults. Rewrites it in full when it was absent, lacks keys (a new version's settings)
-    // or has lines it ignored (an old version's settings, a bad value), so it always shows what is in effect.
+    // or has lines it ignored or read under an old name (an old version's settings, a bad value), so it always shows
+    // what is in effect.
     void Load() {
         std::ifstream in(g_path);
         if (!in) {
@@ -228,6 +249,10 @@ namespace {
             const std::string_view key = trim(text.substr(0, equals));
             const std::string_view raw = trim(text.substr(equals + 1));
             const Setting *setting = FindSetting(key);
+            if (!setting) {
+                setting = FindRenamed(key);
+                ignored = ignored || setting != nullptr;
+            }
             double value = 0.0;
             if (!setting || std::from_chars(raw.data(), raw.data() + raw.size(), value).ec != std::errc{}) {
                 Log::Write("options: ignored '{}' in {}", text, g_path.filename().string());

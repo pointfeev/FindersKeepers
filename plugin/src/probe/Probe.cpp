@@ -68,7 +68,7 @@ namespace {
     }
 
     // A quest trigger that takes no press gives nothing there: its quest step is not reached (Goatskin's barrel) or it
-    // was used. The two look the same, so it is never marked, whatever the keep-finished option says.
+    // was used. The two look the same, so it is never marked, whatever KeepFound says.
     bool Inactive(const Engine::Entity *entity) {
         const std::optional<bool> enabled = PressEnabled(entity);
         return enabled && !*enabled;
@@ -213,18 +213,20 @@ ProbeResult Probe::Run() {
         const bool questOver = QuestOver(map);
         const bool retired = questOver && options.retireQuestMaps;
         const bool has = HasMap(map, inventory);
-        bool known = Knows(map, has) || (!options.requireRead && has);
+        const bool read = Knows(map, has);
+        bool known = read || (!options.requireRead && has);
         if (options.requireCarried)
             known = known && has;
-        if (known) {
-            if (!options.mapDestinations)
-                continue;
+        if (known && options.mapDestinations) {
             for (const MapTable::Place &place : map.targets)
                 if (place.afterQuest ? questOver : !retired)
                     if (const Engine::Entity *entity = Find(place);
-                        entity && !Inactive(entity) && (options.keepFinished || !Done(place, entity)))
+                        entity && !Inactive(entity) && (options.keepFound || !Done(place, entity)))
                         Add(result, map, entity, map.label, false);
-        } else if (options.mapLocations && !has && !retired && map.source.guid) {
+        }
+        // A map carried or read has been found, whatever RequireCarried says of its destinations: its source refills a
+        // copy like any other loot, which would otherwise be marked again once the map is put down.
+        if (options.mapLocations && (options.keepFound || (!has && !read)) && !retired && map.source.guid) {
             if (const Engine::Entity *entity = Find(map.source); entity && HoldsMap(map, entity))
                 Add(result, map, entity, map.sourceLabel, true);
         }

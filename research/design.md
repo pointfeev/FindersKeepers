@@ -18,12 +18,12 @@ Mark type `FindersKeepersMapDestination`.
 
 - A map's destinations are marked once the player has read it, carried or not: the game keeps reading progress per item class, and it survives the map being dropped and a reload (tested in game). A carving counts once examined, and only after Laboratores (`socky`): its trigger is off until that quest ends, which would read as examined.
 - A map that leads to several places marks each one.
-- A destination clears when its hole is dug, its item is taken, or its container's treasure is taken. A container's treasure items are listed in `treasure_maps.json` with a rule. Most clear once any of them is gone (`any_taken`): the list is exactly the items its loot preset always gives, worth more than nothing, so a missing one means the player found the place and took something; what they leave, and junk rolled on top, does not matter. Where a quest adds items that never refill (`DisableRestock`: Brunswick's armour, the Storage Yard's red gold, asphalt and axe recipe, the warlock's books), those alone are the treasure and the place clears once all of them are gone (`all_taken`), for good. A container with no list clears once empty. Value judgements ("is what is left worth a visit") are left to the worth filter under Set aside. A quest's interaction trigger is marked only while it takes a press: from the quest step that switches it on until it is used. Keep finished does not keep a used one, because it looks the same as one whose step is not reached yet.
+- A destination clears when its hole is dug, its item is taken, or its container's treasure is taken. A container's treasure items are listed in `treasure_maps.json` with a rule. Most clear once any of them is gone (`any_taken`): the list is exactly the items its loot preset always gives, worth more than nothing, so a missing one means the player found the place and took something; what they leave, and junk rolled on top, does not matter. Where a quest adds items that never refill (`DisableRestock`: Brunswick's armour, the Storage Yard's red gold, asphalt and axe recipe, the warlock's books), those alone are the treasure and the place clears once all of them are gone (`all_taken`), for good. A container with no list clears once empty. Value judgements ("is what is left worth a visit") are left to the worth filter under Set aside. A quest's interaction trigger is marked only while it takes a press: from the quest step that switches it on until it is used. `KeepFound` does not keep a used one, because it looks the same as one whose step is not reached yet.
 - A riddle note's destination also clears once the player has, or has read, the next note.
 
 ### Map locations
 
-Mark type `FindersKeepersMapLocation`. Where a map is found, marked while the player neither carries the map nor counts as knowing where it leads, its quest has not ended, and the container, NPC or item slot there still holds it. By default knowing means having read it. With `RequireCarried` a map counts only while carried, so a read map put down shows where a copy lies again: carrying that copy brings its destinations back.
+Mark type `FindersKeepersMapLocation`. Where a map is found, marked while the player neither carries it nor has read it, its quest has not ended, and the container, NPC or item slot there still holds it. A map read and put down stays found under `RequireCarried` too: its source refills a copy like any other loot, so marking where a copy lies would bring the mark back about a week after every visit. With `KeepFound` it stays marked while a copy lies there.
 
 ### Quests
 
@@ -79,7 +79,7 @@ KCSE needs the Address Library for KCSE, according to its Nexus page. The librar
 | Maps         | `TreasureMaps`, `QuestMaps`, `RiddleNotes` (each covers both marks) | on | |
 | Rules        | `RequireRead`           | on      |         |
 | Rules        | `RequireCarried`        | off     |         |
-| Rules        | `KeepFinished`          | off     |         |
+| Rules        | `KeepFound`             | off     |         |
 | Rules        | `RetireQuestMaps`       | on      |         |
 | Rules        | `HideUnderQuestMarkers` | on      |         |
 | Distances | `IconShowDistance`      | 40 m    | 10-150  |
