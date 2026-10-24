@@ -2,6 +2,15 @@
 
 Each version's section becomes its GitHub release notes and its Nexus Mods changelog, where every line is one entry, so keep each entry on one line.
 
+## Unreleased
+
+- In-world icons now float above the top of what they mark, such as a chest's lid or a person's head, rather than a fixed height above its base.
+- Icon height is measured from that top to the icon's bottom edge, so the icon no longer reaches into what it marks, and defaults to 0.2 m; its setting is renamed to `IconHeightAboveTop`, so an older value gives way to the new default.
+- Icons shrink steadily with distance as what they mark does, from full size within 5 m to 30% at the edge of their range by default (the new Far icon scale setting), instead of looking massive over small, far-off things.
+- Icons keep up with what they mark, so one over someone carrying a map follows them smoothly instead of trailing behind.
+- Icons hide during cutscenes and while you're talking to someone.
+- The cave-wall carving in the Tunnel in the Cliffs is marked where it lies only once you can examine it, after Laboratores.
+
 ## 1.1.1
 
 - With Only maps you carry (`RequireCarried`) on, putting a read map away now clears all of its marks, so the mod page's workaround for keeping refilling chests off the map works: its location used to be marked again once its source refilled a copy of the map.

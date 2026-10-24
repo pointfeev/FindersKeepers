@@ -87,6 +87,9 @@ namespace Engine {
     const Entity *GetEntityByGuid(std::uint64_t guid);
     std::uint32_t EntityId(const Entity *entity);
     Vec3 EntityPosition(const Entity *entity);
+    // The entity's position raised to the top of what it draws (its render proxy's world box), or its position when it
+    // draws nothing (a trigger, an item slot).
+    Vec3 EntityTop(const Entity *entity);
     // The entity's script table (the Lua `self` of its script); null for entities without a script.
     const ScriptTable *EntityScript(const Entity *entity);
     // The player's world position; false before the player exists.

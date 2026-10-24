@@ -25,12 +25,14 @@ namespace {
     ULONGLONG g_nextProbe = 0;
     // Empty until the first probe after start-up or a save load, so that one is always logged.
     std::optional<ProbeResult> g_last;
-    // The last probe's target positions, for the floating icons every frame: destinations, then map locations.
-    std::vector<Engine::Vec3> g_destinations;
-    std::vector<Engine::Vec3> g_sources;
+    // The last probe's marked entities, for the floating icons every frame: destinations, then map locations.
+    std::vector<std::uint32_t> g_destinations;
+    std::vector<std::uint32_t> g_sources;
     std::uint32_t g_optionsVersion = 0;
     bool g_announced = false;
     bool g_wasStarted = false;
+    bool g_cutscene = false;
+    bool g_dialogue = false;
 
     // Whether two probes mark the same things; positions are left out, since an NPC holding a map moves.
     bool SameMarks(const ProbeResult &a, const ProbeResult &b) {
@@ -85,7 +87,7 @@ namespace {
             g_destinations.clear();
             g_sources.clear();
             for (const auto &t : result.targets)
-                (t.source ? g_sources : g_destinations).push_back(t.pos);
+                (t.source ? g_sources : g_destinations).push_back(t.entity);
             GameMark::Sync(Options::Get().mapMarkers ? std::span(result.targets)
                                                      : std::span<const ProbeResult::Target>());
         }
@@ -94,12 +96,26 @@ namespace {
             g_optionsVersion = Options::Version();
             g_nextProbe = 0;
         }
+        // Icons hide while a cutscene plays or the player is in a dialogue. Neither is asked while a save loads, when
+        // there are no icons to hide and the dialogue manager may be mid-reset.
+        const bool cutscene = started && Game::CutscenePlaying();
+        if (cutscene != g_cutscene) {
+            g_cutscene = cutscene;
+            Log::Write("hud: a cutscene {}", cutscene ? "started; icons hidden" : "ended");
+        }
+        const Engine::Entity *player = Engine::PlayerEntity();
+        const bool dialogue = started && player && Game::InDialogue(player);
+        if (dialogue != g_dialogue) {
+            g_dialogue = dialogue;
+            Log::Write("hud: a dialogue {}", dialogue ? "started; icons hidden" : "ended");
+        }
         // Icons follow the map legend's Track toggle for their type, except while map markers are off: the legend then
         // lists none of our types, so a type untracked earlier could not be tracked again.
         const auto *map = Game::GetMap();
         const Options::Values &options = Options::Get();
         const auto shown = [&](const MarkType::Type &type) {
-            return options.floatingIcons && (!options.mapMarkers || (map && Game::IsTypeVisible(map, type.id)));
+            return options.floatingIcons && !cutscene && !dialogue &&
+                   (!options.mapMarkers || (map && Game::IsTypeVisible(map, type.id)));
         };
         FloatingIcon::Update(MarkType::kMapDestination, g_destinations, shown(MarkType::kMapDestination));
         FloatingIcon::Update(MarkType::kMapLocation, g_sources, shown(MarkType::kMapLocation));

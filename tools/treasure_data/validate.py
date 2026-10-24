@@ -15,7 +15,7 @@ import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from .index import Levels, load_levels, load_map_items, load_strings
+from .index import PLACE_KINDS, Levels, load_levels, load_map_items, load_strings
 from .treasure import container_items, guaranteed_items, item_ids, item_prices
 
 QUEST_NAME = re.compile(r'<Quest Name="([^"]+)"')
@@ -74,6 +74,10 @@ class Checker:
                 self.report.errors.append(
                     f"{label}: GUID {entity.guid} is also '{other.name}' in {other.level}, which would be marked there"
                 )
+        if "kind" in ref and ref["kind"] != (kind := PLACE_KINDS.get(entity.cls)):
+            self.report.errors.append(
+                f"{label}: kind is '{ref['kind']}', but entity {entity_id} is a {entity.cls} ({kind or 'no kind'})"
+            )
         name = ref.get("entity_name")
         if name and entity.name != name:
             self.report.errors.append(f"{label}: entity {entity_id} is named '{entity.name}', table says '{name}'")

@@ -27,8 +27,9 @@ namespace Options {
         // Distances and sizes.
         float iconShowDistance = 40.f; // metres
         float iconFullDistance = 25.f; // metres; fully opaque within
-        float iconSize = 48.f;         // pixels on a 1080-line screen
-        float iconHeight = 1.2f;       // metres above the place
+        float iconSize = 48.f;         // pixels on a 1080-line screen, up close
+        float iconFarScale = 30.f;     // percent of iconSize at the edge of the icon range
+        float iconHeight = 0.2f;       // metres from the top of the marked object to the icon's bottom edge
         float questMarkerReach = 15.f; // metres
 
         bool operator==(const Values &) const = default;

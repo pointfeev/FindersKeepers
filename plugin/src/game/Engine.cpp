@@ -57,6 +57,11 @@ namespace {
     constexpr std::size_t kEntityProxy = 74;
     constexpr int kScriptProxy = 2;
     constexpr std::size_t kProxyScriptTable = 18;
+    // Proxy 0 is the render proxy, as the Lua GetWorldBBox bind (0x1804D2188) asks for it. The lookup returns its
+    // entity-proxy interface (CRenderProxy +0x50, vtable 0x183A4A268), whose slot 17 (0x1804D23E4) fills the world
+    // box, min then max: its local box through the entity's transform, or min 1e15 and max -1e15 when empty.
+    constexpr int kRenderProxy = 0;
+    constexpr std::size_t kProxyWorldBox = 17;
 
     const std::uint8_t *g_env = nullptr;
     void *const *g_framework = nullptr;
@@ -140,6 +145,22 @@ Engine::Vec3 Engine::EntityPosition(const Entity *entity) {
     Vec3 out;
     VCall<void>(entity, kWorldPos, &out);
     return out;
+}
+
+Engine::Vec3 Engine::EntityTop(const Entity *entity) {
+    const Vec3 position = EntityPosition(entity);
+    const void *render = VCall<void *>(entity, kEntityProxy, kRenderProxy);
+    if (!render)
+        return position;
+    struct {
+        Vec3 min, max;
+    } box;
+    VCall<void>(render, kProxyWorldBox, &box);
+    // A proxy with nothing to draw keeps an empty box, its min above its max. Only the box's height is used: its
+    // middle sways with a walking person's arms and legs, while the position stays put.
+    if (box.min.z > box.max.z)
+        return position;
+    return {position.x, position.y, box.max.z};
 }
 
 const Engine::ScriptTable *Engine::EntityScript(const Entity *entity) {

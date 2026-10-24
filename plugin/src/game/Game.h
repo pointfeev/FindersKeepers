@@ -20,6 +20,11 @@ namespace Game {
 
     // The "hud" Flash movie (compass, prompts), whose _root is in screen pixels; null while it is not loaded.
     Flash::Player *HudPlayer();
+    // Whether the game's cutscene player is playing a cutscene.
+    bool CutscenePlaying();
+    // Whether an actor (the player) is held in a conversation, as the game's actors ask it of themselves (0x180AB232C);
+    // a line someone says in passing does not count.
+    bool InDialogue(const Engine::Entity *entity);
 
     // The world map screen (C_UIMap); null until the GUI has built its screens.
     struct Map;

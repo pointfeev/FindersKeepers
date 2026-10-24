@@ -25,12 +25,13 @@ def cpp_entity_guid(guid: str) -> str:
     return f"0x{high:04X}{middle:04X}{low:08X}ull"
 
 
-def cpp_place(place: dict | None, treasure: str | None = None) -> str:
+def cpp_place(place: dict | None, treasure: str | None = None, any_taken: bool = False) -> str:
     """A level entity as a MapTable::Place, or an empty one (GUID 0).
 
-    The plugin finds it by its level GUID, which a patch that renumbers EntityIds leaves alone. A place can also be
-    marked only once the map's quest has ended, and a container names the array of its treasure items and whether
-    taking any of them clears it (any_taken) or only taking all of them (all_taken).
+    The plugin finds it by its level GUID, which a patch that renumbers EntityIds leaves alone, and reads it by its
+    kind (a hole, an item slot, a container and so on). A place can also be marked only once the map's quest has
+    ended, and a place holding items names the array of them and whether taking any of them clears it (any_taken) or
+    only taking all of them (all_taken).
     """
     if place is None:
         return "{}"
@@ -39,9 +40,10 @@ def cpp_place(place: dict | None, treasure: str | None = None) -> str:
     if treasure:
         fields.append(f".treasure = {treasure}")
     fields.append(f".guid = {cpp_entity_guid(place['entity_guid'])}")
+    fields.append(f".kind = Kind::{''.join(word.capitalize() for word in place['kind'].split('_'))}")
     if place.get("after_quest"):
         fields.append(".afterQuest = true")
-    if treasure and place["clears_when"] == "any_taken":
+    if treasure and any_taken:
         fields.append(".anyTaken = true")
     return "{" + ", ".join(fields) + "}"
 
@@ -96,10 +98,15 @@ def build(table_path: Path) -> str:
                 treasure = f"kTreasure{n}_{k}"
                 items = ", ".join(cpp_item_class(entry["guid"]) for entry in place["treasure"])
                 targets.append(f"inline constexpr Game::ItemClassId {treasure}[] = {{{items}}};")
-            places.append(cpp_place(place, treasure))
+            places.append(cpp_place(place, treasure, place.get("clears_when") == "any_taken"))
         targets.append(f"inline constexpr Place kTargets{n}[] = {{{', '.join(places)}}};")
         examined = row.get("examined")
         source = map_source(row)
+        # A carried map's source holds the map the way a container holds its treasure: until the player takes it.
+        source_items = None
+        if source and not examined:
+            source_items = f"kSourceItem{n}"
+            targets.append(f"inline constexpr Game::ItemClassId {source_items}[] = {{{cpp_item_class(row['guid'])}}};")
         maps.append(
             f"    {{.name = {cpp_string(row['map'])},\n"
             f"     .item = {'{}' if examined else cpp_item_class(row['guid'])},\n"
@@ -107,7 +114,7 @@ def build(table_path: Path) -> str:
             f"     .seenAfter = {cpp_optional_string((examined or {}).get('after_quest'))},\n"
             f"     .label = {cpp_string(tooltip_label(row))},\n"
             f"     .targets = kTargets{n},\n"
-            f"     .source = {cpp_place(source)},\n"
+            f"     .source = {cpp_place(source, source_items, any_taken=True)},\n"
             f"     .sourceLabel = {cpp_string(tooltip_label(row, source=True)) if source else 'nullptr'},\n"
             f"     .quest = {cpp_optional_string(row.get('quest'))},\n"
             f"     .reveals = {cpp_item_class(row['reveals']) if row.get('reveals') else '{}'},\n"

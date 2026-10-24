@@ -23,7 +23,7 @@ Mark type `FindersKeepersMapDestination`.
 
 ### Map locations
 
-Mark type `FindersKeepersMapLocation`. Where a map is found, marked while the player neither carries it nor has read it, its quest has not ended, and the container, NPC or item slot there still holds it. A map read and put down stays found under `RequireCarried` too: its source refills a copy like any other loot, so marking where a copy lies would bring the mark back about a week after every visit. With `KeepFound` it stays marked while a copy lies there.
+Mark type `FindersKeepersMapLocation`. Where a map is found, marked while the player neither carries it nor has read it, its quest has not ended, and the container, NPC or item slot there still holds it, the same check as a destination's treasure with the map as the one item. The carving's location shows while its trigger takes a press, so not before Laboratores. A map read and put down stays found under `RequireCarried` too: its source refills a copy like any other loot, so marking where a copy lies would bring the mark back about a week after every visit. With `KeepFound` it stays marked while a copy lies there.
 
 ### Quests
 
@@ -33,7 +33,9 @@ Mark type `FindersKeepersMapLocation`. Where a map is found, marked while the pl
 ### Display
 
 - Tooltips read "Map destination: <map name>" or "Map location: <map name>" in each language, with its own punctuation; the legend and the settings use the same two names.
-- Each marked place within range gets its own in-world icon.
+- On the map our marks stack above every other POI, the quest giver's new-quest mark included (priority 0; the map stacks by priority alone, and QuestGiver, without a `poi_type` row, has 4). The compass is left as the game draws it: quest markers in layers above all POIs, and POIs, ours among them, nearest on top.
+- Each marked place within range gets its own in-world icon over its position, its bottom edge `IconHeightAboveTop` above the top of what it draws (its render box), or above its position when it draws nothing (a trigger, an item slot). Anchoring the bottom edge keeps the icon clear of the object however large it gets on screen, and only the box's height is used, since its middle sways with a walking person's limbs. It follows the object every frame, so it keeps up with a person carrying a map. Between the fade distance and the edge of its range it fades out. Its size is `IconSize` within 5 m and beyond shrinks at every distance with a perspective-like curve (1 / (1 + k * beyond)), down to `IconFarScale` (30% by default) at the edge of its range. At one size an icon looks massive over a small, far object, while true perspective would leave far icons unreadable.
+- Icons hide while the game's cutscene player plays anything and while the player is held in a conversation, not while someone passing by says a line. Both come from the game's own state (the GUI module's cutscene player; the dialogue manager, asked the way actors ask it of themselves), not from what the HUD happens to show, which many other things change.
 
 ### Not possible under the state rule
 
@@ -85,7 +87,8 @@ KCSE needs the Address Library for KCSE, according to its Nexus page. The librar
 | Distances | `IconShowDistance`      | 40 m    | 10-150  |
 | Distances | `IconFullDistance`      | 25 m    | 0-150   |
 | Distances | `IconSize`              | 48 px   | 16-128  |
-| Distances | `IconHeight`            | 1.2 m   | 0-3     |
+| Distances | `IconFarScale`          | 30%     | 10-100  |
+| Distances | `IconHeightAboveTop`    | 0.2 m   | 0-3     |
 | Distances | `QuestMarkerReach`      | 15 m    | 0-50    |
 
 Map and compass markers come from one game entity mark (`RegisterEntityMark` builds the compass marker), so they share one switch; separating them needs RE. An entity with no AI object gets its mark through a stand-in ([findings](findings.md#game-rules)). The compass range is the game's. Labels are English only; MCM can show localised `@` keys if they are added to the localisation table.
@@ -100,14 +103,14 @@ Settings act first (what is created at all) and the map legend's Track toggle se
 
 ## Extending
 
-- Another map or note of an existing kind is a row in `treasure_maps.json`, with the treasure items and rule of each container it leads to. The build generates, validates and localises it; `validate` checks every treasure item against what the game puts in that container, and an `any_taken` list against the loot preset's guaranteed items.
+- Another map or note of an existing kind is a row in `treasure_maps.json`, with each place's kind (what the probe reads from it, by its entity class) and the treasure items and rule of each container it leads to. The build generates, validates and localises it; `validate` checks each kind against the entity's class, every treasure item against what the game puts in that container, and an `any_taken` list against the loot preset's guaranteed items.
 - A new category needs the generator's category list, `MapTable::Category`, a settings entry (the INI and MCM follow) and a case in the probe's category check.
-- A new mark type, with its own icon and legend entry, needs an entry in `MarkType::kTypes` (naming, importance and tooltips already loop over it), its icons in `game_files.json` and its legend string. Three places still assume exactly two types: `ProbeResult::Target` has `bool source`, `GameMark` picks the type from it, and `plugin.cpp` keeps two position lists and two icon calls. Before the next type, give `Target` a `const MarkType::Type *` and loop over `kTypes` there. It's a small change, and after it a type is just data.
+- A new mark type, with its own icon and legend entry, needs an entry in `MarkType::kTypes` (naming, importance and tooltips already loop over it), its icons in `game_files.json` and its legend string. Three places still assume exactly two types: `ProbeResult::Target` has `bool source`, `GameMark` picks the type from it, and `plugin.cpp` keeps two entity lists and two icon calls. Before the next type, give `Target` a `const MarkType::Type *` and loop over `kTypes` there. It's a small change, and after it a type is just data. In-world icons are neither merged nor sorted: a place two maps lead to (the two u49 maps' dig sites, the wall stash holding both hideout maps) draws two identical icons on one spot, and a far icon can draw over a near one. Harmless with two types; with more, draw one icon per object and type, nearest on top.
 - A source that is not a map (stashes, keys) doesn't fit yet, since the probe only walks the map table. Before the first one, split the probe into providers that each return targets, with the map table as one of them. Not before: one provider does not need the split.
 
 ## Surviving game updates
 
-What the build bakes in from `treasure_maps.json` and the game files: each map's item GUID, its destinations and source by level GUID, quest names, the carving's trigger, the next riddle note, categories, treasure items and rules, localised map names and the icons. What the plugin reads live at every probe: the entities behind those GUIDs, what the player carries and has read, quest progress, whether a hole is dug, a slot holds its item or a container its treasure, whether a quest trigger takes a press, positions, WUIDs and quest markers. Its hold on the game code is about 56 signature patterns and 30 struct offsets and vtable slots, found by pattern at start-up.
+What the build bakes in from `treasure_maps.json` and the game files: each map's item GUID, its destinations and source by level GUID and kind, quest names, the carving's trigger, the next riddle note, categories, treasure items and rules, localised map names and the icons. What the plugin reads live at every probe: the entities behind those GUIDs, what the player carries and has read, quest progress, whether a hole is dug, a slot holds its item or a container its treasure, whether a quest trigger takes a press, positions, WUIDs and quest markers. Its hold on the game code is about 56 signature patterns and 30 struct offsets and vtable slots, found by pattern at start-up.
 
 A patch can break the signatures and offsets (the log says the plugin did not start; KCSE and its Address Library have to update first anyway), or change level entities, quests, map items and loot (`uv run treasure-data validate` reports each against the new build, so run it after every patch; it needs the installed game, so not in CI). The game-state logic rarely breaks.
 

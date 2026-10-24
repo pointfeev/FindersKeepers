@@ -10,6 +10,7 @@
     "entity_name": "andelStrazny_kozinaStash",
     "entity_id": "139871",
     "entity_guid": "10757e76-16ca-4481",
+    "kind": "trigger",
     "pos": "3233.389,686.466,39.89327",
     "poi_name": null,
     "alt_entities": [
@@ -48,7 +49,8 @@
         }
       ],
       "entity_check": "ok",
-      "entity_guid": "6566b2f8-f8af-4b13"
+      "entity_guid": "6566b2f8-f8af-4b13",
+      "kind": "person"
     },
     "entity_check": "ok"
   },
@@ -114,6 +116,7 @@
       "entity_name": "ssed_knihovnik",
       "entity_id": "4042",
       "entity_guid": "65ccef38-e3ac-46f3",
+      "kind": "person",
       "pos": "1302.121,997.0846,26.35",
       "confidence": "verified",
       "sources": ["https://www.powerpyx.com/kingdom-come-deliverance-2-seek-and-you-shall-find-walkthrough/"],
@@ -139,6 +142,7 @@
       { "item": "bsmt_syrianAsfalt", "guid": "30c447bb-2ea0-4577-8045-a0020ceb87a9" }
     ],
     "entity_guid": "9a096da4-d656-4770",
+    "kind": "container",
     "pos": "675.2197,1109.931,128.4073",
     "poi_name": "ruinaRabstejnky_poi (Rabstein ruin) 682.0374,1107.738,124.3776",
     "alt_entities": [],
@@ -153,6 +157,7 @@
       "entity_name": "mrtviNemluvi_woundedBandit",
       "entity_id": "952820",
       "entity_guid": "fe3a716f-690b-45e9",
+      "kind": "person",
       "pos": "202.3072,1491.359,136.7345",
       "alt": [
         {
@@ -178,6 +183,7 @@
     "entity_name": "horseArchery_rangeArea",
     "entity_id": "181390",
     "entity_guid": "c309685a-e8cc-401a",
+    "kind": "area",
     "pos": "1091.678,1709.336,58.60509",
     "poi_name": null,
     "alt_entities": [
@@ -207,7 +213,8 @@
       "confidence": "likely",
       "sources": ["https://www.powerpyx.com/kingdom-come-deliverance-2-horses-for-courses-walkthrough/"],
       "entity_check": "ok",
-      "entity_guid": "f095ad0c-25cf-428c"
+      "entity_guid": "f095ad0c-25cf-428c",
+      "kind": "person"
     },
     "entity_check": "ok"
   },
@@ -266,7 +273,8 @@
         "https://www.gamerguides.com/kingdom-come-deliverance-ii/database/books/maps/poachers-map"
       ],
       "entity_check": "ok",
-      "entity_guid": "d2019bd5-f8b5-0251"
+      "entity_guid": "d2019bd5-f8b5-0251",
+      "kind": "container"
     },
     "entity_check": "no_id"
   },
@@ -282,6 +290,7 @@
     "entity_name": "secretAditEntrance",
     "entity_id": "40419",
     "entity_guid": "5daa929f-3d31-44e9",
+    "kind": "area",
     "pos": "3543.129,1789.803,104.0476",
     "poi_name": null,
     "alt_entities": [
@@ -331,6 +340,7 @@
           { "item": "recipe_shotScatter", "guid": "a5eedab1-4c1e-4704-a26e-393b9fcd123c" }
         ],
         "entity_guid": "8b9d6e76-6776-099a",
+        "kind": "container",
         "pos": "3576.506,1815.083,94.66642"
       }
     ],
@@ -345,7 +355,8 @@
       "confidence": "verified",
       "sources": ["https://www.powerpyx.com/kingdom-come-deliverance-2-via-argentum-walkthrough/"],
       "entity_check": "ok",
-      "entity_guid": "ee367189-7d29-4d8f"
+      "entity_guid": "ee367189-7d29-4d8f",
+      "kind": "person"
     },
     "entity_check": "ok"
   },
@@ -411,6 +422,7 @@
       { "item": "LegsPlateBrunswig_m01", "guid": "96981577-61e6-4e10-bb01-c3cb879aa920" }
     ],
     "entity_guid": "4fe8eb63-c0d0-08c1",
+    "kind": "container",
     "pos": "1927.815,3000.045,88.78703",
     "poi_name": "tbuk_animalSpawn_huntingSpotPOI_10 (wolf hunting spot) 1920.017,3003.489,88.20084",
     "alt_entities": [],
@@ -431,7 +443,8 @@
         "quest:Barbora/trosecko/preorder_bonus/bruncvikovaZbroj/bruncvikova_zbroj/precteni_mapky.xml (CreatePlayerReward on brneni_s_mapkou_sebrano)"
       ],
       "entity_check": "ok",
-      "entity_guid": "c0b1037e-d825-0541"
+      "entity_guid": "c0b1037e-d825-0541",
+      "kind": "container"
     },
     "entity_check": "ok"
   },
@@ -448,6 +461,7 @@
     "clears_when": "all_taken",
     "treasure": [{ "item": "ArmPlateBrunswig_m01", "guid": "448e8c3b-a420-41ff-af0f-b98d48784ea8" }],
     "entity_guid": "6c2328f8-ed20-4dba",
+    "kind": "container",
     "pos": "1307.827,2770.852,45.132",
     "poi_name": "krizeVeSkalach_poi (Crosses in the rocks) 1307.246,2770.043,45.14849",
     "alt_entities": [],
@@ -468,7 +482,8 @@
         "quest:Barbora/trosecko/preorder_bonus/bruncvikovaZbroj/bruncvikova_zbroj/precteni_mapky.xml (CreatePlayerReward on brneni_s_mapkou_sebrano)"
       ],
       "entity_check": "ok",
-      "entity_guid": "c0b1037e-d825-0541"
+      "entity_guid": "c0b1037e-d825-0541",
+      "kind": "container"
     },
     "entity_check": "ok"
   },
@@ -485,6 +500,7 @@
     "clears_when": "all_taken",
     "treasure": [{ "item": "CuirassBrunswig_m01", "guid": "8f0afc06-e359-4371-b1ce-a312f5d4aa64" }],
     "entity_guid": "25a5d52d-2a05-040c",
+    "kind": "container",
     "pos": "1651.31,2333.466,41.19957",
     "poi_name": "krizAKostlivec_poi (Cross and skeleton) 1650.7,2333.109,41.36785",
     "alt_entities": [
@@ -510,7 +526,8 @@
         "quest:Barbora/trosecko/preorder_bonus/bruncvikovaZbroj/bruncvikova_zbroj/precteni_mapky.xml (CreatePlayerReward on brneni_s_mapkou_sebrano)"
       ],
       "entity_check": "ok",
-      "entity_guid": "4fe8eb63-c0d0-08c1"
+      "entity_guid": "4fe8eb63-c0d0-08c1",
+      "kind": "container"
     },
     "entity_check": "ok",
     "extra_targets": [
@@ -522,6 +539,7 @@
         "clears_when": "any_taken",
         "treasure": [{ "item": "ring_gem", "guid": "158f44ac-7078-4deb-97a1-fad69075e483" }],
         "entity_guid": "91793419-859e-4550",
+        "kind": "container",
         "pos": "1656.022,2315.164,38.08333"
       }
     ]
@@ -539,6 +557,7 @@
     "clears_when": "all_taken",
     "treasure": [{ "item": "BascinetVisorBrunswig_m01", "guid": "157697b8-f618-4856-aea2-3b3cba06c1d6" }],
     "entity_guid": "91f60272-12d4-489e",
+    "kind": "container",
     "pos": "1284.68,1976.974,63.23505",
     "poi_name": "hledaciPokladu_poi (Treasure hunters' camp) 1293.814,1968.435,62.37451",
     "alt_entities": [
@@ -572,7 +591,8 @@
         "quest:Barbora/trosecko/preorder_bonus/bruncvikovaZbroj/bruncvikova_zbroj/precteni_mapky.xml (CreatePlayerReward on brneni_s_mapkou_sebrano)"
       ],
       "entity_check": "ok",
-      "entity_guid": "6c2328f8-ed20-4dba"
+      "entity_guid": "6c2328f8-ed20-4dba",
+      "kind": "container"
     },
     "entity_check": "ok"
   },
@@ -588,6 +608,7 @@
     "entity_name": "graveHole[special/graveHole8_08f3c974-f610-4e53-aaee-3e92f710058f]",
     "entity_id": "952782",
     "entity_guid": "da0b20e8-8d4b-04b7",
+    "kind": "hole",
     "pos": "3788.133,1146.728,54.10458",
     "poi_name": null,
     "alt_entities": [
@@ -641,7 +662,8 @@
         "https://patchcrazy.co.uk/kcd2-all-treasure-map-locations/"
       ],
       "entity_check": "ok",
-      "entity_guid": "5aef0f5d-1ef4-43ee"
+      "entity_guid": "5aef0f5d-1ef4-43ee",
+      "kind": "person"
     },
     "entity_check": "ok",
     "extra_targets": [
@@ -651,6 +673,7 @@
         "entity_name": "graveHole[special/graveHole7_7976514d-404c-4fa9-b109-bcf8aaeb934c]",
         "entity_id": "952783",
         "entity_guid": "ab8eb8d1-3b17-054d",
+        "kind": "hole",
         "pos": "3784.03,1151.609,54.05568"
       },
       {
@@ -659,6 +682,7 @@
         "entity_name": "graveHole[special/graveHole9_b799338c-1adc-4a9d-8907-e59e72716ab4]",
         "entity_id": "952784",
         "entity_guid": "6561da10-6187-0079",
+        "kind": "hole",
         "pos": "3789.935,1151.602,54.22691"
       }
     ]
@@ -675,6 +699,7 @@
     "entity_name": "graveHole[special/graveHole8_08f3c974-f610-4e53-aaee-3e92f710058f]",
     "entity_id": "952782",
     "entity_guid": "da0b20e8-8d4b-04b7",
+    "kind": "hole",
     "pos": "3788.133,1146.728,54.10458",
     "poi_name": null,
     "alt_entities": [
@@ -725,7 +750,8 @@
       "sources": ["https://game-checklists.com/kcd2/guides/x-marks-the-spot-quest/"],
       "entity_check": "ok",
       "notes": "Entity: (leader, soul char_VUDCE_LAPKU_U49_MAPA_K_POKLADU)",
-      "entity_guid": "823df317-3f45-4d00"
+      "entity_guid": "823df317-3f45-4d00",
+      "kind": "person"
     },
     "entity_check": "ok",
     "extra_targets": [
@@ -735,6 +761,7 @@
         "entity_name": "graveHole[special/graveHole7_7976514d-404c-4fa9-b109-bcf8aaeb934c]",
         "entity_id": "952783",
         "entity_guid": "ab8eb8d1-3b17-054d",
+        "kind": "hole",
         "pos": "3784.03,1151.609,54.05568"
       },
       {
@@ -743,6 +770,7 @@
         "entity_name": "graveHole[special/graveHole9_b799338c-1adc-4a9d-8907-e59e72716ab4]",
         "entity_id": "952784",
         "entity_guid": "6561da10-6187-0079",
+        "kind": "hole",
         "pos": "3789.935,1151.602,54.22691"
       }
     ]
@@ -785,6 +813,7 @@
       "entity_name": "nakaza_coatOfArmsDrawingSlot_placeholder",
       "entity_id": "416",
       "entity_guid": "efbcd6d9-b4ce-4030",
+      "kind": "item_slot",
       "pos": "1367.941,1043.668,22.26123",
       "confidence": "verified",
       "sources": ["https://www.powerpyx.com/?p=313902"],
@@ -805,6 +834,7 @@
     "entity_name": "nakaza_cryptArea",
     "entity_id": "382",
     "entity_guid": "e7588c2e-82a8-49e2",
+    "kind": "area",
     "pos": "1372.22,1047.066,20.14612",
     "poi_name": null,
     "alt_entities": [
@@ -836,6 +866,7 @@
       "entity_name": "nakaza_cryptMapSlot_placeholder",
       "entity_id": "414",
       "entity_guid": "1b526967-c64c-4bdc",
+      "kind": "item_slot",
       "pos": "1363.813,1044.862,22.03538",
       "confidence": "likely",
       "sources": [],
@@ -861,6 +892,7 @@
       { "item": "skillbook_strength_IV_kcd2", "guid": "fa13dc4a-09d1-48ff-b48b-9d1dd2aac13a" }
     ],
     "entity_guid": "232b257f-adef-4580",
+    "kind": "container",
     "pos": "3421.122,269.0405,25.60102",
     "poi_name": "nemcuvPoklad1_poi (Sunken chest) 3421.254,269.0812,26.0571",
     "alt_entities": [
@@ -889,7 +921,8 @@
         "https://www.powerpyx.com/?p=266813"
       ],
       "entity_check": "ok",
-      "entity_guid": "92835d0c-a335-490b"
+      "entity_guid": "92835d0c-a335-490b",
+      "kind": "container"
     },
     "entity_check": "ok"
   },
@@ -913,6 +946,7 @@
       { "item": "ring_golden_cross", "guid": "0e43c996-01ac-49f5-9389-bd458dbd01d9" }
     ],
     "entity_guid": "44a5e0c5-d164-425c",
+    "kind": "container",
     "pos": "2196.518,3281.21,104.9688",
     "poi_name": "nemcuvPokladOpatovice_poi (Buried treasure) 2196.198,3281.003,105.7783",
     "alt_entities": [
@@ -938,7 +972,8 @@
       "confidence": "verified",
       "sources": ["https://kingdomcomedeliverance2.wiki.fextralife.com/Old_Hideout_Map"],
       "entity_check": "ok",
-      "entity_guid": "92835d0c-a335-490b"
+      "entity_guid": "92835d0c-a335-490b",
+      "kind": "container"
     },
     "entity_check": "ok"
   },
@@ -962,6 +997,7 @@
       { "item": "ring_engraved_gem", "guid": "5d628c15-9586-41a4-b9ff-67bd734771be" }
     ],
     "entity_guid": "febefd2d-5032-0aaf",
+    "kind": "container",
     "pos": "2192.099,1329.465,50.0493",
     "poi_name": null,
     "alt_entities": [
@@ -991,6 +1027,7 @@
       "entity_name": "ttro_cernyBartos",
       "entity_id": "194871",
       "entity_guid": "fb866be1-87c9-4d15",
+      "kind": "person",
       "pos": "2384.243,2565.712,239.5405",
       "confidence": "verified",
       "sources": [
@@ -1015,6 +1052,7 @@
     "clears_when": "any_taken",
     "treasure": [{ "item": "money", "guid": "5ef63059-322e-4e1b-abe8-926e100c770e" }],
     "entity_guid": "ee2a6540-eb4f-4415",
+    "kind": "container",
     "pos": "1590.099,2130.904,16.1202",
     "poi_name": null,
     "alt_entities": [
@@ -1040,6 +1078,7 @@
       "entity_name": "ItemSlot216",
       "entity_id": "11947",
       "entity_guid": "cb5d80ef-4b96-4c2f",
+      "kind": "item_slot",
       "pos": "1564.172,2161.125,14.95286",
       "confidence": "verified",
       "sources": ["https://kingdomcomedeliverance2.wiki.fextralife.com/Map_of_The_Zhelejov_Marshes"],
@@ -1058,6 +1097,7 @@
     "entity_name": "ItemSlot160",
     "entity_id": "52786",
     "entity_guid": "c572b493-83ca-4658",
+    "kind": "item_slot",
     "pos": "3532.359,564.5264,26.73887",
     "poi_name": "prchajiciMnich_hnizdeckoLasky_poi (Love nest) 3531.606,563.7429,26.43254",
     "alt_entities": [
@@ -1123,7 +1163,8 @@
         }
       ],
       "entity_check": "ok",
-      "entity_guid": "c0416229-44b6-0ac6"
+      "entity_guid": "c0416229-44b6-0ac6",
+      "kind": "container"
     },
     "entity_check": "ok"
   },
@@ -1138,6 +1179,7 @@
     "entity_name": "ItemSlot115",
     "entity_id": "31712",
     "entity_guid": "4ca999c8-c91d-4363",
+    "kind": "item_slot",
     "pos": "2927.774,1809.111,85.76345",
     "poi_name": "tsla_animalSpawn_huntingSpotPOI_4",
     "alt_entities": [
@@ -1182,6 +1224,7 @@
       "entity_name": "Stash34",
       "entity_id": "49525",
       "entity_guid": "58720c36-2fc1-4d39",
+      "kind": "container",
       "pos": "2816.983,1949.719,108.0853",
       "confidence": "verified",
       "sources": [
@@ -1204,6 +1247,7 @@
     "clears_when": "any_taken",
     "treasure": [{ "item": "money", "guid": "5ef63059-322e-4e1b-abe8-926e100c770e" }],
     "entity_guid": "6bdb4086-32f9-470c",
+    "kind": "container",
     "pos": "919.4504,1408.693,24.59472",
     "poi_name": "vyplataDrevorubcu_poi (Fresh clearing) 911.7474,1389.319",
     "alt_entities": [
@@ -1230,6 +1274,7 @@
       "entity_name": "stash[Chest/chest1_a60ce408-23b7-478c-aee3-a8f3413924da]",
       "entity_id": "20005",
       "entity_guid": "0b544555-3c7f-0d25",
+      "kind": "container",
       "pos": "1026.863,1279.331,35.12",
       "confidence": "verified",
       "sources": [
@@ -1250,6 +1295,7 @@
     "entity_name": "vostatkovoPiti_stash_1",
     "entity_id": "37251",
     "entity_guid": "4254f559-a82c-425d",
+    "kind": "trigger",
     "pos": "1387.022,2389.733,36.41229",
     "poi_name": "vostatkovoPiti_1_poi .. vostatkovoPiti_5_poi (Booze stash)",
     "alt_entities": [
@@ -1337,6 +1383,7 @@
       { "item": "warhammerStab", "guid": "53fd0cb7-015a-48ed-a42f-cd41f4b1b491" }
     ],
     "entity_guid": "1718f6a2-cbcd-00d3",
+    "kind": "container",
     "pos": "3099.342,1631.523,113.5938",
     "poi_name": "skladPaseraku_poi (Locked dugout) 3100.602,1631.692,113.6692",
     "alt_entities": [
@@ -1374,7 +1421,8 @@
         "https://www.gamerguides.com/kingdom-come-deliverance-ii/database/books/maps/smugglerss-map"
       ],
       "entity_check": "ok",
-      "entity_guid": "c540e588-713a-4a2b"
+      "entity_guid": "c540e588-713a-4a2b",
+      "kind": "person"
     },
     "entity_check": "ok"
   },
@@ -1396,6 +1444,7 @@
       { "item": "potion_saviourSchnapps_medium", "guid": "d273bcad-6b58-4eae-9d2a-800c40176cfd" }
     ],
     "entity_guid": "b1c474e0-febd-49ca",
+    "kind": "container",
     "pos": "1532.428,2341.387,34.48995",
     "poi_name": null,
     "alt_entities": [
@@ -1426,6 +1475,7 @@
       "entity_name": "Stash36",
       "entity_id": "37839",
       "entity_guid": "eb214501-c73b-4a82",
+      "kind": "container",
       "pos": "2661.782,2046.269,109.6621",
       "confidence": "verified",
       "sources": ["https://gamerant.com/kingdom-come-deliverance-2-kcd2-how-get-map-left-deceased/"],
@@ -1446,6 +1496,7 @@
     "clears_when": "any_taken",
     "treasure": [{ "item": "money", "guid": "5ef63059-322e-4e1b-abe8-926e100c770e" }],
     "entity_guid": "59cb14ca-4eff-4bc7",
+    "kind": "container",
     "pos": "1224.959,2084.947,10.47491",
     "poi_name": "vodnik_vodniksTreasure_poi (Water goblin's treasure) 1224.695,2084.909",
     "alt_entities": [
@@ -1476,6 +1527,7 @@
       "entity_name": "Stash11",
       "entity_id": "33621",
       "entity_guid": "e2f40fa7-76fe-4ba9",
+      "kind": "container",
       "pos": "841.018,1839.197,10.91303",
       "confidence": "verified",
       "sources": [
@@ -1504,6 +1556,7 @@
       { "item": "money", "guid": "5ef63059-322e-4e1b-abe8-926e100c770e" }
     ],
     "entity_guid": "bca68bb2-859d-021a",
+    "kind": "container",
     "pos": "1545.787,3002.118,15.91506",
     "poi_name": "vyplavenyPoklad_poi (Washed-up chest) 1545.57,3002.219",
     "alt_entities": [
@@ -1532,6 +1585,7 @@
       "entity_name": "tbuk_man_1",
       "entity_id": "12592",
       "entity_guid": "ea2f60d3-5c56-4903",
+      "kind": "person",
       "pos": "1831.618,2961.812,58.58729",
       "confidence": "verified",
       "sources": [
@@ -1554,6 +1608,7 @@
     "entity_name": "basementArea",
     "entity_id": "3716",
     "entity_guid": "ed2e30ec-3d30-4293",
+    "kind": "area",
     "pos": "1286.621,1023.652,19.11506",
     "poi_name": null,
     "alt_entities": [
@@ -1596,6 +1651,7 @@
       "entity_name": "translatorsChest",
       "entity_id": "3809",
       "entity_guid": "cc08d5e1-6512-42b3",
+      "kind": "container",
       "pos": "1327.51,1029.838,33.33699",
       "alt": [
         {
@@ -1645,6 +1701,7 @@
       { "item": "repairKit_weaponSmall", "guid": "c707733a-c0a7-4f02-b684-9392b0b15b83" }
     ],
     "entity_guid": "744d59bc-3ff9-4a66",
+    "kind": "container",
     "pos": "2068.119,1924.898,135.4047",
     "poi_name": "borutovaZakopanaVybava_poi (Buried stash) 2068.07,1924.863,136.0465",
     "alt_entities": [
@@ -1676,6 +1733,7 @@
       "entity_name": "kgru_borut",
       "entity_id": "968439",
       "entity_guid": "221563d1-0760-45d7",
+      "kind": "person",
       "pos": "3154.751,2130.827,102.6335",
       "alt": [
         {
@@ -1709,6 +1767,7 @@
       { "item": "special_teethWolf", "guid": "7b1c57a3-54fd-441f-8cad-21157bd1a85b" }
     ],
     "entity_guid": "76df628c-2cd5-4132",
+    "kind": "container",
     "pos": "1996.673,2591.396,176.3336",
     "poi_name": "kvlc_animalSpawn_huntingSpotPOI_1 (Wolf hunting spot) 1994.604,2585.559",
     "alt_entities": [
@@ -1757,6 +1816,7 @@
       { "item": "special_charcoal", "guid": "f879ac63-2ce2-4114-83a2-89643c1ed102" }
     ],
     "entity_guid": "7054c68d-98bc-404a",
+    "kind": "container",
     "pos": "2618.204,2670.407,133.3482",
     "poi_name": "pokladPodTroskami_poi (Cave under Trosky) 2617.636,2671.998,133.3093",
     "alt_entities": [
@@ -1803,6 +1863,7 @@
         "entity_name": "ItemSlot271",
         "entity_id": "44518",
         "entity_guid": "c48c48f8-83b4-441b",
+        "kind": "item_slot",
         "pos": "2610.904,2669.218,135.0044"
       }
     ]
@@ -1827,6 +1888,7 @@
       { "item": "ring_silver_gem", "guid": "91147117-cdbc-4f7d-b216-5584ca4ac009" }
     ],
     "entity_guid": "3229f758-a4ae-000a",
+    "kind": "container",
     "pos": "966.6812,2157.671,37.06898",
     "poi_name": "pokladSKostlivcem_poi (Skeleton with treasure) 966.4756,2157.269,37.29726",
     "alt_entities": [
@@ -1876,6 +1938,7 @@
       { "item": "skillbook_strength_III_kcd2", "guid": "54e55d9e-6841-4298-98de-efbb9b638eae" }
     ],
     "entity_guid": "f9d6a60f-643b-4bf4",
+    "kind": "container",
     "pos": "2834.594,835.4142,58.69184",
     "poi_name": null,
     "alt_entities": [
@@ -1930,6 +1993,7 @@
       { "item": "skillbook_heavyWeapons_lvl3_kcd2", "guid": "311536e2-4455-4cf9-ac97-b0d92715c157" }
     ],
     "entity_guid": "f11cc4a2-57e5-4dce",
+    "kind": "container",
     "pos": "1030.498,409.1957,106.568",
     "poi_name": null,
     "alt_entities": [
@@ -1979,6 +2043,7 @@
     "entity_name": "zachranaPtacka_malesovArea",
     "entity_id": "85482",
     "entity_guid": "1428eb19-3e7c-44d1",
+    "kind": "area",
     "pos": "505.4331,388.2984,126.5",
     "poi_name": null,
     "alt_entities": [
@@ -2037,6 +2102,7 @@
       "entity_name": "kkut_rozaRuthard",
       "entity_id": "946328",
       "entity_guid": "fe7f4bc0-dbd9-4ca0",
+      "kind": "person",
       "pos": "2993.062,665.0518,51.10302",
       "confidence": "verified",
       "sources": [
@@ -2060,6 +2126,7 @@
     "entity_name": "kmal_fortress_tower3_4_sh",
     "entity_id": "42424",
     "entity_guid": "2b3b4a5d-8d08-4a46",
+    "kind": "area",
     "pos": "459.9382,373.7267,125.1095",
     "poi_name": null,
     "alt_entities": [
@@ -2094,6 +2161,7 @@
       "entity_name": "kkut_rozaRuthard",
       "entity_id": "946328",
       "entity_guid": "fe7f4bc0-dbd9-4ca0",
+      "kind": "person",
       "pos": "2993.062,665.0518,51.10302",
       "confidence": "verified",
       "sources": ["https://game-checklists.com/kcd2/guides/rosas-book-quest/"],
@@ -2114,6 +2182,7 @@
     "entity_name": "zakopanyZitrek_ambushSpot",
     "entity_id": "60522",
     "entity_guid": "760db9f8-954c-4cd2",
+    "kind": "area",
     "pos": "870.7698,1329.794,131.3037",
     "poi_name": null,
     "alt_entities": [
@@ -2173,6 +2242,7 @@
       "entity_name": "stash[Chest/chest9_8972aacc-b854-4a66-b22b-18d12fea644a]",
       "entity_id": "125048",
       "entity_guid": "242a0b91-a79c-00cf",
+      "kind": "container",
       "pos": "1763.444,1118.485,105.5964",
       "alt": [
         {
@@ -2205,6 +2275,7 @@
       { "item": "repairKit_bowyerSmall", "guid": "87912053-8c20-4bee-9bb2-dbc3961e94ea" }
     ],
     "entity_guid": "1f9a4d0e-43f4-0fed",
+    "kind": "container",
     "pos": "2803.865,2186.89,116.1533",
     "poi_name": "tunelVeSkalach_poi (Tunnel in the cliffs) 2819.443,2183.283",
     "alt_entities": [
@@ -2259,6 +2330,7 @@
       { "item": "potion_stamina_high", "guid": "c016f34b-be76-47c7-9f96-caec61afa238" }
     ],
     "entity_guid": "20eefed5-5585-0781",
+    "kind": "container",
     "pos": "2446.858,3031.178,94.92254",
     "poi_name": "ukrytyPoklad_poi (Hidden treasure) 2450.172,3032.561",
     "extra_targets": [
@@ -2273,6 +2345,7 @@
           { "item": "repairKit_weaponSmall", "guid": "c707733a-c0a7-4f02-b684-9392b0b15b83" }
         ],
         "entity_guid": "1cf55fad-925f-4c2e",
+        "kind": "container",
         "pos": "2444.603,3030.857,94.96452"
       }
     ],
@@ -2285,6 +2358,7 @@
       "entity_name": "tunelVeSkalach_map",
       "entity_id": "20483",
       "entity_guid": "3cf9a472-13f8-45aa",
+      "kind": "trigger",
       "pos": "2823.362,2184.632,117.9397"
     },
     "name_label": "ui_maplegend_tunnelInApolena",
@@ -2309,6 +2383,7 @@
     "clears_when": "any_taken",
     "treasure": [{ "item": "andelStrazny_riddles_2", "guid": "91242efc-c004-438b-a083-9a2b1db9153e" }],
     "entity_guid": "24897399-6bcc-4537",
+    "kind": "container",
     "pos": "2989.478,862.3473,63.42873",
     "poi_name": null,
     "alt_entities": [],
@@ -2336,6 +2411,7 @@
     "clears_when": "any_taken",
     "treasure": [{ "item": "andelStrazny_riddles_3", "guid": "e09796f9-0e02-49f4-baff-a01edd0f44e8" }],
     "entity_guid": "4d5582de-5ba4-4064",
+    "kind": "container",
     "pos": "3207.163,953.4286,57.9366",
     "poi_name": null,
     "alt_entities": [],
@@ -2363,6 +2439,7 @@
     "clears_when": "any_taken",
     "treasure": [{ "item": "andelStrazny_riddles_4", "guid": "b2844271-4457-4987-a69c-fc4df87166a8" }],
     "entity_guid": "6b389366-9d82-4556",
+    "kind": "container",
     "pos": "3201.785,639.6072,50.55492",
     "poi_name": null,
     "alt_entities": [],
@@ -2390,6 +2467,7 @@
     "clears_when": "any_taken",
     "treasure": [{ "item": "andelStrazny_riddles_5", "guid": "ebadd3c9-462f-456a-a6b9-dd6ebc8607a8" }],
     "entity_guid": "7aa0c69f-823e-4c08",
+    "kind": "container",
     "pos": "3091.687,863.2286,77.04855",
     "poi_name": null,
     "alt_entities": [],
@@ -2420,6 +2498,7 @@
       { "item": "skillbook_scholarship_IV_KCD2", "guid": "75864a5a-541a-4b68-8465-793f9082127a" }
     ],
     "entity_guid": "a6859ca6-3600-409f",
+    "kind": "container",
     "pos": "3226.867,805.6481,52.40733",
     "poi_name": null,
     "alt_entities": [],
@@ -2453,6 +2532,7 @@
       { "item": "skillbook_alchemy_IV_kcd2", "guid": "2442800d-0712-402d-a54e-37f817adda44" }
     ],
     "entity_guid": "bbc18e33-3aff-0e18",
+    "kind": "container",
     "pos": "2783.269,1097.83,95.59929",
     "poi_name": null,
     "alt_entities": [],
@@ -2467,6 +2547,7 @@
       "entity_name": "cernokneznik_hadanka",
       "entity_id": "49291",
       "entity_guid": "0c9cb0ce-6857-4a76",
+      "kind": "item_slot",
       "pos": "2733.989,1135.145,99.75826",
       "confidence": "verified",
       "entity_check": "ok"

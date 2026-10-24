@@ -27,6 +27,38 @@ namespace {
         {.pattern = kDogMarker, .ripDisp = 30, .ripLength = 34},
         {.pattern = kShowMapMarker, .ripDisp = 40, .ripLength = 44},
     };
+    // The GUI module's cutscene player (C_CutscenePlayer), which the module's init (0x180EE52B8) makes and keeps at
+    // +0x68, and the player's own check (slot 3, 0x182B36DD4) reading the cutscene playing at +0x28. Neither is
+    // called: they pin the two offsets below.
+    constexpr Hooks::Rung kCutscenePlayerRungs[] = {
+        {.pattern = "E8 ?? ?? ?? ?? 48 8B D0 48 8D 4F 68 E8 ?? ?? ?? ?? 48 8D 4D ?? E8 ?? ?? ?? ?? 48 8B 57 58"},
+    };
+    constexpr Hooks::Rung kCurrentCutsceneRungs[] = {
+        {.pattern = "48 8B 41 28 48 85 C0 74 0C 48 8B 40 20 80 78 10 00 0F 94 C0 C3 B0 01 C3"},
+        {.pattern = "48 8B 41 28 48 85 C0 74 ?? 48 8B 40 20 80 78 10 00 0F 94 C0 C3"},
+    };
+    // The dialogue manager's participant lookup (0x18082F0E4): (manager, soul WUID, also the waiting table, key
+    // flag) -> the soul's dialogue (a C_DialogInstance), null when it is in none. First from the actors' own
+    // in-dialogue check (0x180AB232C, in C_Human's vtable and the other actors'), which looks in the running table
+    // only and then asks the dialogue's +0x18 interface slot 20 (its definition's flag bit 21); the other rungs, the
+    // game's interaction check (0x18082F00C, which also pins the manager at game context +0x150 -> +0x10) and
+    // DialogModule.IsSoulInDialog (0x18281024C), find the same lookup.
+    constexpr Hooks::Rung kDialogueLookupRungs[] = {
+        {.pattern =
+             "41 B1 01 45 33 C0 48 8B CF 48 8B 10 E8 ?? ?? ?? ?? 48 85 C0 75 0D 8A C3 48 8B 5C 24 30 48 83 C4 20 "
+             "5F C3 48 8D 48 18 48 8B 01 FF 90 A0 00 00 00",
+         .ripDisp = 13,
+         .ripLength = 17},
+        {.pattern =
+             "E8 ?? ?? ?? ?? 48 8D 54 24 ?? 48 8B 88 50 01 00 00 48 8B 59 10 48 8B 8F B0 00 00 00 E8 ?? ?? ?? ?? "
+             "40 B7 01 48 8B CB 44 8A CF 44 8A C7 48 8B 10 E8 ?? ?? ?? ??",
+         .ripDisp = 49,
+         .ripLength = 53},
+        {.pattern =
+             "48 8B 49 70 49 8B C0 41 B1 01 48 8B DA 45 8A C1 48 8B D0 E8 ?? ?? ?? ?? 48 8D 54 24 ?? 48 8D 48 18",
+         .ripDisp = 20,
+         .ripLength = 24},
+    };
     // C_UIMap::GetOrCreateEntityMark (0x180C4DBD8): (map, shared_ptr *out, type, object, param).
     constexpr Hooks::Rung kCreateMarkRungs[] = {
         {.pattern = kDogMarker, .ripDisp = 100, .ripLength = 104},
@@ -169,6 +201,17 @@ namespace {
     constexpr std::size_t kXGenAiObjects = 0xA8;
     constexpr std::size_t kObjectManagerSlot = 30;
     constexpr std::size_t kMapInApse = 0x1508;
+    // The GUI module's cutscene player, and in it the cutscene playing: any the player runs (in-game and track view
+    // scenes, videos, text, fades, time skips, fast travel), null between them.
+    constexpr std::size_t kCutscenePlayer = 0x68;
+    constexpr std::size_t kCurrentCutscene = 0x28;
+    // S_GameContext +0x150 is the dialogue module, whose +0x10 is the dialogue manager.
+    constexpr std::size_t kDialogueModule = 0x150;
+    constexpr std::size_t kDialogueManager = 0x10;
+    // A C_DialogInstance's interface (vtable 0x183E63B60) and its slot telling a conversation the actor is held in
+    // (0x1803BD840: definition +0xBC bit 21) from a line said in passing.
+    constexpr std::size_t kDialogueInterface = 0x18;
+    constexpr std::size_t kDialogueHoldsSlot = 20;
     // A screen (C_UIFlashBase) keeps its bound element at +0x48 (its call into Flash, 0x180566BCC); the element
     // (CFlashUIElement) its player at +0x58 (its setup, 0x18088EF1C).
     constexpr std::size_t kScreenElement = 0x48;
@@ -226,6 +269,8 @@ namespace {
     };
     using GatherMarkersFn = MarkerRecords *(__fastcall *)(void *questLog, MarkerRecords *out);
     using FreeMarkersFn = void(__fastcall *)(MarkerRecords *);
+    using DialogueLookupFn = const void *(__fastcall *)(const void *manager, std::uint64_t soul, bool waiting,
+                                                        bool flag);
     using IsAreaFn = bool(__fastcall *)(const void *, std::uint64_t wuid);
     using FindAreaFn = const void *(__fastcall *)(const void *, std::uint64_t wuid);
 
@@ -247,6 +292,7 @@ namespace {
     ReleaseQuestFn g_releaseQuest;
     GatherMarkersFn g_gatherMarkers;
     FreeMarkersFn g_freeMarkers;
+    DialogueLookupFn g_dialogueLookup;
     IsAreaFn g_isArea;
     FindAreaFn g_findArea;
 
@@ -280,6 +326,8 @@ bool Game::Install() {
     g_context = reinterpret_cast<ContextFn>(Hooks::Find("game context", kContextRungs));
     g_apse = reinterpret_cast<ScreenFn>(Hooks::Find("apse screen", kApseRungs));
     g_compass = reinterpret_cast<ScreenFn>(Hooks::Find("compass screen", kCompassRungs));
+    const bool cutsceneOffsets = Hooks::Find("cutscene player offset", kCutscenePlayerRungs) &&
+                                 Hooks::Find("current cutscene offset", kCurrentCutsceneRungs);
     g_createMark = reinterpret_cast<CreateMarkFn>(Hooks::Find("GetOrCreateEntityMark", kCreateMarkRungs));
     g_registerMark = reinterpret_cast<RegisterMarkFn>(Hooks::Find("RegisterEntityMark", kRegisterMarkRungs));
     g_removeMark = reinterpret_cast<RegisterMarkFn>(Hooks::Find("RemoveEntityMark", kRemoveMarkRungs));
@@ -295,11 +343,13 @@ bool Game::Install() {
     g_releaseQuest = reinterpret_cast<ReleaseQuestFn>(Hooks::Find("quest release", kReleaseQuestRungs));
     g_gatherMarkers = reinterpret_cast<GatherMarkersFn>(Hooks::Find("quest marker gather", kGatherMarkersRungs));
     g_freeMarkers = reinterpret_cast<FreeMarkersFn>(Hooks::Find("quest marker free", kFreeMarkersRungs));
+    g_dialogueLookup = reinterpret_cast<DialogueLookupFn>(Hooks::Find("dialogue lookup", kDialogueLookupRungs));
     g_isArea = reinterpret_cast<IsAreaFn>(Hooks::Find("area WUID check", kIsAreaRungs));
     g_findArea = reinterpret_cast<FindAreaFn>(Hooks::Find("area lookup", kFindAreaRungs));
-    return g_context && g_apse && g_compass && g_createMark && g_registerMark && g_removeMark && g_watch && g_unwatch &&
-           g_find && g_wuidMap && g_wuidLookup && g_countOfClass && g_itemSlot && g_findQuest && g_questProgress &&
-           g_releaseQuest && g_gatherMarkers && g_freeMarkers && g_isArea && g_findArea;
+    return g_context && g_apse && g_compass && cutsceneOffsets && g_createMark && g_registerMark && g_removeMark &&
+           g_watch && g_unwatch && g_find && g_wuidMap && g_wuidLookup && g_countOfClass && g_itemSlot && g_findQuest &&
+           g_questProgress && g_releaseQuest && g_gatherMarkers && g_freeMarkers && g_dialogueLookup && g_isArea &&
+           g_findArea;
 }
 
 bool Game::GameplayStarted() {
@@ -311,6 +361,23 @@ bool Game::GameplayStarted() {
 Flash::Player *Game::HudPlayer() {
     void *gui = GuiModule();
     return gui ? ScreenPlayer(g_compass(gui)) : nullptr;
+}
+
+bool Game::InDialogue(const Engine::Entity *entity) {
+    const std::uint8_t *context = g_context();
+    const void *module = context ? At<void *>(context, kDialogueModule) : nullptr;
+    const void *manager = module ? At<void *>(module, kDialogueManager) : nullptr;
+    // As the actors' own check: the running table only, and only a dialogue that holds the actor in it.
+    const auto *dialogue =
+        manager ? static_cast<const std::uint8_t *>(g_dialogueLookup(manager, EntityWuid(entity), false, true))
+                : nullptr;
+    return dialogue && Engine::VCall<bool>(dialogue + kDialogueInterface, kDialogueHoldsSlot);
+}
+
+bool Game::CutscenePlaying() {
+    const void *gui = GuiModule();
+    const void *player = gui ? At<void *>(gui, kCutscenePlayer) : nullptr;
+    return player && At<void *>(player, kCurrentCutscene);
 }
 
 Game::Map *Game::GetMap() {

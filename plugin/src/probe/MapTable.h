@@ -8,13 +8,20 @@
 // The maps the mod marks, generated at build time from research/treasure_maps.json (tools/treasure_data/maptable.py)
 // into MapTableData.inc.
 namespace MapTable {
+    // What a place is, from its level entity's class (tools/treasure_data/index.py, PLACE_KINDS), and so what the
+    // probe reads from it: a hole whether it is dug, an item slot whether it holds its item, a container or a person
+    // their inventory, a quest trigger whether it takes a press. An area holds nothing to read.
+    enum class Kind : std::uint8_t { Area, Container, Hole, ItemSlot, Person, Trigger };
+
     // A level entity, by its level GUID (Engine::GetEntityByGuid): patches renumber EntityIds, not GUIDs. 0 for none.
     struct Place {
-        // A container's treasure items, empty for other places and for a container that counts as found only once
-        // empty. With anyTaken, the container's guaranteed loot: it counts as found once any of it is gone. Without,
-        // quest items that never refill: found once all of them are gone.
+        // The items a container or person holds for the player: a destination's treasure, or the map itself at its
+        // source. Empty for other places and for a container that counts as found only once empty. With anyTaken, it
+        // counts as taken once any of them is gone (a destination's guaranteed loot, a source's map); without, once
+        // all of them are (quest items that never refill).
         std::span<const Game::ItemClassId> treasure = {};
         std::uint64_t guid = 0;
+        Kind kind = Kind::Area;
         bool afterQuest = false; // a destination marked only once the map's quest has ended, instead of until then
         bool anyTaken = false;
     };

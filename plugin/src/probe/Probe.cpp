@@ -28,11 +28,12 @@ namespace {
         static std::map<std::string_view, Game::QuestProgress> quests;
         return quests;
     }
-    // The destinations a quest marker covered at the last probe, logged when that changes.
-    std::vector<std::uint64_t> g_covered;
-    // Maps whose carving trigger could not be asked, or whose source has no inventory, logged once each.
+    // The destinations (EntityIds) a quest marker covered at the last probe, logged when that changes.
+    std::vector<std::uint32_t> g_covered;
+    // Maps whose carving trigger could not be asked, and places (GUIDs) whose entity is not the kind the table says,
+    // logged once each.
     std::vector<std::string_view> g_loggedTrigger;
-    std::vector<std::string_view> g_loggedSource;
+    std::vector<std::uint64_t> g_loggedKind;
 
     // The entity at a place, if it is in the loaded level.
     const Engine::Entity *Find(const MapTable::Place &place) {
@@ -67,31 +68,58 @@ namespace {
         return std::nullopt;
     }
 
-    // A quest trigger that takes no press gives nothing there: its quest step is not reached (Goatskin's barrel) or it
-    // was used. The two look the same, so it is never marked, whatever KeepFound says.
-    bool Inactive(const Engine::Entity *entity) {
-        const std::optional<bool> enabled = PressEnabled(entity);
-        return enabled && !*enabled;
-    }
+    // What a place still offers the player.
+    enum class State {
+        Open,     // still to be found: marked
+        Taken,    // found and dealt with: marked only with KeepFound
+        Inactive, // nothing there to use: never marked
+    };
 
-    // Whether a destination has been dealt with: a hole dug (Hole.lua's nDepth is 1 once dug), a loose item taken
-    // from its item slot, or a container's treasure taken (any of its loot, or all of its quest items; a container
-    // without a list once emptied). Destinations with none of these (areas, triggers) stay marked while the player has
-    // the map.
-    bool Done(const MapTable::Place &place, const Engine::Entity *entity) {
-        if (const Engine::ScriptTable *script = Engine::EntityScript(entity)) {
-            if (ScriptValue depth; Engine::TableGet(script, "nDepth", depth) && depth.type == ScriptValue::Number)
-                return depth.number >= 1.f;
+    // A place's state by its kind. A hole is taken once dug (Hole.lua's nDepth is 1 then), an item slot once its item
+    // is gone (a quest may fill it only for a while), a container or person once its items are (any or all of them,
+    // by the place's rule; a container without a list once empty). Chests and souls get their items when the game
+    // registers or initializes them, not when first opened (C_Stash, C_InventorySoul, checked in Ghidra), so what an
+    // inventory holds is what is there. A quest trigger that takes no press gives nothing there: its quest step is not
+    // reached (Goatskin's barrel) or it was used, and the two look the same, so it is inactive. An area offers
+    // nothing to read and stays open.
+    State StateOf(const MapTable::Place &place, const Engine::Entity *entity) {
+        switch (place.kind) {
+        case MapTable::Kind::Hole: {
+            const Engine::ScriptTable *script = Engine::EntityScript(entity);
+            ScriptValue depth;
+            const bool dug = script && Engine::TableGet(script, "nDepth", depth) && depth.type == ScriptValue::Number &&
+                             depth.number >= 1.f;
+            return dug ? State::Taken : State::Open;
         }
-        if (const std::optional<bool> holds = Game::SlotHoldsItem(Engine::EntityId(entity)))
-            return !*holds;
-        const Game::Inventory *inventory = Game::EntityInventory(entity);
-        if (!inventory)
-            return false;
-        if (place.treasure.empty())
-            return Game::ItemCount(inventory) == 0;
-        const auto gone = [&](const Game::ItemClassId &item) { return Game::CountOfClass(inventory, item) == 0; };
-        return place.anyTaken ? std::ranges::any_of(place.treasure, gone) : std::ranges::all_of(place.treasure, gone);
+        case MapTable::Kind::ItemSlot:
+            if (const std::optional<bool> holds = Game::SlotHoldsItem(Engine::EntityId(entity)))
+                return *holds ? State::Open : State::Taken;
+            break;
+        case MapTable::Kind::Container:
+        case MapTable::Kind::Person:
+            if (const Game::Inventory *inventory = Game::EntityInventory(entity)) {
+                if (place.treasure.empty())
+                    return Game::ItemCount(inventory) == 0 ? State::Taken : State::Open;
+                const auto gone = [&](const Game::ItemClassId &item) {
+                    return Game::CountOfClass(inventory, item) == 0;
+                };
+                const bool taken = place.anyTaken ? std::ranges::any_of(place.treasure, gone)
+                                                  : std::ranges::all_of(place.treasure, gone);
+                return taken ? State::Taken : State::Open;
+            }
+            break;
+        case MapTable::Kind::Trigger:
+            return PressEnabled(entity).value_or(true) ? State::Open : State::Inactive;
+        case MapTable::Kind::Area:
+            return State::Open;
+        }
+        // The level entity is not what the table says it is (validate checks this against each game build).
+        if (!std::ranges::contains(g_loggedKind, place.guid)) {
+            Log::Write("probe: entity {:016x} is not the {} the map table says", place.guid,
+                       place.kind == MapTable::Kind::ItemSlot ? "item slot" : "container or person with an inventory");
+            g_loggedKind.push_back(place.guid);
+        }
+        return State::Inactive;
     }
 
     // A quest's progress, logging each change so quest gates show up in the log.
@@ -170,24 +198,6 @@ namespace {
         return read;
     }
 
-    // Whether the object a map is found on still holds it: an item slot while it holds an item (a quest may fill it
-    // only for a while), a chest or NPC while its inventory has the map. Chests and souls get their items when the game
-    // registers or initializes them, not when first opened (C_Stash, C_InventorySoul, checked in Ghidra), so what the
-    // inventory has is what is there. A carving's trigger is the map itself, found until examined.
-    bool HoldsMap(const MapTable::Map &map, const Engine::Entity *entity) {
-        if (const std::optional<bool> holds = Game::SlotHoldsItem(Engine::EntityId(entity)))
-            return *holds;
-        if (!IsItem(map))
-            return true;
-        if (const Game::Inventory *inventory = Game::EntityInventory(entity))
-            return Game::CountOfClass(inventory, map.item) > 0;
-        if (!std::ranges::contains(g_loggedSource, std::string_view(map.name))) {
-            Log::Write("probe: {}'s source has no inventory to hold it", map.name);
-            g_loggedSource.emplace_back(map.name);
-        }
-        return false;
-    }
-
     void Add(ProbeResult &result, const MapTable::Map &map, const Engine::Entity *entity, const char *label,
              const bool source) {
         result.targets.push_back({.map = map.name,
@@ -207,6 +217,9 @@ ProbeResult Probe::Run() {
         return result;
     result.playerReady = true;
     const Options::Values &options = Options::Get();
+    // The quest markers, gathered once a destination of a map with a quest needs them.
+    std::optional<std::vector<Game::QuestMarker>> markers;
+    std::vector<std::uint32_t> covered;
     for (const MapTable::Map &map : MapTable::kMaps) {
         if (!Shown(map.category, options) || Revealed(map, inventory))
             continue;
@@ -218,39 +231,40 @@ ProbeResult Probe::Run() {
         if (options.requireCarried)
             known = known && has;
         if (known && options.mapDestinations) {
-            for (const MapTable::Place &place : map.targets)
-                if (place.afterQuest ? questOver : !retired)
-                    if (const Engine::Entity *entity = Find(place);
-                        entity && !Inactive(entity) && (options.keepFound || !Done(place, entity)))
-                        Add(result, map, entity, map.label, false);
+            for (const MapTable::Place &place : map.targets) {
+                const Engine::Entity *entity = (place.afterQuest ? questOver : !retired) ? Find(place) : nullptr;
+                if (!entity)
+                    continue;
+                if (const State state = StateOf(place, entity);
+                    state == State::Inactive || (state == State::Taken && !options.keepFound))
+                    continue;
+                // A destination its map's quest already points at is left to the quest while that marker shows.
+                if (options.hideUnderQuestMarkers && map.quest) {
+                    if (!markers)
+                        markers = Game::QuestMarkers();
+                    if (Covered(Engine::EntityPosition(entity), *markers, map.quest, options.questMarkerReach)) {
+                        const std::uint32_t id = Engine::EntityId(entity);
+                        covered.push_back(id);
+                        if (!std::ranges::contains(g_covered, id))
+                            Log::Write("quest: a {} marker points at {}'s destination, entity {}; it is left to the "
+                                       "quest",
+                                       map.quest, map.name, id);
+                        continue;
+                    }
+                }
+                Add(result, map, entity, map.label, false);
+            }
         }
         // A map carried or read has been found, whatever RequireCarried says of its destinations: its source refills a
         // copy like any other loot, which would otherwise be marked again once the map is put down.
-        if (options.mapLocations && (options.keepFound || (!has && !read)) && !retired && map.source.guid) {
-            if (const Engine::Entity *entity = Find(map.source); entity && HoldsMap(map, entity))
+        if (options.mapLocations && (options.keepFound || (!has && !read)) && !retired)
+            if (const Engine::Entity *entity = Find(map.source); entity && StateOf(map.source, entity) == State::Open)
                 Add(result, map, entity, map.sourceLabel, true);
-        }
     }
-
-    // A destination its map's quest already points at is left to the quest while that marker shows.
-    std::vector<std::uint64_t> covered;
-    if (options.hideUnderQuestMarkers && std::ranges::any_of(result.targets, [](const auto &t) { return !t.source; })) {
-        const std::vector<Game::QuestMarker> markers = Game::QuestMarkers();
-        std::erase_if(result.targets, [&](const ProbeResult::Target &t) {
-            const MapTable::Map &map = *std::ranges::find(MapTable::kMaps, t.map, &MapTable::Map::name);
-            if (t.source || !Covered(t.pos, markers, map.quest, options.questMarkerReach))
-                return false;
-            covered.push_back(t.wuid);
-            if (!std::ranges::contains(g_covered, t.wuid))
-                Log::Write("quest: a {} marker points at {}'s destination {:016x}; it is left to the quest", map.quest,
-                           t.map, t.wuid);
-            return true;
-        });
-    }
-    for (const std::uint64_t wuid : g_covered)
-        if (!std::ranges::contains(covered, wuid) &&
-            std::ranges::any_of(result.targets, [&](const auto &t) { return !t.source && t.wuid == wuid; }))
-            Log::Write("quest: no quest marker points at destination {:016x} any more; it is marked again", wuid);
+    for (const std::uint32_t id : g_covered)
+        if (!std::ranges::contains(covered, id) &&
+            std::ranges::any_of(result.targets, [&](const auto &t) { return !t.source && t.entity == id; }))
+            Log::Write("quest: no quest marker points at destination entity {} any more; it is marked again", id);
     g_covered = std::move(covered);
     return result;
 }
@@ -260,5 +274,5 @@ void Probe::Reset() {
     QuestState().clear();
     g_covered.clear();
     g_loggedTrigger.clear();
-    g_loggedSource.clear();
+    g_loggedKind.clear();
 }

@@ -20,6 +20,21 @@ from .game import LEVELS
 
 MAP_DOCUMENT_CLASS = "4"
 CONTAINER_CLASSES = {"Stash", "Hole", "SO_DiggingSpot", "StashCorpse", "CartStash", "DestroStash"}
+# A marked place's kind (MapTable::Kind), by its level entity's class: what the plugin reads to tell whether the place
+# is dealt with, or whether it still holds its map.
+PLACE_KINDS = {
+    "Stash": "container",
+    "StashCorpse": "container",
+    "Nest": "container",
+    "Hole": "hole",
+    "ItemSlot": "item_slot",
+    "NPC": "person",
+    "NPC_Female": "person",
+    "InteractionTrigger": "trigger",
+    "TriggerArea": "area",
+    "AreaShape": "area",
+    "TagPoint": "area",
+}
 
 _ENTITY_RE = re.compile(r"<Entity\s([^>]*?)\s*(?:/>|>(.*?)</Entity>)", re.DOTALL)
 _POI_RE = re.compile(r'<Object Type="POI" ([^>]*)/>')
