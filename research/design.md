@@ -39,7 +39,16 @@ Mark type `FindersKeepersMapLocation`. Where a map is found, marked while the pl
 
 An unread map that leaves the inventory. Finding it again would mean remembering when it left, or searching every inventory and dropped item.
 
-A refilled destination. Most treasure containers and loose items refill 7 days after they are taken (18 marked destinations: 15 containers and 3 item slots; see findings, Restocking), and the game keeps no lasting record that one was looted: its restock record resets once it is full again. So once its loot is back it is marked again. Under `any_taken` it stays clear until the refill completes. Keeping it clear means storing that it was looted, and every place to store it has a catch:
+A refilled destination. Most treasure containers and loose items refill 7 days after they are taken (18 marked destinations: 15 containers and 3 item slots; see findings, Restocking), and the game keeps no lasting record that one was looted. A container's save record holds its inventory as a difference from its loot preset, its lock state, its restock state, its quest item links and its phase model (Ghidra, StashSaveRecord). The preset is generated from a seed tied to the container, and a refill gives each item back its original id. So once the container is full again, its difference is empty and its restock record is reset: in the save it is the same as one never touched, and it is marked again. Under `any_taken` it stays clear until the refill completes.
+
+Two traces outlast a refill, but neither covers enough to clear a place by:
+- A container locked in the level stays unlocked once picked or opened with a key; only quests and the tutorial chest relock one. Unlocked containers have no such trace, and opening is not looting.
+- A container whose phase changes when the player takes an item (`esStashPhaseChangeEvent` PlayerTakesItem or StashIsEmpty) keeps its emptied model through a refill. Few containers have one.
+
+A region switch's save (LevelSwitchSave) drops refilling containers whole, so both traces are gone once the player changes region. Nothing else records a looted container: the game's statistics keep unique sets for documents and dice opponents but not containers, and the AI logs looting only as a crime at an owned container.
+
+Keeping a place clear therefore means storing that it was looted, and every place to store it but the first has a catch:
+- A free mark type's name (best): the map's save writes every mark type's name as a string of any length, and its load passes each saved name through the name mapper, which the plugin already detours. Name a free id with the list of found places and the list rides every save, while a game without the mod ignores the unknown name. The game asks for a free id's name only in that save loop. Open: a save without the list, and a new game, must start with an empty list. The map's filter bytes, which the game resets on load and when it builds the map, can anchor that; a test build settles it.
 - The map's read progress cannot hold it: maps are not timed documents, so the game keeps their read state as a GUID set, not a number (Ghidra, C_RPGMinigames). Adding made-up GUIDs to that set risks a crash in any code that looks them up as item classes.
 - A field on the container's script needs the game's stash scripts replaced, as Loot Info does, which clashes with Loot Info and with patches to those scripts.
 - Loot Info's own `bSearchedAllready` (set on opening, saved per container) would give back-progress, but couples the mod to another mod's internals, already renamed once.
@@ -48,10 +57,10 @@ A refilled destination. Most treasure containers and loose items refill 7 days a
 - A hidden permanent buff per place: a save holding a buff whose definition is gone (the mod removed) loads it without one, and whether the game survives that is untraced.
 - A quest of our own: a new quest must be wired into a vanilla parent graph, and setting its variables from C++ needs much more RE.
 - Spare map legend flags: 12 mark type ids are unnamed (33, 35, 40, 41, 54, 62-68), each saved as a raw byte under the name we give it and skipped once unknown, so three hold the 18 places. The legend's Track all fills every flag byte, so it needs a hook that keeps ours.
-- The player's `AI` script table (best so far): `Player:OnSaveAI` and `OnLoadAI` save and restore it whole, and no vanilla script reads keys inside it, so a `player.AI.FindersKeepers` table would ride the save, invisible, and be ignored without the mod. Untested: that KCD2's save reaches this CryEngine AI script path for the player, and that nested tables survive. A throwaway build that writes a value, then reads it after a save and reload, settles it.
+- The player's `AI` script table: `Player:OnSaveAI` and `OnLoadAI` save and restore it whole, and no vanilla script reads keys inside it, so a `player.AI.FindersKeepers` table would ride the save, invisible, and be ignored without the mod. Untested: that KCD2's save reaches this CryEngine AI script path for the player, and that nested tables survive. A throwaway build that writes a value, then reads it after a save and reload, settles it.
 - A discovered POI only says the player was near.
 
-If this comes back, only the 18 places that refill need it, marked `refills` from game data (a refill period above 0 and treasure that is not a quest item).
+If this comes back, the condition is the one marks already use: a place counts as found the first time the probe sees it done (treasure taken, hole dug, slot emptied), and it stays clear from then on, refill or not, for every place alike. Places looted before then, or without the mod running, can't be known and stay marked until looted again.
 
 ## Options
 
