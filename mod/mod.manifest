@@ -4,7 +4,7 @@
     <name>Finders Keepers</name>
     <description>Marks where treasure maps, quest maps and riddle notes lead, and where each one is found, on the world map, the compass and in the world.</description>
     <author>pointfeev</author>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <modid>finderskeepers</modid>
     <modifies_level>false</modifies_level>
     <dependencies></dependencies>

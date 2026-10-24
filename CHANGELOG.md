@@ -2,7 +2,7 @@
 
 Each version's section becomes its GitHub release notes and its Nexus Mods changelog, where every line is one entry, so keep each entry on one line.
 
-## Unreleased
+## 1.1.1
 
 - With Only maps you carry (`RequireCarried`) on, putting a read map away now clears all of its marks, so the mod page's workaround for keeping refilling chests off the map works: its location used to be marked again once its source refilled a copy of the map.
 - Keep finished places is now Keep marks once found (`KeepFound`), and also keeps a found map's location marked while a copy lies there. A settings file with the old name carries over.
