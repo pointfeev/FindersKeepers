@@ -1,1 +1,1 @@
-Marks where every treasure map, quest map and riddle note leads, and where each one is found, on the world map, the compass and in the world. Marks clear once a spot is dug or looted, step aside for quest markers, and almost everything is configurable.
+No more looking up where a map leads! Every treasure map, quest map and riddle note gets a mark where it leads and where it's found, on the world map, the compass and in the world. Marks clear once a spot is dug or looted, step aside for quest markers, and almost everything is configurable.

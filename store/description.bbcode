@@ -1,18 +1,18 @@
 [size=5][b]Description[/b][/size]
-Marks where every treasure map leads, and where each map is found, on the world map, the compass and in the world. Covers all 28 treasure maps, the cave-wall carving in the Tunnel in the Cliffs, the 6 quest maps and the riddle notes (the Strange Little Verses, the Strange Riddle). Maps that lead to several spots get a mark on each, and a mark clears once its spot is dug or looted. No more looking up where a map leads!
+Finders Keepers marks every map's destinations, and where each map is found, on the world map, the compass and in the world. Covers all 27 treasure maps, the cave-wall carving in the Tunnel in the Cliffs, the 6 quest maps and the riddle notes (the Strange Little Verses, the Strange Riddle). Every spot comes from the game's own data, checked against guides and in game. Maps that lead to several spots get a mark on each, and a mark clears once its spot is dug or looted.
 
 [size=5][b]Features[/b][/size]
 [list]
 [*]A map's destinations show once you've read it, whether you still carry it or not. You can require carrying it instead, or show them before reading.
-[*]The chest, body or merchant holding a map you haven't found yet is marked too.
-[*]A mark steps aside while its own tracked quest points at the same spot, and quest maps stop being marked once their quest ends.
+[*]Most maps you haven't found yet are marked where they lie: in a chest, on a person or body, or out in the open.
+[*]A mark steps aside while its own tracked quest points at the same spot. Maps tied to a quest stop being marked once it ends, and a riddle note once you find the next one.
 [*]Dug holes, looted chests and taken items lose their marks. A chest counts as looted once you take any of its loot (junk aside); one holding quest items, such as Brunswick's armour, once you take those.
 [*]Tooltips name the map, as in "Map destination: Map left by the deceased".
 [*]Marked spots within range get an icon in the world, with adjustable range, fade, size and height.
 [*]Treasure maps, quest maps and riddle notes can each be hidden.
-[*]Settings can be changed in game with [url=https://www.nexusmods.com/kingdomcomedeliverance2/mods/3363]Mod Configuration Menu[/url], or in a settings file. The map legend's Track toggle also hides each kind of mark.
+[*]Each kind of mark gets its own entry in the map legend, and its Track toggle hides it.
 [/list]
-Almost all of this can be switched off or tuned; see Settings.
+Almost all of this can be switched off or tuned, in game with [url=https://www.nexusmods.com/kingdomcomedeliverance2/mods/3363]Mod Configuration Menu[/url] or in a settings file; see Settings.
 
 [size=5][b]Requirements[/b][/size]
 [list]
@@ -27,25 +27,30 @@ Almost all of this can be switched off or tuned; see Settings.
 [*]If you installed by hand and keep a [font=Courier New]Mods/mod_order.txt[/font], add [font=Courier New]finderskeepers[/font] to it. Vortex adds it for you.
 [/list]
 [size=5][b]Settings[/b][/size]
-[font=Courier New]Mods/finderskeepers/KCSE/Plugins/FindersKeepers.ini[/font], created on first launch with every default in its comments. Edits apply while the game runs, and updates keep the file. The same settings show under Mod Configuration in the pause menu when MCM is installed.
+Settings live in [font=Courier New]Mods/finderskeepers/KCSE/Plugins/FindersKeepers.ini[/font], created on first launch with every default in its comments. Edits apply while the game runs, and updates keep the file. The same settings show under Mod Configuration in the pause menu when MCM is installed.
 [list]
-[*][b]Display:[/b] map and compass markers, in-world icons
-[*][b]Marks:[/b] map destinations, map locations
-[*][b]Maps:[/b] treasure maps, quest maps, riddle notes
-[*][b]Rules:[/b] require reading, require carrying, keep finished spots, retire quest maps, defer to quest markers
-[*][b]Distances:[/b] icon range, fade, size and height; quest marker reach
+[*][b]Display:[/b] Map and compass markers, Icons in the world
+[*][b]Marks:[/b] Map destinations, Map locations
+[*][b]Maps:[/b] Treasure maps, Quest maps, Riddle notes
+[*][b]Rules:[/b] Only maps you have read, Only maps you carry, Keep finished places, Retire quest maps, Defer to quest markers
+[*][b]Distances:[/b] Icon range, Icon fade, Icon size, Icon height, Quest marker reach
 [/list]
 [size=5][b]Compatibility[/b][/size]
 [list]
-[*]Safe to add or remove mid-playthrough: it keeps no record of its own. Every mark is read straight from the game's current state, so maps you already read show up at once. The only trace in your save is the map legend's Track setting for its two mark types, which the game stores like any other and ignores once the mod is removed.
-[*]Uses its own two marker types; replaces nothing.
+[*]Safe to add or remove mid-playthrough: it keeps no record of its own. Every mark is read straight from the game's current state, so maps you already read show up at once.
+[list]
+[*]The one trace in your save is the map legend's Track setting for its two mark types. The game saves that setting for every legend entry, which is how your choice survives a reload, and ignores ours once the mod is removed.
+[/list]
+[*]Works alongside other mods: it only adds files of its own and overrides no game file or script. Its marks are new mark types, so the game's own markers are left as they are.
 [*]Finds the game code it needs by pattern, so it often survives patches once KCSE and its Address Library support the new version. If a patch breaks it, [font=Courier New]kcd.log[/font] says so and the game runs without it.
 [/list]
 [size=5][b]Known limitations[/b][/size]
 [list]
-[*]Not every map has been played through yet. Destinations and map locations come from the game's own data, checked against guides, but some are only verified on paper. If a mark is in the wrong place, missing, or never clears, please report it on the [url=https://www.nexusmods.com/kingdomcomedeliverance2/mods/3863?tab=bugs]Bugs tab[/url] or as a [url=https://github.com/pointfeev/FindersKeepers/issues]GitHub issue[/url], with the map's name.
-[*]An unread map that leaves your inventory is not marked; the game keeps no record of where it went, and the mod keeps none of its own.
+[*]Nearly every map has been checked in game, but a mark may still be off here and there; if one is in the wrong place, missing, or never clears, please report it on the [url=https://www.nexusmods.com/kingdomcomedeliverance2/mods/3863?tab=bugs]Bugs tab[/url] or as a [url=https://github.com/pointfeev/FindersKeepers/issues]GitHub issue[/url], with the map's name.
 [*]Many treasure chests, and a few loose items such as the book in the Love nest, refill about a week after you loot them, and they are marked again once their loot is back, since the game keeps no record that you already found them. Quest items such as Brunswick's armour never come back, so those spots stay clear.
+[list]
+[*]I'm exploring options here. In the meantime, to keep them off the map, turn on Only maps you carry ([font=Courier New]RequireCarried[/font]) and stash or sell a map once you've visited every spot it leads to.
+[/list]
 [/list]
 [size=5][b]Maybe later[/b][/size]
 Other things the mod could mark, each as its own mark type with its own legend entry and settings. They are researched but not built, mostly to keep the map from drowning in marks. Tell me in the comments if you want any of these, or something else entirely.
@@ -58,7 +63,7 @@ Other things the mod could mark, each as its own mark type with its own legend e
 [/list]
 A worth filter would make the first two practical: mark a spot only while what is left in it is worth having, by its total value in groschen, or for anything valuable whatever its price (an unread skill book, a unique item, a badge).
 
-Considered and not planned: easter eggs (no loot, and nothing records seeing one), shrines and hunting spots (the game marks them), and bird nests (hundreds, with random loot that comes back).
+Considered and not planned: easter eggs (no loot, and nothing records seeing one), shrines (the game marks them), hunting and fishing spots, and bird nests (hundreds, with random loot that comes back).
 
 [size=5][b]Credits[/b][/size]
 [list]
