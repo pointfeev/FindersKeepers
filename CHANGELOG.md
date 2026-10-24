@@ -2,7 +2,7 @@
 
 Each version's section becomes its GitHub release notes and its Nexus Mods changelog, where every line is one entry, so keep each entry on one line.
 
-## Unreleased
+## 1.1.2
 
 - In-world icons now float above the top of what they mark, such as a chest's lid or a person's head, rather than a fixed height above its base.
 - Icon height is measured from that top to the icon's bottom edge, so the icon no longer reaches into what it marks, and defaults to 0.2 m; its setting is renamed to `IconHeightAboveTop`, so an older value gives way to the new default.
